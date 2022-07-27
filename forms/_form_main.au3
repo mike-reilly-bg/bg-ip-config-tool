@@ -533,8 +533,8 @@ Func _form_main()
 	GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 	$ip_Gateway = _GUICtrlIpAddress_Create($hgui, $x + $w - 135 * $dscale - 8 * $dscale, $yText_offset + $textHeight * 4 + $textSpacer * 4, 135 * $dscale, 22 * $dscale)
 	_GUICtrlIpAddress_SetFontByHeight($ip_Gateway, $MyGlobalFontName, $MyGlobalFontHeight)
-
-
+	_GUICtrlIpAddress_Create().Next
+	_GUICtrlIpAddress_SetFocus
 	; ------------------
 	; DNS PROPERTIES
 	; ------------------
