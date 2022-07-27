@@ -375,7 +375,7 @@ Func _main()
 			$lvTabKey = False
 			Send("{TAB}")
 		EndIf
-
+		_updateCurrent()
 		Sleep(100)
 	WEnd
 EndFunc   ;==>_main
