@@ -161,7 +161,11 @@ EndFunc   ;==>_onRename
 Func _onTabKey()
 	If IsHWnd(_GUICtrlListView_GetEditControl(ControlGetHandle($hgui, "", $list_profiles))) Then
 		$lvTabKey = True
-		Send("{ENTER}")
+		Send("{ENTER}")		
+	Elseif Mod(Int(StringReplace(ControlGetFocus($hgui),"Edit",""))-5, 4) > 0 Then
+		GUISetAccelerators(0)
+		Send("^ + {RIGHT}")
+		GUISetAccelerators($aAccelKeys)
 	Else
 		GUISetAccelerators(0)
 		Send("{TAB}")
