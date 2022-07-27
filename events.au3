@@ -107,6 +107,19 @@ EndFunc   ;==>_onRadio
 ; Events.......: Click on profile list item
 ;------------------------------------------------------------------------------
 Func _onSelect()
+	;~ $oProfile = _getProfile()
+	;~ if 
+
+
+	;~ $ipAuto = $oProfile.IpAuto
+	;~ $ipAddress = $oProfile.IpAddress
+	;~ $ipSubnet = $oProfile.IpSubnet
+	;~ $ipGateway = $oProfile.IpGateway
+	;~ $dnsAuto = $oProfile.DnsAuto
+	;~ $dnsPref = $oProfile.DnsPref
+	;~ $dnsAlt = $oProfile.DnsAlt
+	;~ $dnsReg = $oProfile.RegisterDns
+	;~ $adapterName = $oProfile.AdapterName
 EndFunc   ;==>_onSelect
 
 ;------------------------------------------------------------------------------
@@ -287,6 +300,7 @@ Func _onLvDown()
 	EndIf
 EndFunc   ;==>_onLvDown
 
+
 ;------------------------------------------------------------------------------
 ; Title........: _onLvEnter
 ; Description..: Apply the selected profile
@@ -295,6 +309,8 @@ EndFunc   ;==>_onLvDown
 Func _onLvEnter()
 	If Not $lv_editing Then
 		_apply_GUI()
+	; If focus is on list view item
+	;ElseIf 
 	Else
 		GUISetAccelerators(0)
 		Send("{ENTER}")

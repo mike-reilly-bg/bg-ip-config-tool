@@ -566,18 +566,27 @@ Func _radios()
 	EndIf
 EndFunc   ;==>_radios
 
-Func _apply_GUI()
-	$dhcp = (GUICtrlRead($radio_IpAuto) = $GUI_CHECKED) ? "true" : "false"
-	$ip = _ctrlGetIP($ip_Ip)
-	$subnet = _ctrlGetIP($ip_Subnet)
-	$gateway = _ctrlGetIP($ip_Gateway)
-	$dnsDhcp = (GUICtrlRead($radio_DnsAuto) = $GUI_CHECKED) ? "true" : "false"
-	$dnsp = _ctrlGetIP($ip_DnsPri)
-	$dnsa = _ctrlGetIP($ip_DnsAlt)
-	$dnsreg = (BitAND(GUICtrlRead($ck_dnsReg), $GUI_CHECKED) = $GUI_CHECKED) ? "true" : "false"
-	$adapter = GUICtrlRead($combo_adapters)
 
-	_apply($dhcp, $ip, $subnet, $gateway, $dnsDhcp, $dnsp, $dnsa, $dnsreg, $adapter, RunCallback)
+Func _getGUI()
+	Local $GUIProfiles = _Profiles()
+	Local $GUIProfile = _Profiles_createProfile($GUIProfiles, "GUI_Profile")
+	$GUIProfile.IpAuto = (GUICtrlRead($radio_IpAuto) = $GUI_CHECKED) ? "true" : "false"
+	$GUIProfile.IpAddress = _ctrlGetIP($ip_Ip)
+	$GUIProfile.IpSubnet = _ctrlGetIP($ip_Subnet)
+	$GUIProfile.IpGateway = _ctrlGetIP($ip_Gateway)
+	$GUIProfile.DnsAuto = (GUICtrlRead($radio_DnsAuto) = $GUI_CHECKED) ? "true" : "false"
+	$GUIProfile.IpDnsPref = _ctrlGetIP($ip_DnsPri)
+	$GUIProfile.IpDnsAlt = _ctrlGetIP($ip_DnsAlt)
+	$GUIProfile.RegisterDns = (BitAND(GUICtrlRead($ck_dnsReg), $GUI_CHECKED) = $GUI_CHECKED) ? "true" : "false"
+	$GUIProfile.AdapterName = GUICtrlRead($combo_adapters)
+	Return $GUIProfile
+EndFunc
+
+Func _apply_GUI()
+	MsgBox(0,"","before get")
+	Local $GP = _getGUI()
+	MsgBox(0,"","after get")
+	_apply($GP.IpAuto, $GP.IpAddress, $GP.IpSubnet, $GP.IpGateway, $GP.DnsAuto, $GP.IpDnsPref, $GP.IpDnsAlt, $GP.RegisterDns, $GP.AdapterName, RunCallback)
 EndFunc   ;==>_apply_GUI
 
 
@@ -1071,6 +1080,28 @@ Func _refresh($init = 0)
 	EndIf
 EndFunc   ;==>_refresh
 
+
+Func _getProfile($init = 0, $profileName = "")
+	;------------------------------------------------------------------------------
+	; Title...........: _retrieveProfileProperties
+	; Description.....: Get properties from profile
+	;
+	; Parameters......:
+	; Return value....:
+	;------------------------------------------------------------------------------
+	If Not $init Then
+		$profileName = StringReplace(GUICtrlRead(GUICtrlRead($list_profiles)), "|", "")
+	EndIf
+
+	If $profiles.exists($profileName) Then
+		Local $oProfile = $profiles.get($profileName)
+		return $oProfile
+	Else
+		_setStatus($oLangStrings.message.errorOccurred, 1)
+		Return 1
+	EndIf
+EndFunc
+
 ;------------------------------------------------------------------------------
 ; Title...........: _setProperties
 ; Description.....: Set fields from profile properties
@@ -1079,45 +1110,83 @@ EndFunc   ;==>_refresh
 ; Return value....:
 ;------------------------------------------------------------------------------
 Func _setProperties($init = 0, $profileName = "")
-	If Not $init Then
-		$profileName = StringReplace(GUICtrlRead(GUICtrlRead($list_profiles)), "|", "")
-	EndIf
-
-
-	If $profiles.exists($profileName) Then
-		Local $oProfile = $profiles.get($profileName)
-		$ipAuto = $oProfile.IpAuto
-		$ipAddress = $oProfile.IpAddress
-		$ipSubnet = $oProfile.IpSubnet
-		$ipGateway = $oProfile.IpGateway
+	Local $oProfile = _getProfile()
+	If $oProfile <> 1 Then
 		GUICtrlSetState($radio_IpMan, $GUI_CHECKED)
-		GUICtrlSetState($radio_IpAuto, _StrToState($ipAuto))
-		_ctrlSetIP($ip_Ip, $ipAddress)
-		_ctrlSetIP($ip_Subnet, $ipSubnet)
-		_ctrlSetIP($ip_Gateway, $ipGateway)
+		GUICtrlSetState($radio_IpAuto, _StrToState($oProfile.IpAuto))
+		_ctrlSetIP($ip_Ip, $oProfile.IpAddress)
+		_ctrlSetIP($ip_Subnet, $oProfile.IpSubnet)
+		_ctrlSetIP($ip_Gateway, $oProfile.IpGateway)
 
-		$dnsAuto = $oProfile.DnsAuto
-		$dnsPref = $oProfile.IpDnsPref
-		$dnsAlt = $oProfile.IpDnsAlt
-		$dnsreg = $oProfile.RegisterDns
 		GUICtrlSetState($radio_DnsMan, $GUI_CHECKED)
-		GUICtrlSetState($radio_DnsAuto, _StrToState($dnsAuto))
-		_ctrlSetIP($ip_DnsPri, $dnsPref)
-		_ctrlSetIP($ip_DnsAlt, $dnsAlt)
-		GUICtrlSetState($ck_dnsReg, _StrToState($dnsreg))
+		GUICtrlSetState($radio_DnsAuto, _StrToState($oProfile.DnsAuto))
+		_ctrlSetIP($ip_DnsPri, $oProfile.IpDnsPref)
+		_ctrlSetIP($ip_DnsAlt, $oProfile.IpDnsAlt)
+		GUICtrlSetState($ck_dnsReg, _StrToState($oProfile.RegisterDns))
 
-		$sSaveAdapter = $options.SaveAdapterToProfile
-		$profileAdapter = $oProfile.AdapterName
-		If $profileAdapter <> "" And ($sSaveAdapter = 1 Or $sSaveAdapter = "true") Then
-			ControlCommand($hgui, "", $combo_adapters, "SelectString", $profileAdapter)
+		If $oProfile.AdapterName <> "" And ($options.SaveAdapterToProfile = 1 Or $options.SaveAdapterToProfile = "true") Then
+			ControlCommand($hgui, "", $combo_adapters, "SelectString", $oProfile.AdapterName)
 		EndIf
-
+		
 		_radios()
-	Else
-		_setStatus($oLangStrings.message.errorOccurred, 1)
-		Return 1
 	EndIf
 EndFunc   ;==>_setProperties
+
+
+
+
+;~ ;------------------------------------------------------------------------------
+;~ ; Title...........: _setProperties
+;~ ; Description.....: Set fields from profile properties
+;~ ;
+;~ ; Parameters......:
+;~ ; Return value....:
+;~ ;------------------------------------------------------------------------------
+;~ Func _setProperties($init = 0, $profileName = "")
+;~ 	If Not $init Then
+;~ 		$profileName = StringReplace(GUICtrlRead(GUICtrlRead($list_profiles)), "|", "")
+;~ 	EndIf
+
+
+;~ 	If $profiles.exists($profileName) Then
+;~ 		Local $oProfile = $profiles.get($profileName)
+;~ 		$ipAuto = $oProfile.IpAuto
+;~ 		$ipAddress = $oProfile.IpAddress
+;~ 		$ipSubnet = $oProfile.IpSubnet
+;~ 		$ipGateway = $oProfile.IpGateway
+;~ 		GUICtrlSetState($radio_IpMan, $GUI_CHECKED)
+;~ 		GUICtrlSetState($radio_IpAuto, _StrToState($ipAuto))
+;~ 		_ctrlSetIP($ip_Ip, $ipAddress)
+;~ 		_ctrlSetIP($ip_Subnet, $ipSubnet)
+;~ 		_ctrlSetIP($ip_Gateway, $ipGateway)
+
+;~ 		$dnsAuto = $oProfile.DnsAuto
+;~ 		$dnsPref = $oProfile.IpDnsPref
+;~ 		$dnsAlt = $oProfile.IpDnsAlt
+;~ 		$dnsreg = $oProfile.RegisterDns
+;~ 		GUICtrlSetState($radio_DnsMan, $GUI_CHECKED)
+;~ 		GUICtrlSetState($radio_DnsAuto, _StrToState($dnsAuto))
+;~ 		_ctrlSetIP($ip_DnsPri, $dnsPref)
+;~ 		_ctrlSetIP($ip_DnsAlt, $dnsAlt)
+;~ 		GUICtrlSetState($ck_dnsReg, _StrToState($dnsreg))
+
+;~ 		$sSaveAdapter = $options.SaveAdapterToProfile
+;~ 		$profileAdapter = $oProfile.AdapterName
+;~ 		If $profileAdapter <> "" And ($sSaveAdapter = 1 Or $sSaveAdapter = "true") Then
+;~ 			ControlCommand($hgui, "", $combo_adapters, "SelectString", $profileAdapter)
+;~ 		EndIf
+
+;~ 		_radios()
+;~ 	Else
+;~ 		_setStatus($oLangStrings.message.errorOccurred, 1)
+;~ 		Return 1
+;~ 	EndIf
+;~ EndFunc   ;==>_setProperties
+
+
+
+
+
 
 
 ;helper
