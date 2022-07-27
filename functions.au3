@@ -398,7 +398,7 @@ Func _clickUp()
 	If _checkMouse($list_profiles) And _ctrlHasFocus($list_profiles) Then
 		MouseClick($MOUSE_CLICK_PRIMARY)
 		If $mdblClick Then
-			_apply_GUI()
+			_setProperties()
 			$mdblClick = 0
 		Else
 			If $dragging Then

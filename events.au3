@@ -107,7 +107,6 @@ EndFunc   ;==>_onRadio
 ; Events.......: Click on profile list item
 ;------------------------------------------------------------------------------
 Func _onSelect()
-	_setProperties()
 EndFunc   ;==>_onSelect
 
 ;------------------------------------------------------------------------------
@@ -162,10 +161,12 @@ Func _onTabKey()
 	If IsHWnd(_GUICtrlListView_GetEditControl(ControlGetHandle($hgui, "", $list_profiles))) Then
 		$lvTabKey = True
 		Send("{ENTER}")		
+		; IP address fields go:
+		; 12 11 10 9
+		; 16 15 14 13
+		; 20 19 18 17
 	Elseif Mod(Int(StringReplace(ControlGetFocus($hgui),"Edit",""))-5, 4) > 0 Then
-		GUISetAccelerators(0)
-		Send("^ + {RIGHT}")
-		GUISetAccelerators($aAccelKeys)
+		Send("^{RIGHT}")
 	Else
 		GUISetAccelerators(0)
 		Send("{TAB}")
@@ -262,7 +263,6 @@ Func _onLvUp()
 	If _ctrlHasFocus($list_profiles) Then
 		$Index = ControlListView($hgui, "", $list_profiles, "GetSelected")
 		ControlListView($hgui, "", $list_profiles, "Select", $Index - 1)
-		_setProperties()
 	Else
 		GUISetAccelerators(0)
 		Send("{Up}")
