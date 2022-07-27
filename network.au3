@@ -70,7 +70,7 @@ Func _cycleDhcp()
 EndFunc   ;==>_cycleDhcp
 
 Func _getIPs($adaptername)
-	Local $props[7]
+	Local $props[9]
 	Local $colItems, $thismac
 	Local $ip, $subnet, $gateway, $dnspri, $dnsalt, $dnsServer, $dhcpServer, $dhcpEnabled, $sDNS
 
@@ -83,7 +83,6 @@ Func _getIPs($adaptername)
 	Local $tadapters = _GetAdapters()
 
 	If $adapstate = $oLangStrings.interface.props.adapterStateDisabled Then
-		$props[6] = $adapstate
 
 		$DhcpEn = _doRegGetValue($adaptername, "EnableDHCP")
 		$DhcpDis = _doRegGetValue($adaptername, "DisableDhcpOnConnect")
@@ -124,6 +123,10 @@ Func _getIPs($adaptername)
 		$props[3] = $dnspri
 		$props[4] = $dnsalt
 		$props[5] = $dhcpServer
+		$props[6] = $adapstate
+		$props[7] = _doRegGetValue($adaptername, "EnableDHCP")
+		$props[8] = _doRegGetValue($adaptername, "NameServer")
+
 	Else
 		For $i = 0 To $nInterfaces - 1
 			If $aIPAllAddrTable[$i][7] = $adaptername Then
@@ -169,7 +172,7 @@ Func _getIPs($adaptername)
 					$dnspri = ""
 					$dnsalt = ""
 				ElseIf $aDNS[0] > 1 Then
-					$dnspri = $aDNS[1]
+				$dnspri = $aDNS[1]
 					$dnsalt = $aDNS[2]
 				Else
 					$dnspri = $sDNS
@@ -182,6 +185,8 @@ Func _getIPs($adaptername)
 				$props[3] = $dnspri
 				$props[4] = $dnsalt
 				$props[5] = $dhcpServer
+				$props[7] = _doRegGetValue($adaptername, "EnableDHCP")
+				$props[8] = _doRegGetValue($adaptername, "NameServer")
 				ExitLoop
 			EndIf
 		Next
@@ -270,10 +275,10 @@ Func _AdapterMod($oLanConnection, $bEnable = 1)
 			$strEnableVerb = "En&able"
 			$strDisableVerb = "Disa&ble"
 
-			; Français (France)
+			; Franï¿½ais (France)
 		Case StringInStr("040c,080c,0c0c,100c,140c,180c", @OSLang)
 			$strEnableVerb = "&Activer"
-			$strDisableVerb = "&Désactiver"
+			$strDisableVerb = "&Dï¿½sactiver"
 	EndSelect
 
 	; Create virtual folder for Network Connections

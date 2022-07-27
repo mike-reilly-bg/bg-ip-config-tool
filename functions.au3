@@ -1158,6 +1158,7 @@ Func _StateToStr($Id)
 	EndIf
 EndFunc   ;==>_StateToStr
 
+
 Func _loadProfiles()
 	Local $pname = $sProfileName
 
@@ -1242,6 +1243,7 @@ Func _loadProfiles()
 
 EndFunc   ;==>_loadProfiles
 
+
 Func _ImportProfiles($pname)
 	If Not FileExists($pname) Then
 		_setStatus($oLangStrings.message.profilesNotFound, 1)
@@ -1300,6 +1302,7 @@ Func _ImportProfiles($pname)
 
 EndFunc   ;==>_ImportProfiles
 
+
 Func _updateProfileList()
 	$ap_names = $profiles.getNames()
 	$lv_count = ControlListView($hgui, "", $list_profiles, "GetItemCount")
@@ -1337,6 +1340,78 @@ Func _updateProfileList()
 	EndIf
 EndFunc   ;==>_updateProfileList
 
+
+Func _makeApplyButtonGreen()
+	Local $aColorsEx = _
+			[0x73f773, 0x111111, 0x666666, _     ; normal 	: Background, Text, Border
+			0x8ef98e, 0x111111, 0x999999, _     ; focus 	: Background, Text, Border
+			0xbbfbbb, 0x333333, 0x666666, _      ; hover 	: Background, Text, Border
+			0x73f773, 0x111111, 0x666666]        ; selected 	: Background, Text, Border
+	GuiFlatButton_SetColorsEx($tbButtonApply, $aColorsEx)
+EndFunc   ;==>_makeApplyButtonGreen
+
+
+Func _makeApplyButtonYellow()
+	Local $aColorsEx = _
+			[0xFFDB28, 0x111111, 0x666666, _     ; normal 	: Background, Text, Border
+			0xFFE564, 0x111111, 0x999999, _     ; focus 	: Background, Text, Border
+			0xFFEE9A, 0x333333, 0x666666, _      ; hover 	: Background, Text, Border
+			0xFFDB28, 0x111111, 0x666666]        ; selected 	: Background, Text, Border
+	GuiFlatButton_SetColorsEx($tbButtonApply, $aColorsEx)
+EndFunc   ;==>_makeApplyButtonYellow
+
+Func _elementExists($array, $element)
+    If $element > UBound($array)-1 Then Return False ; element is out of the array bounds
+    Return True ; element is in array bounds
+EndFunc
+
+Func _updateApplyButtonColor($init = 0)
+	$dhcp = (GUICtrlRead($radio_IpAuto) = $GUI_CHECKED) ? "1" : "0"
+	$ip = _ctrlGetIP($ip_Ip)
+	$subnet = _ctrlGetIP($ip_Subnet)
+	$gateway = _ctrlGetIP($ip_Gateway)
+	$dnsDhcp = (GUICtrlRead($radio_DnsAuto) = $GUI_CHECKED) ? "true" : "false"
+	$dnsp = _ctrlGetIP($ip_DnsPri)
+	$dnsa = _ctrlGetIP($ip_DnsAlt)
+	$dnsreg = (BitAND(GUICtrlRead($ck_dnsReg), $GUI_CHECKED) = $GUI_CHECKED) ? "true" : "false"
+	$adapter = GUICtrlRead($combo_adapters)
+
+	$selected_adapter = GUICtrlRead($combo_adapters)
+	$props = _getIPs($selected_adapter)
+	local $values_match = 1
+
+	;MsgBox(0,"title",_doRegGetValue($selected_adapter, "DhcpNameServer"))
+
+	; check if dhcp mode is off
+	if ($dhcp = 0) Or ($props[7] = 0) Then
+		; check if dhcp, IP address, netmask, and gateways match
+		If ($ip <> $props[0]) Or ($subnet <> $props[1]) Or _
+		($gateway <> $props[2]) Or ($dhcp <> $props[7]) Then
+			$values_match = 0
+		Endif
+	Endif
+	
+	local $nameservers = StringSplit($props[8],",",2)
+	;MsgBox(0,"title", (($dhcp = 0) Or ($props[7] = 0)) And (($ip <> $props[0]) Or ($subnet <> $props[1]) Or _
+	;	($gateway <> $props[2]) Or ($dhcp <> $props[7])))
+	;MsgBox(0,"title", ($dhcp <> $props[7]))
+	; check if autodns mode is on
+	if ($dnsDhcp = "true") Then
+		; nameservers registry entry should be empty
+		if $props[8] <> "" Then $values_match = 0
+	Elseif ($dnsDhcp = "false") Then
+		; if primary dns is not left blank, values should match
+		if ($dnsp <> "") And ($dnsp <> $props[3]) Then $values_match = 0
+		; if primary dns is left blank, there should not be a manual nameserver entry
+		if ($dnsp = "") And ($nameservers[0] <> "") Then $values_match = 0
+		; secondary dns values should match
+		if ($dnsa <> $props[4]) Then $values_match = 0
+	Endif
+
+if ($values_match = 1) Then _makeApplyButtonGreen()
+if ($values_match = 0) Then _makeApplyButtonYellow()
+
+EndFunc   ;==>_updateApplyButtonColor
 
 Func _updateCurrent($init = 0, $selected_adapter = "")
 	If $cmdLine Then Return
@@ -1376,6 +1451,8 @@ Func _updateCurrent($init = 0, $selected_adapter = "")
 	Else
 		GUICtrlSetData($disableitem, $oLangStrings.menu.tools.disable)
 	EndIf
+
+	_updateApplyButtonColor()
 EndFunc   ;==>_updateCurrent
 
 
