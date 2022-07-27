@@ -1392,9 +1392,6 @@ Func _updateApplyButtonColor($init = 0)
 	Endif
 	
 	local $nameservers = StringSplit($props[8],",",2)
-	;MsgBox(0,"title", (($dhcp = 0) Or ($props[7] = 0)) And (($ip <> $props[0]) Or ($subnet <> $props[1]) Or _
-	;	($gateway <> $props[2]) Or ($dhcp <> $props[7])))
-	;MsgBox(0,"title", ($dhcp <> $props[7]))
 	; check if autodns mode is on
 	if ($dnsDhcp = "true") Then
 		; nameservers registry entry should be empty
