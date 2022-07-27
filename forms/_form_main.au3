@@ -424,18 +424,6 @@ Func _form_main()
 	$combo_dummy = GUICtrlCreateDummy()
 	GUICtrlSetOnEvent(-1, "_onCombo")
 
-;~ 	Local $aColorsEx = _
-;~ 			[0xFFFFFF, 0xFCFCFC, 0xFFFFFF, _ ; normal 	: Background, Text, Border
-;~ 			0xFFFFFF, 0xFCFCFC, 0xFFFFFF, _     ; focus 	: Background, Text, Border
-;~ 			0xDDDDDD, 0xFCFCFC, 0xDDDDDD, _     ; hover 	: Background, Text, Border
-;~ 			0xDDDDDD, 0xFCFCFC, 0xDDDDDD]     ; selected 	: Background, Text, Border
-
-	Local $buttonRefresh = GuiFlatButton_Create("", $x + 8 * $dscale + $w - 16 * $dscale - 32 * $dscale + 5 * $dscale, $y + 8 * $dscale, 26 * $dscale, 26 * $dscale, $BS_TOOLBUTTON)
-	GuiFlatButton_SetBkColor(-1, 0xFFFFFF)
-	GUICtrlSetCursor(-1, 0)
-;~ 	GuiFlatButton_SetColorsEx($buttonRefresh, $aColorsEx)
-	_WinAPI_DeleteObject(_SendMessage(GUICtrlGetHandle($buttonRefresh), $BM_SETIMAGE, $IMAGE_ICON, _getMemoryAsIcon(GetIconData($pngRefresh24))))
-
 	$label_sep1 = GUICtrlCreateLabel("", $x + 1, $yText_offset + $textHeight * 2 + $textSpacer * 2, $w - 2, 1)
 	GUICtrlSetBkColor(-1, 0x666666)
 
