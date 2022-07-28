@@ -38,14 +38,14 @@ Func _form_restart($langCode, $x, $y)
 			$fileData = _getEnglish()
 		Else
 			MsgBox(1, "Error", "Error reading language file")
-		EndIf
+		Endif
 	Else
 		If $hFile = -1 Then
 			MsgBox(1, "Error", "Error reading language file")
-		EndIf
+		Endif
 		$fileData = FileRead($hFile)
 		FileClose($hFile)
-	EndIf
+	Endif
 	Local $jsonData = Json_Decode($fileData)
 
 	GUICtrlCreateLabel(Json_Get($jsonData, ".strings.interface.restarting") & " Simple IP Config", 0, 0, $w, $h, BitOR($SS_CENTER, $SS_CENTERIMAGE))

@@ -50,7 +50,7 @@ Func CheckCmdLine()
 
 						_apply($ipAuto, $ipAddress, $ipSubnet, $ipGateway, $dnsAuto, $dnsPref, $dnsAlt, $dnsReg, $adapterName, RunCallback_cli)
 						_cmdLineMain($profileName)
-					EndIf
+					Endif
 					$sMsg = 'The profile "' & $profileName & '" could not be found.'
 					_Toast_Set(0, 0xFF0000, 0xFFFFFF, 0xFFFFFF, 0x000000, 10, "", 250, 250)
 					$aRet = _Toast_Show(0, "Simple IP Config", $sMsg, -3, True) ; Delay can be set here because script continues
@@ -64,8 +64,8 @@ Func CheckCmdLine()
 			_Toast_Set(0, 0xFF0000, 0xFFFFFF, 0xFFFFFF, 0x000000, 10, "", 250, 250)
 			$aRet = _Toast_Show(0, "Simple IP Config", $sMsg, -3, True) ; Delay can be set here because script continues
 			Exit
-		EndIf
-	EndIf
+		Endif
+	Endif
 EndFunc   ;==>CheckCmdLine
 
 Func RunCallback_cli($sDescription, $sNextDescription, $sStdOut)
@@ -86,10 +86,10 @@ Func _cmdLineMain($profileName)
 				$sMsg = 'Profile "' & $profileName & '" applied successfully.'
 				_Toast_Set(0, 0xAAAAAA, 0x000000, 0xFFFFFF, 0x000000, 10, "", 250, 250)
 				$aRet = _Toast_Show(0, "Simple IP Config", $sMsg, 2, True) ; Delay can be set here because script continues
-			EndIf
+			Endif
 
 			Exit
-		EndIf
+		Endif
 
 		Sleep(100)
 	WEnd

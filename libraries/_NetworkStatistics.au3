@@ -157,7 +157,7 @@ Func _Network_IPStatistics($bIPv6 = False)
 		$nProtocol = 23
 	Else
 		$nProtocol = 2
-	EndIf
+	Endif
 
 	$stMIB_IPStats = DllStructCreate("DWORD dwForwarding;DWORD dwDefaultTTL;DWORD dwInReceives;DWORD dwInHdrErrors;" & _
 		"DWORD dwInAddrErrors;DWORD dwForwDatagrams;DWORD dwInUnknownProtos;DWORD dwInDiscards;DWORD dwInDelivers;" & _
@@ -225,7 +225,7 @@ Func _Network_TCPStatistics($bIPv6 = False)
 		$nProtocol = 23
 	Else
 		$nProtocol = 2
-	EndIf
+	Endif
 
 	$stMIB_TCPStats = DllStructCreate("DWORD dwRtoAlgorithm;DWORD dwRtoMin;DWORD dwRtoMax;DWORD dwMaxConn;" & _
 		"DWORD dwActiveOpens;DWORD dwPassiveOpens;DWORD dwAttemptFails;DWORD dwEstabResets;DWORD dwCurrEstab;" & _
@@ -275,7 +275,7 @@ Func _Network_UDPStatistics($bIPv6 = False)
 		$nProtocol = 23
 	Else
 		$nProtocol = 2
-	EndIf
+	Endif
 
 	$stMIB_UDPStats = DllStructCreate("dword dwInDatagrams;dword dwNoPorts;dword dwInErrors;dword dwOutDatagrams;dword dwNumAddrs;")
 
@@ -327,7 +327,7 @@ Func _Network_ICMPStatistics($bIPv6 = False)
 		$nProtocol = 23
 	Else
 		$nProtocol = 2
-	EndIf
+	Endif
 
 	$stMIB_ICMPStats = DllStructCreate("DWORD dwInMsgs;DWORD dwInErrors;DWORD rgdwInTypeCount[256];" & _
 		"DWORD dwOutMsgs;DWORD dwOutErrors;DWORD rgdwOutTypeCount[256];")
@@ -349,8 +349,8 @@ Func _Network_ICMPStatistics($bIPv6 = False)
 			If @error Then Return SetError(2, @error, $aICMPRet)
 		Else
 			Return SetError(2, @error, $aICMPRet)
-		EndIf
-	EndIf
+		Endif
+	Endif
 
 	; Something other than NO_ERROR returned is an error code
 	If $aRet[0] Then Return SetError(3, $aRet[0], $aICMPRet)
@@ -423,7 +423,7 @@ Func _Network_IPv4AddressTable()
 		; Anything other than ERROR_INSUFFICIENT_BUFFER (122)? Or is buffer size 0?
 		If $aRet[0] <> 122 Or Not $aRet[2] Then Return SetError(3, $aRet[0], "")
 ;~ 		ConsoleWrite("ERROR_INSUFFICIENT_BUFFER returned. Bufsize = " & DllStructGetSize($stTemp) & ", Required Size = " & $aRet[2] & @CRLF)
-	EndIf
+	Endif
 
 	$nBufSize = $aRet[2]
 	$stTemp = DllStructCreate("byte [" & $nBufSize & "];")
@@ -461,7 +461,7 @@ Func _Network_IPv4AddressTable()
 		Else
 			ConsoleWrite("+ Added Adapter (index #"&$aIPv4Entries[$nIndex][0]&"), IPv4 "&$aIPv4Entries[$nIndex][1]&@CRLF)
 			$nIndex += 1
-		EndIf
+		Endif
 
 		; Next MIB_IPADDRROW structure in array
 		$pIPAddrRow += 24
@@ -472,7 +472,7 @@ Func _Network_IPv4AddressTable()
 		If $nIndex = 0 Then Return SetError(-1, 0, "")
 
 		ReDim $aIPv4Entries[$nIndex][6]
-	EndIf
+	Endif
 
 	Return SetExtended($nIndex, $aIPv4Entries)
 EndFunc
@@ -576,7 +576,7 @@ Func _Network_IPAllAddressTable($nIPvFlag = 0, $bGetAllIPs = 0, $bGetDownIntfc =
 	Else
 		; AF_UNSPEC = 0
 		$nIPvFlag = 0
-	EndIf
+	Endif
 
 	; 1st Call - Get required buffer size
 	;	Flags used:  GAA_FLAG_SKIP_ANYCAST (0x02) | GAA_FLAG_SKIP_MULTICAST (0x04) | GAA_FLAG_INCLUDE_GATEWAYS (0x80)
@@ -590,7 +590,7 @@ Func _Network_IPAllAddressTable($nIPvFlag = 0, $bGetAllIPs = 0, $bGetDownIntfc =
 		; Anything other than ERROR_BUFFER_OVERFLOW (111)? Or is buffer size 0?
 		If $aRet[0] <> 111 Or Not $aRet[5] Then Return SetError(3, $aRet[0], "")
 ;~ 		ConsoleWrite("ERROR_BUFFER_OVERFLOW returned. Bufsize = " & DllStructGetSize($stTemp) & ", Required Size = " & $aRet[2] & @CRLF)
-	EndIf
+	Endif
 
 	$nBufSize = $aRet[5]
 	; There's a union in the original definition for the first 2 members which is used for 64-bit alignment,
@@ -654,12 +654,12 @@ Func _Network_IPAllAddressTable($nIPvFlag = 0, $bGetAllIPs = 0, $bGetDownIntfc =
 
 					If $nTemp And $nTemp <> $aIPAddrEntries[$nEntries][0] Then
 						$aIPAddrEntries[$nEntries][0] = $nTemp
-					EndIf
+					Endif
 
 					; Get all IP Adapter Prefixes [XP SP1+] - must be requested via flag GAA_FLAG_INCLUDE_PREFIX (0x10)
 					;$aIPs = __Network_Pull_IPAdapterAddresses(DllStructGetData($stIP_ADAPTER_ADDRESSES, "FirstPrefix"), $bGetAllIPs)
 					; ...
-				EndIf
+				Endif
 
 				$aIPAddrEntries[$nEntries][3] = DllStructGetData($stIP_ADAPTER_ADDRESSES, "Flags")
 
@@ -728,19 +728,19 @@ Func _Network_IPAllAddressTable($nIPvFlag = 0, $bGetAllIPs = 0, $bGetDownIntfc =
 							$pTemp = DllStructGetData($stIP_AdapterDNSSuffix, "Next")
 						Else
 							ConsoleWrite("DNS Suffix - not available" & @CRLF)
-						EndIf
-					EndIf
+						Endif
+					Endif
 #ce
 
 				;Else
 					;$aIPAddrEntries[$nEntries][9, 10, 13, 14] = undefined
-				EndIf
+				Endif
 
 ;~ 				ConsoleWrite("+ Added Interface (index #"&$aIPAddrEntries[$nEntries][0] & "), " & $aIPAddrEntries[$nEntries][6] & @CRLF)
 				$nEntries += 1
-			EndIf
+			Endif
 
-		EndIf
+		Endif
 
 		; Next structure in linked list
 		$pIPAAStruct = DllStructGetData($stIP_ADAPTER_ADDRESSES, "Next")
@@ -786,7 +786,7 @@ Func _Network_IPv4AdaptersInfo()
 		; Anything other than ERROR_INSUFFICIENT_BUFFER (122)? Or is buffer size 0?
 		If $aRet[0] <> 122 Or Not $aRet[2] Then Return SetError(3, $aRet[0], "")
 ;~ 		ConsoleWrite("ERROR_INSUFFICIENT_BUFFER returned. Bufsize = " & DllStructGetSize($stTemp) & ", Required Size = " & $aRet[2] & @CRLF)
-	EndIf
+	Endif
 
 	$nBufSize = $aRet[2]
 	$stTemp = DllStructCreate("byte [" & $nBufSize & "];")
@@ -900,7 +900,7 @@ Func _Network_IPv4AdaptersInfoEx($bGetAllIPs = 0)
 		; Anything other than ERROR_BUFFER_OVERFLOW (111? Or is buffer size 0?
 		If $aRet[0] <> 111 Or Not $aRet[2] Then Return SetError(3, $aRet[0], "")
 ;~ 		ConsoleWrite("ERROR_BUFFER_OVERFLOW returned. Buf Required Size = " & $aRet[2] & @CRLF)
-	EndIf
+	Endif
 
 	$nBufSize = $aRet[2]
 	$stBuffer = DllStructCreate("byte [" & $nBufSize & "];")
@@ -966,7 +966,7 @@ Func _Network_IPv4AdaptersInfoEx($bGetAllIPs = 0)
 			$aAdapterInfo[$nEntries][16] = $aIPs[2]
 			$aAdapterInfo[$nEntries][17] = DllStructGetData($stIP_ADAPTER_INFO, "LeaseObtained")
 			$aAdapterInfo[$nEntries][18] = DllStructGetData($stIP_ADAPTER_INFO, "LeaseExpires")
-		EndIf
+		Endif
 
 	; HaveWins?
 		If $aAdapterInfo[$nEntries][3] Then
@@ -979,7 +979,7 @@ Func _Network_IPv4AdaptersInfoEx($bGetAllIPs = 0)
 			$aIPs = __Network_Pull_IPFromAddrString(DllStructGetPtr($stIP_ADAPTER_INFO, "SecondaryWinsServerNext"), $bGetAllIPs)
 			$aAdapterInfo[$nEntries][21] = $aIPs[1]
 			$aAdapterInfo[$nEntries][22] = $aIPs[2]
-		EndIf
+		Endif
 
 		$nEntries += 1
 		$pIPAIStruct = DllStructGetData($stIP_ADAPTER_INFO, "Next")
@@ -1125,7 +1125,7 @@ Func __Network_WSA_Startup()
 		If $aRet[0] Then Return SetError(3, $aRet[0], "")
 		$bWSAStartedUp = True
 		OnAutoItExitRegister("__Network_WSA_Cleanup")
-	EndIf
+	Endif
 	Return True
 EndFunc
 
@@ -1245,7 +1245,7 @@ Func _Network_IP_In_Addr_To_StringWSA($stSockAddrIn, $nSize = 0)
 	Else
 		; Only valid structure sizes!
 		If $nSize <> 16 And $nSize <> 28 And $nSize <> 32 Then Return SetError(1,0,"")
-	EndIf
+	Endif
 
 ;~ 	ConsoleWrite("_Network_IP_In_Addr_To_StringWSA - ptr = " & DllStructGetPtr($stSockAddrIn) & ", Size = " &$nSize & @CRLF)
 
@@ -1261,14 +1261,14 @@ Func _Network_IP_In_Addr_To_StringWSA($stSockAddrIn, $nSize = 0)
 			Return SetError(3,$aRet[0],"")
 		Else
 			Return SetError(2,@error,"")
-		EndIf
-	EndIf
+		Endif
+	Endif
 
 	; Replace '%xx' that shows up at the end of certain addresses - this is the Interface Index #
 	Local $nPos = StringInStr($aRet[4], "%", 1, 1)
 	If $nPos Then
 		$aRet[4] = StringLeft($aRet[4], $nPos - 1)
-	EndIf
+	Endif
 	Return $aRet[4]
 EndFunc
 
@@ -1285,7 +1285,7 @@ Func _Network_IP_In_Addr_To_String($stSockAddrIn, $nSize = 0)
 	Else
 		; Only valid structure sizes!
 		If $nSize <> 16 And $nSize <> 28 And $nSize <> 32 Then Return SetError(1,0,"")
-	EndIf
+	Endif
 
 ;~ 	ConsoleWrite("_Network_IP_In_Addr_To_String - ptr = " & DllStructGetPtr($stSockAddrIn) & ", Size = " &$nSize & @CRLF)
 	; NI_NUMERICHOST = 0x02
@@ -1301,14 +1301,14 @@ Func _Network_IP_In_Addr_To_String($stSockAddrIn, $nSize = 0)
 			Return SetError(3,$aRet[0],"")
 		Else
 			Return SetError(2,@error,"")
-		EndIf
-	EndIf
+		Endif
+	Endif
 
 	; Replace '%xx' that shows up at the end of certain addresses - this is the Interface Index #
 	Local $nPos = StringInStr($aRet[3], "%", 1, 1)
 	If $nPos Then
 		$aRet[3] = StringLeft($aRet[3], $nPos - 1)
-	EndIf
+	Endif
 
 	Return $aRet[3]
 EndFunc
@@ -1324,7 +1324,7 @@ Func _Network_IP_In_Addr_To_StringV($stSockAddrIn, $nSize = 0)
 	Else
 		; Only valid structure sizes!
 		If $nSize <> 16 And $nSize <> 28 And $nSize <> 32 Then Return SetError(1,0,"")
-	EndIf
+	Endif
 
 	Local $nType, $pInAddr
 
@@ -1336,7 +1336,7 @@ Func _Network_IP_In_Addr_To_StringV($stSockAddrIn, $nSize = 0)
 	Else
 		$nType = 23	; AF_INET6
 		$pInAddr = DllStructGetPtr($stSockAddrIn, 4)	; "sin6_addr"
-	EndIf
+	Endif
 
 ;~ 	ConsoleWrite("_Network_IP_In_Addr_To_StringV - ptr = " & $pInAddr & ", Size = " & $nSize)
 
@@ -1412,8 +1412,8 @@ Func __Network_Pull_IPFromSocket($pSocketAddress)
 			Return SetExtended(6, _Network_IP_In_Addr_To_StringWSA($stSockAddrIn, $nSockAddrLen))
 		Else
 			Return SetExtended(6, _Network_IP_In_Addr_To_StringV($stSockAddrIn, $nSockAddrLen))
-		EndIf
-	EndIf
+		Endif
+	Endif
 	Return SetError(-1,0,"")
 EndFunc
 
@@ -1470,20 +1470,20 @@ Func __Network_Pull_IPAdapterAddresses($pAnyCastStart, $bGetAllIPs = 0)
 			If $bGetAllIPs Or Not $nIPv4s Then
 				If $nIPv4s Then
 					$aIPs[2] &= "|"
-				EndIf
+				Endif
 				$aIPs[2] &=  $sIPStr
 				$nIPv4s += 1
-			EndIf
+			Endif
 		; IPv6
 		ElseIf @extended = 6 Then
 			If $bGetAllIPs Or Not $nIPv6s Then
 				If $nIPv6s Then
 					$aIPs[3] &= "|"
-				EndIf
+				Endif
 				$aIPs[3] &=  $sIPStr
 				$nIPv6s += 1
-			EndIf
-		EndIf
+			Endif
+		Endif
 
 		$pIPAAAddress = DllStructGetData($stAnyCastAddress, "Next")
 	Until $pIPAAAddress = 0
@@ -1537,12 +1537,12 @@ Func __Network_Pull_IPFromAddrString($pIPAddrStr, $bGetAllIPs = 0)
 			If $aIPs[0] Then
 				$aIPs[1] &= '|'
 				$aIPs[2] &= '|'
-			EndIf
+			Endif
 			$aIPs[0] += 1
 			$aIPs[1] &= $sIPAddr
 			$aIPs[2] &= $sIPMask
 			If Not $bGetAllIPs Then ExitLoop
-		EndIf
+		Endif
 
 		$pIPAddrStr = DllStructGetData($stIPAddrString, "Next")
 	Until $pIPAddrStr = 0

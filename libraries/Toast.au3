@@ -177,16 +177,16 @@ Func _Toast_Set($vJust, $iHdr_BkCol = -1, $iHdr_Col = -1, $iMsg_BkCol = -1, $iMs
 				$sToast_Font_Name = $sFont_Name
 			Else
 				Return SetError(1, 7, 0)
-			EndIf
+			Endif
 	EndSwitch
 
 	If Number($iTime_Out) Then
 		$iToast_Time_Out = Int($iTime_Out)
-	EndIf
+	Endif
 
 	If Number($iTime_In) Then
 		$iToast_Time_In = Int($iTime_In)
-	EndIf
+	Endif
 
 	Return 1
 
@@ -237,7 +237,7 @@ Func _Toast_Show($vIcon, $sTitle, $sMessage, $iDelay = 0, $fWait = True, $fRaw =
 		AdlibRegister("__Toast_Retraction_Check", 100)
 		; Explain situation to user
 		Return SetError(5, 0, -1)
-	EndIf
+	Endif
 
 	; Store current GUI mode and set Message mode
 	Local $nOldOpt = Opt('GUIOnEventMode', 0)
@@ -283,18 +283,18 @@ Func _Toast_Show($vIcon, $sTitle, $sMessage, $iDelay = 0, $fWait = True, $fRaw =
 			Case "bmp", "jpg", "gif", "png"
 				$sImg = $vIcon
 		EndSwitch
-	EndIf
+	Endif
 
 	; Determine max message width
 	Local $iMax_Label_Width = $iToast_Width_max - 20 - $iIcon_Reduction
-	If $fRaw = True Then $iMax_Label_Width = 0
+	If _StrToState($fRaw) Then $iMax_Label_Width = 0
 
 	; Get message label size
 	Local $aLabel_Pos = _StringSize($sMessage, $iToast_Font_Size, Default, Default, $sToast_Font_Name, $iMax_Label_Width)
 	If @error Then
 		$nOldOpt = Opt('GUIOnEventMode', $nOldOpt)
 		Return SetError(3, 0, -1)
-	EndIf
+	Endif
 
 	; Reset text to match rectangle
 	$sMessage = $aLabel_Pos[0]
@@ -312,12 +312,12 @@ Func _Toast_Show($vIcon, $sTitle, $sMessage, $iDelay = 0, $fWait = True, $fRaw =
 	If $iToast_Width > @DesktopWidth - 20 Then
 		$nOldOpt = Opt('GUIOnEventMode', $nOldOpt)
 		Return SetError(4, 0, -1)
-	EndIf
+	Endif
 	; Increase if below min size
 	If $iToast_Width < $iToast_Width_min + $iIcon_Reduction Then
 		$iToast_Width = $iToast_Width_min + $iIcon_Reduction
 		$iLabelwidth = $iToast_Width_min - 20
-	EndIf
+	Endif
 
 	; Set title bar height - with minimum for [X]
 	Local $iTitle_Height = 0
@@ -327,15 +327,15 @@ Func _Toast_Show($vIcon, $sTitle, $sMessage, $iDelay = 0, $fWait = True, $fRaw =
 		$iTitle_Height = $iLine_Height + 2
 		If $iDelay < 0 Then
 			If $iTitle_Height < 17 Then $iTitle_Height = 17
-		EndIf
-	EndIf
+		Endif
+	Endif
 
 	; Set Toast height as label height + title bar + bottom margin
 	Local $iToast_Height = $iLabelheight + $iTitle_Height + 20
 	; Ensure enough room for icon if displayed
 	If $iIcon_Reduction Then
 		If $iToast_Height < $iTitle_Height + 42 Then $iToast_Height = $iTitle_Height + 47
-	EndIf
+	Endif
 
 	; Get Toast starting position and direction
 	Local $aToast_Data = __Toast_Locate($iToast_Width, $iToast_Height)
@@ -345,7 +345,7 @@ Func _Toast_Show($vIcon, $sTitle, $sMessage, $iDelay = 0, $fWait = True, $fRaw =
 	If @error Then
 		$nOldOpt = Opt('GUIOnEventMode', $nOldOpt)
 		Return SetError(1, 0, -1)
-	EndIf
+	Endif
 	GUISetFont($iToast_Font_Size, Default, Default, $sToast_Font_Name)
 	GUISetBkColor($iToast_Message_BkCol)
 
@@ -355,7 +355,7 @@ Func _Toast_Show($vIcon, $sTitle, $sMessage, $iDelay = 0, $fWait = True, $fRaw =
 		$iLabel_Style = 1 ; $SS_CENTER
 	ElseIf BitAND($iToast_Style, 2) = 2 Then
 		$iLabel_Style = 2 ; $SS_RIGHT
-	EndIf
+	Endif
 
 	; Check installed fonts
 	Local $sX_Font = "WingDings"
@@ -367,7 +367,7 @@ Func _Toast_Show($vIcon, $sTitle, $sMessage, $iDelay = 0, $fWait = True, $fRaw =
 		If StringInStr($sInstalled_Font, "WingDings 2") Then
 			$sX_Font = "WingDings 2"
 			$sX_Char = "T"
-		EndIf
+		Endif
 		$i += 1
 	WEnd
 
@@ -392,7 +392,7 @@ Func _Toast_Show($vIcon, $sTitle, $sMessage, $iDelay = 0, $fWait = True, $fRaw =
 			GUICtrlSetColor(-1, $iToast_Header_Col)
 			; Reduce title bar width to allow [X] to activate
 			$iTitle_Width -= 18
-		EndIf
+		Endif
 
 		; Create Title label with bold text, centred vertically in case bar is higher than line
 		GUICtrlCreateLabel($sTitle, 10, 0, $iTitle_Width, $iTitle_Height, 0x0200) ; $SS_CENTERIMAGE
@@ -408,9 +408,9 @@ Func _Toast_Show($vIcon, $sTitle, $sMessage, $iDelay = 0, $fWait = True, $fRaw =
 			GUICtrlSetFont(-1, 14, Default, Default, $sX_Font)
 			GUICtrlSetBkColor(-1, -2) ; $GUI_BKCOLOR_TRANSPARENT
 			GUICtrlSetColor(-1, $iToast_Message_Col)
-		EndIf
+		Endif
 
-	EndIf
+	Endif
 
 	; Create icon
 	If $iIcon_Reduction Then
@@ -422,7 +422,7 @@ Func _Toast_Show($vIcon, $sTitle, $sMessage, $iDelay = 0, $fWait = True, $fRaw =
 			Case Else
 				GUICtrlCreateIcon($sDLL, $iIcon_Style, 10, 10 + $iTitle_Height)
 		EndSwitch
-	EndIf
+	Endif
 
 	; Create Message label
 	GUICtrlCreateLabel($sMessage, 10 + $iIcon_Reduction, 10 + $iTitle_Height, $iLabelwidth, $iLabelheight)
@@ -462,7 +462,7 @@ Func _Toast_Show($vIcon, $sTitle, $sMessage, $iDelay = 0, $fWait = True, $fRaw =
 		; Register message handler to check for [X] click
 		GUIRegisterMsg(0x0021, "__Toast_WM_EVENTS") ; $WM_MOUSEACTIVATE
 
-	EndIf
+	Endif
 
 	; Reset original mode
 	$nOldOpt = Opt('GUIOnEventMode', $nOldOpt)
@@ -525,7 +525,7 @@ Func __Toast_Locate($iToast_Width, $iToast_Height)
 		$tWorkArea = DllStructCreate("long Left;long Top;long Right;long Bottom")
 	Else
 		$tWorkArea = DllStructCreate("struct;long Left;long Top;long Right;long Bottom;endstruct")
-	EndIf
+	Endif
 
 	; Check if Taskbar is hidden
 	Local $aRet = DllCall("shell32.dll", "uint", "SHAppBarMessage", "dword", 0x00000004, "ptr*", 0) ; $ABM_GETSTATE
@@ -559,7 +559,7 @@ Func __Toast_Locate($iToast_Width, $iToast_Height)
 			$aToast_Data[0] = $aTray_Pos[0] + $aTray_Pos[2]
 			$aToast_Data[1] = @DesktopHeight - $iToast_Height - 10
 			$aToast_Data[2] = 0x00040001 ; $AW_SLIDE_IN_LEFT
-		EndIf
+		Endif
 
 	Else
 
@@ -590,9 +590,9 @@ Func __Toast_Locate($iToast_Width, $iToast_Height)
 			$aToast_Data[0] = $aWorkArea[0]
 			$aToast_Data[1] = @DesktopHeight - $iToast_Height - 10
 			$aToast_Data[2] = 0x00040001 ; $AW_SLIDE_IN_LEFT
-		EndIf
+		Endif
 
-	EndIf
+	Endif
 
 	Return $aToast_Data
 
@@ -610,7 +610,7 @@ Func __Toast_Timer_Check()
 	If TimerDiff($iToast_Start) >= $iToast_Timer Or $fToast_Close Then
 		; Retract slice
 		_Toast_Hide()
-	EndIf
+	Endif
 
 EndFunc   ;==>__Toast_Timer_Check
 
@@ -625,7 +625,7 @@ Func __Toast_Retraction_Check()
 	If Not $fToast_Retracting Then
 		AdlibUnRegister("__Toast_Retraction_Check")
 		_Toast_Show($vIcon_Retraction, $sTitle_Retraction, $sMessage_Retraction, $iDelay_Retraction, $fWait_Retraction, $fRaw_Retraction)
-	EndIf
+	Endif
 
 EndFunc
 
@@ -644,8 +644,8 @@ Func __Toast_WM_EVENTS($hWnd, $Msg, $wParam, $lParam)
 			; Check mouse position
 			Local $aPos = GUIGetCursorInfo($hToast_Handle)
 			If $aPos[4] = $hToast_Close_X Then $fToast_Close = True
-		EndIf
-	EndIf
+		Endif
+	Endif
 	Return 'GUI_RUNDEFMSG'
 
 EndFunc   ;==>__Toast_WM_EVENTS
@@ -726,7 +726,7 @@ Func __Toast_BitmapCreateDIB($hBitmap)
 	If (Not @error) And ($aRet2[0]) Then
 		DllCall("gdi32.dll", "dword", "SetBitmapBits", "ptr", $aRet2[0], "dword", $aRet1[2] * $aRet1[3] * 4, "ptr", DllStructGetData($tData, "Scan0"))
 		$hRet = $aRet2[0]
-	EndIf
+	Endif
 	_GDIPlus_BitmapUnlockBits($hBitmap, $tData)
 	Return $hRet
 EndFunc   ;==>__Toast_BitmapCreateDIB

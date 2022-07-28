@@ -27,7 +27,7 @@ Func _form_about()
 	Else
 		$x = @DesktopWidth / 2 - $w / 2
 		$y = @DesktopHeight / 2 - $h / 2
-	EndIf
+	Endif
 
 	$AboutChild = GUICreate($oLangStrings.about.title & " Simple IP Config", $w, $h, $x, $y, $WS_CAPTION, -1, $hgui)
 	GUISetOnEvent($GUI_EVENT_CLOSE, "_onExitChild")

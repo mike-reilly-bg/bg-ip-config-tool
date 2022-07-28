@@ -39,7 +39,7 @@ Func _onExit()
 		$options.PositionX = $currentWinPos[0]
 		$options.PositionY = $currentWinPos[1]
 		IniWriteSection($sProfileName, "options", $options.getSection, 0)
-	EndIf
+	Endif
 
 	Exit
 EndFunc   ;==>_onExit
@@ -67,7 +67,7 @@ Func _OnTrayClick()
 		_maximize()
 	Else
 		_SendToTray()
-	EndIf
+	Endif
 EndFunc   ;==>_OnTrayClick
 
 ;------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ Func _OnRestore()
 		_maximize()
 	Else
 		_SendToTray()
-	EndIf
+	Endif
 EndFunc   ;==>_OnRestore
 
 ;------------------------------------------------------------------------------
@@ -102,25 +102,125 @@ Func _onRadio()
 EndFunc   ;==>_onRadio
 
 ;------------------------------------------------------------------------------
-; Title........: _onSelect
+; Title........: _onSelectionChange
 ; Description..: Set IP address information from profile
-; Events.......: Click on profile list item
+; Events.......: Click on profile list item / deselect a list item
 ;------------------------------------------------------------------------------
-Func _onSelect()
-	;~ $oProfile = _getProfile()
-	;~ if 
+Func _onSelectionChange()
+	if $alreadyProcessedSelection Then return
+	$alreadyProcessedSelection = True
+
+	; clicked apply button, pressed enter, or double-clicked
+	If $firstScan Then
+		$selectedProfile = _getSelectedProfile()
+		_setGUI($selectedProfile)
+		_storeTempProfileValues($selectedProfile)
+		_setAllGUILabelsDefault()
+		_setAllListViewLabelsDefault()
+	Elseif $applyGUIFlag Then
+		$lastClickWasProfile = False
+		$GUIProfile = _getGUI()
+		_storeTempProfileValues($GUIProfile)
+		_setAllGUILabelsDefault()
+	; clicking in blank listview space or pressing Escape
+	Elseif _GUICtrlListView_GetSelectedCount($list_profiles) = 0 Then
+		if $lastClickWasProfile Then
+			$GUIProfile = _dumpTempProfileValues()
+			_setGUI($GUIProfile)
+		Else
+			$GUIProfile = _getGUI()
+			_storeTempProfileValues($GUIProfile)
+		Endif
+		$lastClickWasProfile = False
+		_setAllGUILabelsDefault()
+		_setAllListViewLabelsDefault()
+	; clicked while editing GUI values
+	ElseIf (Not _checkMouse($list_profiles)) And _
+	(StringInStr(ControlGetFocus($hgui),"edit") Or StringInStr(ControlGetFocus($hgui),"button"))  Then
+		$lastClickWasProfile = False
+		$GUIProfile = _getGUI()
+		_storeTempProfileValues($GUIProfile)
+		_setAllGUILabelsDefault()
+		_setAllListViewLabelsDefault()
+		_highlightListViewItemGUIMismatch($GUIProfile)
+	; clicked on a profile
+	Elseif _checkMouse($list_profiles) Then
+		$GUIProfile = _getGUI()
+		if Not $lastClickWasProfile Then
+			_storeTempProfileValues($GUIProfile)
+		Endif
+		$lastClickWasProfile = True
+		$selectedProfile = _getSelectedProfile()
+		_setGUI($selectedProfile)
+		_setAllListViewLabelsDefault()
+
+		; update label colors based on whether the profile and previous gui values match
+		_updateLabelColor($radio_IpAuto, $selectedProfile.IpAuto, $tempProfile.IpAuto)
+		_updateLabelColor($radio_IpMan, $selectedProfile.IpAuto, $tempProfile.IpAuto)
+		_updateLabelColor($label_ip, $selectedProfile.IpAddress, $tempProfile.IpAddress)
+		_updateLabelColor($label_subnet, $selectedProfile.IpSubnet, $tempProfile.IpSubnet)
+		_updateLabelColor($label_gateway, $selectedProfile.IpGateway, $tempProfile.IpGateway)
+		_updateLabelColor($radio_DnsAuto, $selectedProfile.DnsAuto, $tempProfile.DnsAuto)
+		_updateLabelColor($label_DnsPri, $selectedProfile.IpDnsPref, $tempProfile.IpDnsPref)
+		_updateLabelColor($label_DnsAlt, $selectedProfile.IpDnsAlt, $tempProfile.IpDnsAlt)
+		_updateLabelColor($ck_dnsReg, $selectedProfile.RegisterDns, $tempProfile.RegisterDns)
+	Else
+		return
+	Endif
+
+	_updateApplyButtonColor()
+EndFunc   ;==>_onSelectionChange
 
 
-	;~ $ipAuto = $oProfile.IpAuto
-	;~ $ipAddress = $oProfile.IpAddress
-	;~ $ipSubnet = $oProfile.IpSubnet
-	;~ $ipGateway = $oProfile.IpGateway
-	;~ $dnsAuto = $oProfile.DnsAuto
-	;~ $dnsPref = $oProfile.DnsPref
-	;~ $dnsAlt = $oProfile.DnsAlt
-	;~ $dnsReg = $oProfile.RegisterDns
-	;~ $adapterName = $oProfile.AdapterName
-EndFunc   ;==>_onSelect
+Func _highlightListViewItemGUIMismatch($guiProfile_1)
+	if _GUICtrlListView_GetSelectedCount($list_profiles) <> 0 Then
+		$selectedProfile = _getSelectedProfile()
+		if $selectedProfile.IpAuto <> $guiProfile_1.IpAuto Or _
+		$selectedProfile.IpAddress <> $guiProfile_1.IpAddress Or _
+		$selectedProfile.IpSubnet <> $guiProfile_1.IpSubnet Or _
+		$selectedProfile.IpGateway <> $guiProfile_1.IpGateway Or _
+		$selectedProfile.DnsAuto <> $guiProfile_1.DnsAuto Or _
+		$selectedProfile.IpDnsPref <> $guiProfile_1.IpDnsPref Or _
+		$selectedProfile.IpDnsAlt <> $guiProfile_1.IpDnsAlt Or _
+		$selectedProfile.RegisterDns <> $guiProfile_1.RegisterDns Then
+			_updateLabelColor($label_CurrGateway,0)
+			;_updateLabelColor(_GUICtrlListView_GetItemParam($list_profiles,_GUICtrlListView_GetSelectedIndices($list_profiles)),0)
+			;~ _onRefresh()
+		Endif
+		
+	Endif
+EndFunc
+
+
+Func _setAllGUILabelsDefault()
+	_updateLabelColor($radio_IpAuto)
+	_updateLabelColor($radio_IpMan)
+	_updateLabelColor($label_ip)
+	_updateLabelColor($label_subnet)
+	_updateLabelColor($label_gateway)
+	_updateLabelColor($radio_DnsAuto)
+	_updateLabelColor($label_DnsPri)
+	_updateLabelColor($label_DnsAlt)
+	_updateLabelColor($ck_dnsReg)
+EndFunc
+
+
+Func _setAllListViewLabelsDefault()
+	_updateLabelColor($label_CurrGateway)
+	;~ for $i = 0 to (_GUICtrlListView_GetItemCount($list_profiles) - 1)
+	;~ 	_updateLabelColor(_GUICtrlListView_GetItemParam($list_profiles,$i))
+	;~ Next
+EndFunc
+
+
+Func _updateLabelColor($labelHandle, $param1 = 1 , $param2 = 1)
+	if $param1 = $param2 Then
+		GUICtrlSetBkColor($labelHandle, $values_match_bk_color)
+	Else
+		GUICtrlSetBkColor($labelHandle, $values_no_match_bk_color)
+	Endif
+EndFunc
+
 
 ;------------------------------------------------------------------------------
 ; Title........: _onApply
@@ -128,7 +228,7 @@ EndFunc   ;==>_onSelect
 ; Events.......: File menu 'Apply profile' button, toolbar 'Apply' button
 ;------------------------------------------------------------------------------
 Func _onApply()
-	_apply_GUI()
+	_applyGUI()
 EndFunc   ;==>_onApply
 
 ;------------------------------------------------------------------------------
@@ -158,7 +258,7 @@ EndFunc   ;==>_onArrangeZa
 Func _onRename()
 	If Not _ctrlHasFocus($list_profiles) Then
 		Return
-	EndIf
+	Endif
 	$Index = _GUICtrlListView_GetSelectedIndices($list_profiles)
 	$lvEditHandle = _GUICtrlListView_EditLabel(ControlGetHandle($hgui, "", $list_profiles), $Index)
 EndFunc   ;==>_onRename
@@ -184,7 +284,7 @@ Func _onTabKey()
 		GUISetAccelerators(0)
 		Send("{TAB}")
 		GUISetAccelerators($aAccelKeys)
-	EndIf
+	Endif
 EndFunc
 
 
@@ -206,7 +306,7 @@ Func _onNewItem()
 	GUISwitch($hgui)
 	ControlFocus($hgui, "", $list_profiles)
 	GUICtrlCreateListViewItem($newname, $list_profiles)
-	GUICtrlSetOnEvent(-1, "_onSelect")
+	GUICtrlSetOnEvent(-1, "_onSelectionChange")
 	$lv_newItem = 1
 	$Index = ControlListView($hgui, "", $list_profiles, "GetItemCount")
 	ControlListView($hgui, "", $list_profiles, "Select", $Index - 1)
@@ -264,7 +364,7 @@ Func _onLvDel()
 		GUISetAccelerators(0)
 		Send("{DEL}")
 		GUISetAccelerators($aAccelKeys)
-	EndIf
+	Endif
 EndFunc   ;==>_onLvDel
 
 ;------------------------------------------------------------------------------
@@ -273,14 +373,17 @@ EndFunc   ;==>_onLvDel
 ; Events.......: UP key accelerator
 ;------------------------------------------------------------------------------
 Func _onLvUp()
+	$alreadyProcessedSelection = False
+	
 	If _ctrlHasFocus($list_profiles) Then
 		$Index = ControlListView($hgui, "", $list_profiles, "GetSelected")
 		ControlListView($hgui, "", $list_profiles, "Select", $Index - 1)
+		_onSelectionChange()
 	Else
 		GUISetAccelerators(0)
 		Send("{Up}")
 		GUISetAccelerators($aAccelKeys)
-	EndIf
+	Endif
 EndFunc   ;==>_onLvUp
 
 ;------------------------------------------------------------------------------
@@ -289,15 +392,17 @@ EndFunc   ;==>_onLvUp
 ; Events.......: DOWN key accelerator
 ;------------------------------------------------------------------------------
 Func _onLvDown()
+	$alreadyProcessedSelection = False
+	
 	If _ctrlHasFocus($list_profiles) Then
 		$Index = ControlListView($hgui, "", $list_profiles, "GetSelected")
 		ControlListView($hgui, "", $list_profiles, "Select", $Index + 1)
-		_setProperties()
+		_onSelectionChange()
 	Else
 		GUISetAccelerators(0)
 		Send("{Down}")
 		GUISetAccelerators($aAccelKeys)
-	EndIf
+	Endif
 EndFunc   ;==>_onLvDown
 
 
@@ -308,15 +413,34 @@ EndFunc   ;==>_onLvDown
 ;------------------------------------------------------------------------------
 Func _onLvEnter()
 	If Not $lv_editing Then
-		_apply_GUI()
+		_applyGUI()
 	; If focus is on list view item
 	;ElseIf 
 	Else
 		GUISetAccelerators(0)
 		Send("{ENTER}")
 		GUISetAccelerators($aAccelKeys)
-	EndIf
+	Endif
 EndFunc   ;==>_onLvEnter
+
+
+;------------------------------------------------------------------------------
+; Title........: _onESCKey
+; Description..: Unselect listview item
+; Events.......: Escape key on listview item
+;------------------------------------------------------------------------------
+Func _onESCKey()
+	If _ctrlHasFocus($list_profiles) Then
+		_GUICtrlListView_SetItemSelected($list_profiles, -1, False)
+		$alreadyProcessedSelection = False
+		_onSelectionChange()
+	Else
+		GUISetAccelerators(0)
+		Send("{ESC}")
+		GUISetAccelerators($aAccelKeys)
+	Endif
+EndFunc
+
 
 ;------------------------------------------------------------------------------
 ; Title........: _onTray
@@ -327,6 +451,7 @@ Func _onTray()
 	_SendToTray()
 EndFunc   ;==>_onTray
 
+
 ;------------------------------------------------------------------------------
 ; Title........: _onPull
 ; Description..: Get current IP information from adapter
@@ -335,6 +460,7 @@ EndFunc   ;==>_onTray
 Func _onPull()
 	_Pull()
 EndFunc   ;==>_onPull
+
 
 ;------------------------------------------------------------------------------
 ; Title........: _onDisable
@@ -345,6 +471,7 @@ Func _onDisable()
 	_disable()
 EndFunc   ;==>_onDisable
 
+
 ;------------------------------------------------------------------------------
 ; Title........: _onRelease
 ; Description..: Release DHCP for the selected adapter
@@ -353,6 +480,7 @@ EndFunc   ;==>_onDisable
 Func _onRelease()
 	_releaseDhcp()
 EndFunc   ;==>_onRelease
+
 
 ;------------------------------------------------------------------------------
 ; Title........: _onRenew
@@ -363,6 +491,7 @@ Func _onRenew()
 	_renewDhcp()
 EndFunc   ;==>_onRenew
 
+
 ;------------------------------------------------------------------------------
 ; Title........: _onCycle
 ; Description..: Release DHCP followed by Renew DHCP for the selected adapter
@@ -372,6 +501,7 @@ Func _onCycle()
 	_cycleDhcp()
 EndFunc   ;==>_onCycle
 
+
 ;------------------------------------------------------------------------------
 ; Title........: _onSettings
 ; Description..: Create the settings child window
@@ -380,6 +510,7 @@ EndFunc   ;==>_onCycle
 Func _onSettings()
 	_formm_settings()
 EndFunc   ;==>_onSettings
+
 
 ;------------------------------------------------------------------------------
 ; Title........: _onHelp
@@ -396,6 +527,7 @@ Func _onUpdateCheckItem()
 	$suppressComError = 0
 EndFunc   ;==>_onUpdateCheckItem
 
+
 ;------------------------------------------------------------------------------
 ; Title........: _onDebugItem
 ; Description..: Create debug child window
@@ -404,6 +536,7 @@ EndFunc   ;==>_onUpdateCheckItem
 Func _onDebugItem()
 	_form_debug()
 EndFunc   ;==>_onDebugItem
+
 
 ;------------------------------------------------------------------------------
 ; Title........: _onChangelog
@@ -414,6 +547,7 @@ Func _onChangelog()
 	_form_changelog()
 EndFunc   ;==>_onChangelog
 
+
 ;------------------------------------------------------------------------------
 ; Title........: _onAbout
 ; Description..: Create the About child window
@@ -423,6 +557,7 @@ Func _onAbout()
 	_form_about()
 EndFunc   ;==>_onAbout
 
+
 ;------------------------------------------------------------------------------
 ; Title........: _onFilter
 ; Description..: Filter the profiles listview
@@ -431,6 +566,7 @@ EndFunc   ;==>_onAbout
 Func _onFilter()
 	_filterProfiles()
 EndFunc   ;==>_onFilter
+
 
 ;------------------------------------------------------------------------------
 ; Title........: _OnCombo
@@ -446,8 +582,9 @@ Func _OnCombo()
 		_setStatus("An error occurred while saving the selected adapter", 1)
 	Else
 		$options.StartupAdapter = $adap
-	EndIf
+	Endif
 EndFunc   ;==>_OnCombo
+
 
 ;------------------------------------------------------------------------------
 ; Title........: _iconLink
@@ -458,6 +595,7 @@ Func _iconLink()
 	ShellExecute('http://www.aha-soft.com/')
 	GUICtrlSetColor(@GUI_CtrlId, 0x551A8B)
 EndFunc   ;==>_iconLink
+
 
 ;------------------------------------------------------------------------------
 ; Title........: _updateLink
@@ -470,6 +608,7 @@ Func _updateLink()
 	GUICtrlSetColor(@GUI_CtrlId, 0x551A8B)
 EndFunc   ;==>_updateLink
 
+
 ;------------------------------------------------------------------------------
 ; Title........: _onOpenProfiles
 ; Description..: Open a custom profiles.ini file
@@ -478,6 +617,7 @@ EndFunc   ;==>_updateLink
 Func _onOpenProfiles()
 	$OpenFileFlag = 1
 EndFunc   ;==>_onOpenProfiles
+
 
 ;------------------------------------------------------------------------------
 ; Title........: _onImportProfiles
@@ -488,6 +628,7 @@ Func _onImportProfiles()
 	$ImportFileFlag = 1
 EndFunc   ;==>_onImportProfiles
 
+
 ;------------------------------------------------------------------------------
 ; Title........: _onExportProfiles
 ; Description..: export profiles to a file
@@ -496,6 +637,7 @@ EndFunc   ;==>_onImportProfiles
 Func _onExportProfiles()
 	$ExportFileFlag = 1
 EndFunc   ;==>_onExportProfiles
+
 
 ;------------------------------------------------------------------------------
 ; Title........: _onOpenProfLoc
@@ -508,6 +650,7 @@ Func _onOpenProfLoc()
 	Run("explorer.exe /n,/e,/select," & $path)
 EndFunc   ;==>_onExportProfiles
 
+
 ;------------------------------------------------------------------------------
 ; Title........: _onOpenNetConnections
 ; Description..: open the network connections dialog
@@ -516,6 +659,7 @@ EndFunc   ;==>_onExportProfiles
 Func _onOpenNetConnections()
 	ShellExecute("ncpa.cpl")
 EndFunc   ;==>_onOpenNetConnections
+
 
 ;------------------------------------------------------------------------------
 ; Title........: WM_COMMAND
@@ -544,7 +688,7 @@ Func WM_COMMAND($hWnd, $iMsg, $wParam, $lParam)
 					Case $combo_adapters
 						GUICtrlSendToDummy($combo_dummy)
 				EndSwitch
-			EndIf
+			Endif
 	EndSwitch
 	Return $GUI_RUNDEFMSG
 EndFunc   ;==>WM_COMMAND
@@ -593,16 +737,16 @@ Func WM_NOTIFY($hWnd, $iMsg, $wParam, $lParam)
 									If $lv_newItem = 1 Then
 										_GUICtrlListView_DeleteItem(ControlGetHandle($hgui, "", $list_profiles), $lv_editIndex)
 										$lv_newItem = 0
-									EndIf
+									Endif
 									$lv_aboutEditing = 1
-								EndIf
+								Endif
 							Else
 								If $lv_newItem = 1 Then
 									_GUICtrlListView_DeleteItem(ControlGetHandle($hgui, "", $list_profiles), $lv_editIndex)
 									$lv_newItem = 0
-								EndIf
+								Endif
 								$lv_aboutEditing = 1
-							EndIf
+							Endif
 					EndSwitch
 				Case $ip_Ip
 					Switch $iCode

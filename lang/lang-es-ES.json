@@ -70,6 +70,7 @@
          "delete":"Eliminar",
          "sortAsc":"Ordenar A->Z",
          "sortDesc":"Ordenar Z->A",
+         "saveDesc":"Guardar",
          "shortcut":"Crear acceso directo a perfil"
       },
       "toolbar":{
@@ -146,7 +147,8 @@
          "opt1":"Inicio en la bara de escritorio",
          "opt2":"Minimizar a la barra de escritorio",
          "opt3":"Guardar adaptador en perfil",
-         "opt4":"Buscar actualizaciones automáticamente"
+         "opt4":"Buscar actualizaciones automáticamente",
+         "opt5":"Automatically refresh current network info"
       },
       "message":{
          "ready":"Listo",

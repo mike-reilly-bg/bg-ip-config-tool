@@ -70,6 +70,7 @@
          "delete":"Delete",
          "sortAsc":"Sort A->Z",
          "sortDesc":"Sort Z->A",
+         "saveDesc":"Save profile",
          "shortcut":"Create shortcut to profile"
       },
       "toolbar":{
@@ -146,7 +147,8 @@
          "opt1":"Startup in system tray",
          "opt2":"Minimize to the system tray",
          "opt3":"Save adapter to profile",
-         "opt4":"Automatically check for updates"
+         "opt4":"Automatically check for updates",
+         "opt5":"Automatically refresh current network info"
       },
       "message":{
          "ready":"Ready",

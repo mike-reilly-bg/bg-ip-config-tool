@@ -29,7 +29,7 @@ Func _getLangsAvailable()
 		Next
 ;~ 	Else
 ;~ 		$aLangsRet[0] = "English   (en-US)"
-	EndIf
+	Endif
 
 	Return $aLangsRet
 EndFunc   ;==>_getLangsAvailable
@@ -144,6 +144,7 @@ Func _langStrings()
 	_AutoItObject_AddProperty($oLvmenu, "delete")
 	_AutoItObject_AddProperty($oLvmenu, "sortAsc")
 	_AutoItObject_AddProperty($oLvmenu, "sortDesc")
+	_AutoItObject_AddProperty($oLvmenu, "saveDesc")
 	_AutoItObject_AddProperty($oLvmenu, "shortcut")
 
 	_AutoItObject_AddProperty($oToolbar, "apply")
@@ -218,6 +219,7 @@ Func _langStrings()
 	_AutoItObject_AddProperty($oSettings, "opt2")
 	_AutoItObject_AddProperty($oSettings, "opt3")
 	_AutoItObject_AddProperty($oSettings, "opt4")
+	_AutoItObject_AddProperty($oSettings, "opt5")
 
 	_AutoItObject_AddProperty($oMessage, "ready")
 	_AutoItObject_AddProperty($oMessage, "timedout")
@@ -266,14 +268,14 @@ Func _setLangStrings($langCode = "en-US", $manualUpdate = False)
 		$fileData = _getEnglish()
 		If $langCode <> "en-US" Then
 			MsgBox(1, "Error", "Error reading language file")
-		EndIf
+		Endif
 	Else
 		If $hFile = -1 Then
 			MsgBox(1, "Error", "Error reading language file")
-		EndIf
+		Endif
 		$fileData = FileRead($hFile)
 		FileClose($hFile)
-	EndIf
+	Endif
 	Local $jsonData = Json_Decode($fileData)
 
 	$oLangStrings.menu.file.file = Json_Get($jsonData, ".strings.menu.file.file")
@@ -331,6 +333,8 @@ Func _setLangStrings($langCode = "en-US", $manualUpdate = False)
 	$oLangStrings.lvmenu.delete = Json_Get($jsonData, ".strings.lvmenu.delete")
 	$oLangStrings.lvmenu.sortAsc = Json_Get($jsonData, ".strings.lvmenu.sortAsc")
 	$oLangStrings.lvmenu.sortDesc = Json_Get($jsonData, ".strings.lvmenu.sortDesc")
+	$oLangStrings.lvmenu.saveDesc = Json_Get($jsonData, ".strings.lvmenu.saveDesc")
+
 	$oLangStrings.lvmenu.shortcut = Json_Get($jsonData, ".strings.lvmenu.shortcut")
 
 	$oLangStrings.toolbar.apply = Json_Get($jsonData, ".strings.toolbar.apply")
@@ -405,6 +409,7 @@ Func _setLangStrings($langCode = "en-US", $manualUpdate = False)
 	$oLangStrings.settings.opt2 = Json_Get($jsonData, ".strings.settings.opt2")
 	$oLangStrings.settings.opt3 = Json_Get($jsonData, ".strings.settings.opt3")
 	$oLangStrings.settings.opt4 = Json_Get($jsonData, ".strings.settings.opt4")
+	$oLangStrings.settings.opt5 = Json_Get($jsonData, ".strings.settings.opt5")
 
 	$oLangStrings.buttonOK = Json_Get($jsonData, ".strings.buttonOK")
 	$oLangStrings.buttonCancel = Json_Get($jsonData, ".strings.buttonCancel")
@@ -522,6 +527,7 @@ Func _getEnglish()
 			'         "delete":"Delete",' & _
 			'         "sortAsc":"Sort A->Z",' & _
 			'         "sortDesc":"Sort Z->A",' & _
+			'		  "saveDesc":"Save profile",' & _
 			'         "shortcut":"Create shortcut to profile"' & _
 			'      },' & _
 			'      "toolbar":{' & _
@@ -598,6 +604,7 @@ Func _getEnglish()
 			'         "opt2":"Minimize to the system tray",' & _
 			'         "opt3":"Save adapter to profile",' & _
 			'         "opt4":"Automatically check for updates"' & _
+			'         "opt5":"Automatically refresh current network info"' & _
 			'      },' & _
 			'      "message":{' & _
 			'         "ready":"Ready",' & _

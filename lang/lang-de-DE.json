@@ -70,6 +70,7 @@
          "delete":"Löschen",
          "sortAsc":"Sortieren nach A->Z",
          "sortDesc":"Sortieren nach Z->A",
+         "saveDesc":"Speichern",
          "shortcut":"Verknüpfung für Profil erstellen"
       },
       "toolbar":{
@@ -146,7 +147,8 @@
          "opt1":"In Tray starten",
          "opt2":"In Tray minimieren",
          "opt3":"Adapter in Profil speichern",
-         "opt4":"Automatisch auf Aktualisierungen prüfen"
+         "opt4":"Automatisch auf Aktualisierungen prüfen",
+         "opt5":"Automatically refresh current network info"
       },
       "message":{
          "ready":"Bereit",

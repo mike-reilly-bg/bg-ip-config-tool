@@ -44,33 +44,37 @@ Func _formm_settings()
 		If $aLangsAvailable[$i] <> "" Then
 			If StringInStr($aLangsAvailable[$i], $strOptionsLang) Then
 				$strOptionsLang = $aLangsAvailable[$i]
-			EndIf
+			Endif
 			If Not StringInStr($langNameStr, $aLangsAvailable[$i]) And $aLangsAvailable[$i] <> "English   (en-US)" Then
 				$langNameStr &= $aLangsAvailable[$i] & "|"
-			EndIf
+			Endif
 		Else
 			ExitLoop
-		EndIf
+		Endif
 	Next
 	$cmb_langSelect = GUICtrlCreateCombo("English   (en-US)", 10 * $dScale, 28 * $dScale, $w - 20 * $dScale, -1, BitOR($CBS_DROPDOWNlist, $CBS_AUTOHSCROLL, $WS_VSCROLL))
 	If $langNameStr <> "" Then
 		GUICtrlSetData(-1, $langNameStr)
-	EndIf
+	Endif
 	ControlCommand($settingsChild, "", $cmb_langSelect, "SelectString", $strOptionsLang)
 
 	$ck_startinTray = GUICtrlCreateCheckbox($oLangStrings.settings.opt1, 10 * $dScale, 60 * $dScale, $w - 50 * $dScale, 20 * $dScale)
 	GUICtrlSetBkColor(-1, 0xFFFFFF)
-	GUICtrlSetState($ck_startinTray, _StrToState($options.StartupMode))
+	GUICtrlSetState($ck_startinTray, _checkboxStrToState($options.StartupMode))
 	$ck_mintoTray = GUICtrlCreateCheckbox($oLangStrings.settings.opt2, 10 * $dScale, 80 * $dScale, $w - 50 * $dScale, 20 * $dScale)
 	GUICtrlSetBkColor(-1, 0xFFFFFF)
-	GUICtrlSetState($ck_mintoTray, _StrToState($options.MinToTray))
+	GUICtrlSetState($ck_mintoTray, _checkboxStrToState($options.MinToTray))
 	$ck_saveAdapter = GUICtrlCreateCheckbox($oLangStrings.settings.opt3, 10 * $dScale, 100 * $dScale, $w - 50 * $dScale, 20 * $dScale)
 	GUICtrlSetBkColor(-1, 0xFFFFFF)
-	GUICtrlSetState($ck_saveAdapter, _StrToState($options.SaveAdapterToProfile))
+	GUICtrlSetState($ck_saveAdapter, _checkboxStrToState($options.SaveAdapterToProfile))
 
 	$ck_autoUpdate = GUICtrlCreateCheckbox($oLangStrings.settings.opt4, 10 * $dScale, 120 * $dScale, $w - 50 * $dScale, 20 * $dScale)
 	GUICtrlSetBkColor(-1, 0xFFFFFF)
-	GUICtrlSetState($ck_autoUpdate, _StrToState($options.AutoUpdate))
+	GUICtrlSetState($ck_autoUpdate, _checkboxStrToState($options.AutoUpdate))
+
+	$ck_autoRefresh = GUICtrlCreateCheckbox($oLangStrings.settings.opt5, 10 * $dScale, 140 * $dScale, $w - 50 * $dScale, 20 * $dScale)
+	GUICtrlSetBkColor(-1, 0xFFFFFF)
+	GUICtrlSetState($ck_autoRefresh, _checkboxStrToState($options.AutoRefresh))
 
 	$bt_optSave = GUICtrlCreateButton($oLangStrings.buttonSave, $w - 20 * $dScale - 75 * $dScale, $h - 27 * $dScale, 75 * $dScale, 22 * $dScale)
 	GUICtrlSetOnEvent($bt_optSave, "_saveOptions")
@@ -88,6 +92,7 @@ Func _saveOptions()
 	$options.MinToTray = _StateToStr($ck_mintoTray)
 	$options.SaveAdapterToProfile = _StateToStr($ck_saveAdapter)
 	$options.AutoUpdate = _StateToStr($ck_autoUpdate)
+	$options.AutoRefresh = _StateToStr($ck_autoRefresh)
 
 	Local $langRet = StringLeft(StringRight(GUICtrlRead($cmb_langSelect), 6), 5)
 	If $langRet <> -1 Then
@@ -95,8 +100,8 @@ Func _saveOptions()
 			$updateGUI = 1
 			$oLangStrings.OSLang = $langRet
 			$options.Language = $oLangStrings.OSLang
-		EndIf
-	EndIf
+		Endif
+	Endif
 
 	IniWriteSection($sProfileName, "options", $options.getSection(), 0)
 	_ExitChild(@GUI_WinHandle)
@@ -121,7 +126,7 @@ Func _saveOptions()
 			$sStartupAdapter = $options.StartupAdapter
 			If Adapter_Exists($adapters, $sStartupAdapter) Then
 				$defaultitem = $sStartupAdapter
-			EndIf
+			Endif
 
 			$sAdapterBlacklist = $options.AdapterBlacklist
 			$aBlacklist = StringSplit($sAdapterBlacklist, "|")
@@ -132,10 +137,10 @@ Func _saveOptions()
 					If $indexBlacklist <> -1 Then ContinueLoop
 					GUICtrlSetData($combo_adapters, $adapterNames[$i], $defaultitem)
 				Next
-			EndIf
-		EndIf
+			Endif
+		Endif
 
 		_refresh(1)
 		ControlListView($hgui, "", $list_profiles, "Select", 0)
-	EndIf
+	Endif
 EndFunc   ;==>_saveOptions

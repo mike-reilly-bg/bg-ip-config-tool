@@ -70,6 +70,7 @@
          "delete":"Supprimer",
          "sortAsc":"Trier de A->Z",
          "sortDesc":"Trier de Z->A",
+         "saveDesc":"Enregistrer",
          "shortcut":"Créer un raccourci vers le profil"
       },
       "toolbar":{
@@ -146,7 +147,8 @@
          "opt1":"Démarrage dans la barre d'état système",
          "opt2":"Réduire dans la barre d'état système",
          "opt3":"Enregistrer l'adaptateur dans le profil",
-         "opt4":"Vérifier automatiquement les mises à jour"
+         "opt4":"Vérifier automatiquement les mises à jour",
+         "opt5":"Automatically refresh current network info"
       },
       "message":{
          "ready":"Prêt",

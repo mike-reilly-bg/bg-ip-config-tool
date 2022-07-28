@@ -46,10 +46,10 @@ Func _LinkedList_remove($self, $index)
 			Else
 				If $i = $self.size - 1 Then $self.last = $previous ; last element
 				$previous.next = $current.next
-			EndIf
+			Endif
 			$self.size = $self.size - 1
 			Return
-		EndIf
+		Endif
 		$i += 1
 		$previous = $current
 		$current = $current.next
@@ -66,7 +66,7 @@ Func _LinkedList_add($self, $newdata)
 	Else
 		$oLast.next = __Element__($newdata)
 		$self.last = $oLast.next
-	EndIf
+	Endif
 	$self.size = $iSize + 1
 EndFunc   ;==>_LinkedList_add
 
@@ -93,7 +93,7 @@ Func _LinkedList_Enumnext(ByRef $self, ByRef $iterator)
 	If Not IsObj($iterator) Then
 		$iterator = $self.first
 		Return $iterator.data
-	EndIf
+	Endif
 	If Not IsObj($iterator.next) Then Return SetError(1, 0, 0)
 	$iterator = $iterator.next
 	Return $iterator.data

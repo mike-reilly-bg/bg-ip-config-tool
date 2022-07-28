@@ -67,7 +67,7 @@ Func __Jsmn_RuntimeLoader($ProcName = "")
 			$Code = 'AwAAAAQfCAAAAAAAAAA1HbEvgTNrvX54gCiWSTVmt5v7RCdoFJ/zhkKmwcm8yVqZPjJBoVhNHHAIzrHWKbZh1J0QAUaHB5zyQTilTmWa9O0OKeLrk/Jg+o7CmMzjEk74uPongdHv37nwYXvg97fiHvjP2bBzI9gxSkKq9Cqh/GxSHIlZPYyW76pXUt//25Aqs2Icfpyay/NFd50rW7eMliH5ynkrp16HM1afithVrO+LpSaz/IojowApmXnBHUncHliDqbkx6/AODUkyDm1hj+AiEZ9Me1Jy+hBQ1/wC/YnuuYSJvNAKp6XDnyc8Nwr54Uqx5SbUW2CezwQQ7aXX/HFiHSKpQcFW/gi8oSx5nsoxUXVjxeNI/L7z6GF2mfu3Tnpt7hliWEdA2r2VB+TIM7Pgwl9X3Ge0T3KJQUaRtLJZcPvVtOuKXr2Q9wy7hl80hVRrt9zYrbjBHXLrRx/HeIMkZwxhmKo/dD/vvaNgE+BdU8eeJqFBJK2alrK2rh2WkRynftyepm1WrdKrz/5KhQPp/4PqH+9IADDjoGBbfvJQXdT+yiO8DtfrVnd+JOEKsKEsdgeM3UXx5r6tEHO9rYWbzbnyEiX7WozZemry+vBZMMtHn1aA63+RcDQED73xOsnj00/9E5Z6hszM5Hi8vi6Hw3iOgf3cHwcXG44aau0JpuA2DlrUvnJOYkNnY+bECeSdAR1UQkFNyqRoH2xm4Y7gYMCPsFtPBlwwleEKI27SsUq1ZHVQvFCoef7DXgf/GwPCAvwDMIQfb3hJtIVubOkASRQZVNIJ/y4KPrn/gcASV7fvMjE34loltTVlyqprUWxpI51tN6vhTOLAp+CHseKxWaf9g1wdbVs0e/5xAiqgJbmKNi9OYbhV/blpp3SL63XKxGiHdxhK1aR+4rUY4eckNbaHfW7ob+q7aBoHSs6LVX9lWakb/xWxwQdwcX/7/C+TcQSOOg6rLoWZ8wur9qp+QwzoCbXkf04OYpvD5kqgEiwQnB90kLtcA+2XSbDRu+aq02eNNCzgkZujeL/HjVISjf2EuQKSsZkBhS15eiXoRgPaUoQ5586VS7t7rhM8ng5LiVzoUQIZ0pNKxWWqD+gXRBvOMIXY2yd0Ei4sE5KFIEhbs3u8vwP7nFLIpZ/RembPTuc0ZlguGJgJ2F5iApfia+C2tRYRNjVCqECCveWw6P2Btfaq9gw7cWWmJflIQbjxtccDqsn52cftLqXSna9zk05mYdJSV8z2W7vM1YJ5Rd82v0j3kau710A/kQrN41bdaxmKjL+gvSRlOLB1bpvkCtf9+h+eVA4XIkIXKFydr1OjMZ8wq2FIxPJXskAe4YMgwQmeWZXMK1KBbLB3yQR1YOYaaHk1fNea9KsXgs5YLbiP/noAusz76oEDo/DJh1aw7cUwdhboVPg1bNq88mRb5RGa13KDK9uEET7OA02KbSL+Q4HOtyasLUoVrZzVyd8iZPoGrV36vHnj+yvG4fq6F/fkug/sBRp186yVZQVmdAgFd+WiRLnUjxHUKJ6xBbpt4FTP42E/PzPw3JlDb0UQtXTDnIL0CWqbns2E7rZ5PBwrwQYwvBn/gaEeLVGDSh84DfW4zknIneGnYDXdVEHC+ITzejAnNxb1duB+w2aVTk64iXsKHETq53GMH6DuFi0oUeEFb/xp0HsRyNC8vBjOq3Kk7NZHxCQLh7UATFttG7sH+VIqGjjNwmraGJ0C92XhpQwSgfAb3KHucCHGTTti0sn6cgS3vb36BkjGKsRhXVuoQCFH96bvTYtl8paQQW9ufRfvxPqmU0sALdR0fIvZwd7Z8z0UoEec6b1Sul4e60REj/H4scb6N2ryHBR9ua5N1YxJu1uwgoLXUL2wT9ZPBjPjySUzeqXikUIKKYgNlWy+VlNIiWWTPtKpCTr508logA=='
 		Else
 			$Code = 'AwAAAASFBwAAAAAAAAA1HbEvgTNrvX54gCiqsa1mt5v7RCdoAFjCfVE40DZbE5UfabA9UKuHrjqOMbvjSoB2zBJTEYEQejBREnPrXL3VwpVOW+L9SSfo0rTfA8U2W+Veqo1uy0dOsPhl7vAHbBHrvJNfEUe8TT0q2eaTX2LeWpyrFEm4I3mhDJY/E9cpWf0A78e+y4c7NxewvcVvAakIHE8Xb8fgtqCTVQj3Q1eso7n1fKQj5YsQ20A86Gy9fz8dky78raeZnhYayn0b1riSUKxGVnWja2i02OvAVM3tCCvXwcbSkHTRjuIAbMu2mXF1UpKci3i/GzPmbxo9n/3aX/jpR6UvxMZuaEDEij4yzfZv7EyK9WCNBXxMmtTp3Uv6MZsK+nopXO3C0xFzZA/zQObwP3zhJ4sdatzMhFi9GAM70R4kgMzsxQDNArueXj+UFzbCCFZ89zXs22F7Ixi0FyFTk3jhH56dBaN65S+gtPztNGzEUmtk4M8IanhQSw8xCXr0x0MPDpDFDZs3aN5TtTPYmyk3psk7OrmofCQGG5cRcqEt9902qtxQDOHumfuCPMvU+oMjzLzBVEDnBbj+tY3y1jvgGbmEJguAgfB04tSeAt/2618ksnJJK+dbBkDLxjB4xrFr3uIFFadJQWUckl5vfh4MVXbsFA1hG49lqWDa7uSuPCnOhv8Yql376I4U4gfcF8LcgorkxS+64urv2nMUq6AkBEMQ8bdkI64oKLFfO7fGxh5iMNZuLoutDn2ll3nq4rPi4kOyAtfhW0UPyjvqNtXJ/h0Wik5Mi8z7BVxaURTDk81TP8y9+tzjySB/uGfHFAzjF8DUY1vqJCgn0GQ8ANtiiElX/+Wnc9HWi2bEEXItbm4yv97QrEPvJG9nPRBKWGiAQsIA5J+WryX5NrfEfRPk0QQwyl16lpHlw6l0UMuk7S21xjQgyWo0MywfzoBWW7+t4HH9sqavvP4dYAw81BxXqVHQhefUOS23en4bFUPWE98pAN6bul+kS767vDK34yTC3lA2a8wLrBEilmFhdB74fxbAl+db91PivhwF/CR4Igxr35uLdof7+jAYyACopQzmsbHpvAAwT2lapLix8H03nztAC3fBqFSPBVdIv12lsrrDw4dfhJEzq7AbL/Y7L/nIcBsQ/3UyVnZk4kZP1KzyPCBLLIQNpCVgOLJzQuyaQ6k2QCBy0eJ0ppUyfp54LjwVg0X7bwncYbAomG4ZcFwTQnC2AX3oYG5n6Bz4SLLjxrFsY+v/SVa+GqH8uePBh1TPkHVNmzjXXymEf5jROlnd+EjfQdRyitkjPrg2HiQxxDcVhCh5J2L5+6CY9eIaYgrbd8zJnzAD8KnowHwh2bi4JLgmt7ktJ1XGizox7cWf3/Dod56KAcaIrSVw9XzYybdJCf0YRA6yrwPWXbwnzc/4+UDkmegi+AoCEMoue+cC7vnYVdmlbq/YLE/DWJX383oz2Ryq8anFrZ8jYvdoh8WI+dIugYL2SwRjmBoSwn56XIaot/QpMo3pYJIa4o8aZIZrjvB7BXO5aCDeMuZdUMT6AXGAGF1AeAWxFd2XIo1coR+OplMNDuYia8YAtnSTJ9JwGYWi2dJz3xrxsTQpBONf3yn8LVf8eH+o5eXc7lzCtHlDB+YyI8V9PyMsUPOeyvpB3rr9fDfNy263Zx33zTi5jldgP2OetUqGfbwl+0+zNYnrg64bluyIN/Awt1doDCQkCKpKXxuPaem/SyCHrKjg'
-		EndIf
+		Endif
 
 		Local $Symbol[] = ["jsmn_parse", "jsmn_init", "json_string_decode", "json_string_encode"]
 		Local $CodeBase = _BinaryCall_Create($Code)
@@ -75,7 +75,7 @@ Func __Jsmn_RuntimeLoader($ProcName = "")
 
 		$SymbolList = _BinaryCall_SymbolList($CodeBase, $Symbol)
 		If @error Then Exit MsgBox(16, "Json", "Startup Failure!")
-	EndIf
+	Endif
 	If $ProcName Then Return DllStructGetData($SymbolList, $ProcName)
 EndFunc   ;==>__Jsmn_RuntimeLoader
 
@@ -124,7 +124,7 @@ Func _Json_Token(ByRef $Json, $Ptr, ByRef $Next)
 	If $Type = 0 And $Start = 0 And $End = 0 And $Size = 0 Then ; Null Item
 		$Next = -1
 		Return Null
-	EndIf
+	Endif
 
 	Switch $Type
 		Case 0 ; Json_PRIMITIVE
@@ -141,7 +141,7 @@ Func _Json_Token(ByRef $Json, $Ptr, ByRef $Next)
 						Return Number($Primitive)
 					Else
 						Return Json_StringDecode($Primitive)
-					EndIf
+					Endif
 			EndSwitch
 
 		Case 1 ; Json_OBJECT
@@ -228,7 +228,7 @@ Func Json_Encode_Pretty($Data, $Option, $Indent, $ArraySep, $ObjectSep, $ColonSe
 				Return $String
 			Else
 				Return '"' & $String & '"'
-			EndIf
+			Endif
 
 		Case IsArray($Data) And UBound($Data, 0) = 1
 			If UBound($Data) = 0 Then Return "[]"
@@ -236,7 +236,7 @@ Func Json_Encode_Pretty($Data, $Option, $Indent, $ArraySep, $ObjectSep, $ColonSe
 				$ArrayCRLF = ""
 				$Match = StringRegExp($ArraySep, "[\r\n]+$", 3)
 				If IsArray($Match) Then $ArrayCRLF = $Match[0]
-			EndIf
+			Endif
 
 			If $ArrayCRLF Then $NextIdent &= $Indent
 			$Length = UBound($Data) - 1
@@ -255,7 +255,7 @@ Func Json_Encode_Pretty($Data, $Option, $Indent, $ArraySep, $ObjectSep, $ColonSe
 				$ObjectCRLF = ""
 				$Match = StringRegExp($ObjectSep, "[\r\n]+$", 3)
 				If IsArray($Match) Then $ObjectCRLF = $Match[0]
-			EndIf
+			Endif
 
 			If $ObjectCRLF Then $NextIdent &= $Indent
 			$Keys = $Data.Keys()
@@ -285,28 +285,28 @@ Func Json_Encode($Data, $Option = 0, $Indent = Default, $ArraySep = Default, $Ob
 		Else
 			$Indent = Json_StringDecode($Indent)
 			If StringRegExp($Indent, "[^\t ]") Then $Indent = @TAB
-		EndIf
+		Endif
 
 		If IsKeyword($ArraySep) Then
 			$ArraySep = "," & @CRLF
 		Else
 			$ArraySep = Json_StringDecode($ArraySep)
 			If $ArraySep = "" Or StringRegExp($ArraySep, "[^\s,]|,.*,") Or ($Strict And Not StringRegExp($ArraySep, ",")) Then $ArraySep = "," & @CRLF
-		EndIf
+		Endif
 
 		If IsKeyword($ObjectSep) Then
 			$ObjectSep = "," & @CRLF
 		Else
 			$ObjectSep = Json_StringDecode($ObjectSep)
 			If $ObjectSep = "" Or StringRegExp($ObjectSep, "[^\s,]|,.*,") Or ($Strict And Not StringRegExp($ObjectSep, ",")) Then $ObjectSep = "," & @CRLF
-		EndIf
+		Endif
 
 		If IsKeyword($ColonSep) Then
 			$ColonSep = ": "
 		Else
 			$ColonSep = Json_StringDecode($ColonSep)
 			If $ColonSep = "" Or StringRegExp($ColonSep, "[^\s,:]|[,:].*[,:]") Or ($Strict And (StringRegExp($ColonSep, ",") Or Not StringRegExp($ColonSep, ":"))) Then $ColonSep = ": "
-		EndIf
+		Endif
 
 		Return Json_Encode_Pretty($Data, $Option, $Indent, $ArraySep, $ObjectSep, $ColonSep)
 
@@ -314,7 +314,7 @@ Func Json_Encode($Data, $Option = 0, $Indent = Default, $ArraySep = Default, $Ob
 		Return Json_Encode_Pretty($Data, $Option, "", ",", ",", ":")
 	Else
 		Return Json_Encode_Compact($Data, $Option)
-	EndIf
+	Endif
 EndFunc   ;==>Json_Encode
 
 Func Json_ObjCreate()
@@ -338,8 +338,8 @@ Func Json_ObjGet(ByRef $Object, $Key)
 				Return $DynObject.Item($Keys[$x])
 			Else
 				$DynObject = Json_ObjGet($DynObject, $Keys[$x])
-			EndIf
-		EndIf
+			Endif
+		Endif
 	Next
 	Return SetError(1, 0, '')
 EndFunc   ;==>Json_ObjGet
@@ -358,10 +358,10 @@ Func Json_ObjExists(ByRef $Object, $Key)
 				Return True
 			Else
 				$DynObject = Json_ObjGet($DynObject, $Keys[$x])
-			EndIf
+			Endif
 		Else
 			Return False
-		EndIf
+		Endif
 	Next
 	Return False
 EndFunc   ;==>Json_ObjExists
@@ -418,13 +418,13 @@ Func Json_Put(ByRef $Var, $Notation, $Data, $CheckExists = False)
 			$Index = String(Json_Decode($Match[1])) ;only string using dot-notation
 		Else
 			$Index = Json_Decode($Match[1])
-		EndIf
+		Endif
 		$Notation = StringTrimLeft($Notation, StringLen($Match[0])) ;trim leading notation
 
 		If IsString($Index) Then
 			If $CheckExists And (Not Json_IsObject($Var) Or Not Json_ObjExists($Var, $Index)) Then
 				Return SetError(1, 0, False) ; no specific object
-			EndIf
+			Endif
 
 			If Not Json_IsObject($Var) Then $Var = Json_ObjCreate()
 			If $Notation Then
@@ -436,18 +436,18 @@ Func Json_Put(ByRef $Var, $Notation, $Data, $CheckExists = False)
 			Else
 				Json_ObjPut($Var, $Index, $Data)
 				Return True
-			EndIf
+			Endif
 
 		ElseIf IsInt($Index) Then
 			If $Index < 0 Or ($CheckExists And (Not IsArray($Var) Or UBound($Var, 0) <> 1 Or $Index >= UBound($Var))) Then
 				Return SetError(1, 0, False) ; no specific object
-			EndIf
+			Endif
 
 			If Not IsArray($Var) Or UBound($Var, 0) <> 1 Then
 				Dim $Var[$Index + 1]
 			ElseIf $Index >= UBound($Var) Then
 				ReDim $Var[$Index + 1]
-			EndIf
+			Endif
 
 			If $Notation Then
 				$Ret = Json_Put($Var[$Index], $Notation, $Data, $CheckExists)
@@ -455,10 +455,10 @@ Func Json_Put(ByRef $Var, $Notation, $Data, $CheckExists = False)
 			Else
 				$Var[$Index] = $Data
 				Return True
-			EndIf
+			Endif
 
-		EndIf
-	EndIf
+		Endif
+	Endif
 	Return SetError(2, 0, False) ; invalid notation
 EndFunc   ;==>Json_Put
 
@@ -495,7 +495,7 @@ Func Json_Get(ByRef $Var, $Notation)
 			$Index = String(Json_Decode($Match[1])) ;only string using dot-notation
 		Else
 			$Index = Json_Decode($Match[1])
-		EndIf
+		Endif
 		$Notation = StringTrimLeft($Notation, StringLen($Match[0])) ;trim leading notation
 
 		Local $Item
@@ -505,13 +505,13 @@ Func Json_Get(ByRef $Var, $Notation)
 			$Item = $Var[$Index]
 		Else
 			Return SetError(1, 0, "") ; no specific object
-		EndIf
+		Endif
 
 		If Not $Notation Then Return $Item
 
 		Local $Ret = Json_Get($Item, $Notation)
 		Return SetError(@error, 0, $Ret)
-	EndIf
+	Endif
 EndFunc   ;==>Json_Get
 
 ; List all JSON keys and their value to the Console
@@ -546,7 +546,7 @@ Func _Json_TokenDump(ByRef $Json, $Ptr, ByRef $Next, $ObjPath = "")
 	If $Type = 0 And $Start = 0 And $End = 0 And $Size = 0 Then ; Null Item
 		$Next = -1
 		Return Null
-	EndIf
+	Endif
 
 	Switch $Type
 		Case 0 ; Json_PRIMITIVE
@@ -563,7 +563,7 @@ Func _Json_TokenDump(ByRef $Json, $Ptr, ByRef $Next, $ObjPath = "")
 						Return Number($Primitive)
 					Else
 						Return Json_StringDecode($Primitive)
-					EndIf
+					Endif
 			EndSwitch
 
 		Case 1 ; Json_OBJECT
@@ -574,11 +574,11 @@ Func _Json_TokenDump(ByRef $Json, $Ptr, ByRef $Next, $ObjPath = "")
 				If Not (IsBool($Value) And $Value = False) Then
 					If Not IsString($Key) Then
 						$Key = Json_Encode($Key)
-					EndIf
+					Endif
 					; show the key and its value
 					ConsoleWrite("+-> " & $cObjPath & '  =' & $Value & @CRLF)
 					$Total_JSON_DUMP_Output &= "+-> " & $cObjPath & '  =' & $Value & @CRLF
-				EndIf
+				Endif
 			Next
 			Return False
 		Case 2 ; Json_ARRAY
@@ -590,7 +590,7 @@ Func _Json_TokenDump(ByRef $Json, $Ptr, ByRef $Next, $ObjPath = "")
 					; show the key and its value
 					ConsoleWrite("+=> " & $sObjPath & "=>" & $Value & @CRLF)
 					$Total_JSON_DUMP_Output &= "+=> " & $sObjPath & "=>" & $Value & @CRLF
-				EndIf
+				Endif
 			Next
 			$ObjPath = $sObjPath
 			Return False

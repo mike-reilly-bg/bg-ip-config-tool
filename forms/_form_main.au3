@@ -38,10 +38,10 @@ Func _form_main()
 			$xpos = $iFullDesktopWidth - ($guiWidth * $dscale)
 		ElseIf $xpos < $ixCoordMin Then
 			$xpos = 1
-		EndIf
+		Endif
 	Else
 		$xpos = @DesktopWidth / 2 - $guiWidth * $dscale / 2
-	EndIf
+	Endif
 	Local $sPositionY = $options.PositionY
 	If $sPositionY <> "" Then
 		$ypos = $sPositionY
@@ -49,10 +49,10 @@ Func _form_main()
 			$ypos = $iFullDesktopHeight - ($guiHeight * $dscale)
 		ElseIf $ypos < $iyCoordMin Then
 			$ypos = 1
-		EndIf
+		Endif
 	Else
 		$ypos = @DesktopHeight / 2 - $guiHeight * $dscale / 2
-	EndIf
+	Endif
 
 	; ---- create the main GUI
 	$hgui = GUICreate($winName & " " & $winVersion, $guiWidth * $dscale, $guiHeight * $dscale, $xpos, $ypos, BitOR($GUI_SS_DEFAULT_GUI, $WS_CLIPCHILDREN), $WS_EX_COMPOSITED)
@@ -65,6 +65,8 @@ Func _form_main()
 	GUISetOnEvent($GUI_EVENT_RESTORE, "_maximize")
 	GUISetOnEvent($GUI_EVENT_PRIMARYDOWN, "_clickDn")
 	GUISetOnEvent($GUI_EVENT_PRIMARYUP, "_clickUp")
+	GUISetOnEvent($GUI_EVENT_SECONDARYDOWN , "_rightClickDn")
+	GUISetOnEvent($GUI_EVENT_SECONDARYUP , "_rightClickUp")
 
 	GUIRegisterMsg($WM_COMMAND, 'WM_COMMAND')
 	GUIRegisterMsg($WM_NOTIFY, 'WM_NOTIFY')
@@ -190,7 +192,7 @@ Func _form_main()
 ;~ 	;add new buttons and associate an icon
 ;~ 	$tbButtonApply = _GuiFlatToolbar_AddButton($oToolbar, $oLangStrings.toolbar.apply, _getMemoryAsIcon(GetIconData($pngAccept)))
 ;~ 	GUICtrlSetTip(-1, $oLangStrings.toolbar.apply_tip)
-;~ 	GUICtrlSetOnEvent(-1, "_apply_GUI")
+;~ 	GUICtrlSetOnEvent(-1, "_applyGUI")
 ;~ 	_GuiFlatToolbar_AddButton($oToolbar, $oLangStrings.toolbar.refresh, _getMemoryAsIcon(GetIconData($pngRefresh)))
 ;~ 	GUICtrlSetTip(-1, $oLangStrings.toolbar.refresh_tip)
 ;~ 	GUICtrlSetOnEvent(-1, "_onRefresh")
@@ -269,7 +271,7 @@ Func _form_main()
 		$computerName = GUICtrlCreateLabel($oLangStrings.interface.computername & ": ________", $x + 3, $y + 2, $w / 2, $h)
 	Else
 		$computerName = GUICtrlCreateLabel($oLangStrings.interface.computername & ": " & @ComputerName, $x + 3, $y + 2, $w / 2, $h)
-	EndIf
+	Endif
 	GUICtrlSetBkColor($computerName, 0x1a81d7)
 	_setFont($computerName, 8, -1, 0xFFFFFF)
 
@@ -277,7 +279,7 @@ Func _form_main()
 		$domainName = GUICtrlCreateLabel("", $w / 2, $y + 2, $w / 2 - 3, $h, $SS_RIGHT)
 		GUICtrlSetBkColor($domainName, 0x1a81d7)
 		_setFont($domainName, 8, -1, 0xFFFFFF)
-	EndIf
+	Endif
 	#EndRegion footer
 
 
@@ -377,6 +379,9 @@ Func _form_main()
 	$lvcon_arrZa = GUICtrlCreateMenuItem($oLangStrings.lvmenu.sortDesc, $lvcontext)
 	GUICtrlSetOnEvent(-1, "_onArrangeZa")
 	GUICtrlCreateMenuItem("", $lvcontext)
+	$lvcon_save = GUICtrlCreateMenuItem($oLangStrings.lvmenu.saveDesc, $lvcontext)
+	GUICtrlSetOnEvent(-1, "_onSave")
+	GUICtrlCreateMenuItem("", $lvcontext)
 	$lvcreateLinkItem = GUICtrlCreateMenuItem($oLangStrings.lvmenu.shortcut, $lvcontext)
 	GUICtrlSetOnEvent(-1, "_onCreateLink")
 
@@ -462,7 +467,7 @@ Func _form_main()
 	$label_CurrentDnsPri = GUICtrlCreateInput("", $x + $w - 125 * $dscale - 8 * $dscale, $yText_offset + $textHeight * 5 + $textSpacer * 5, 125 * $dscale, 15 * $dscale, BitOR($ES_READONLY, $SS_CENTER), $WS_EX_TOOLWINDOW)
 	GUICtrlSetBkColor(-1, $bkcolor)
 	GUICtrlSetColor(-1, 0x444444)
-
+	
 	$label_CurrDnsAlt = GUICtrlCreateLabel($oLangStrings.interface.props.dnsAlt & ":", $x + 8 * $dscale + $xIndent, $yText_offset + $textHeight * 6 + $textSpacer * 6)
 	GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 	GUICtrlSetColor(-1, 0x444444)
@@ -575,7 +580,7 @@ Func _form_main()
 	;MAKE THE APPLY BUTTON
 	$tbButtonApply = GuiFlatButton_Create($oLangStrings.toolbar.apply, $x + 8 * $dscale, $yText_offset + $textHeight * 10 + $textSpacer * 10, $wRight - 2 * (8 * $dscale), 50 * $dscale)
 	GUICtrlSetTip(-1, $oLangStrings.toolbar.apply_tip)
-	GUICtrlSetOnEvent(-1, "_apply_GUI")
+	GUICtrlSetOnEvent(-1, "_applyGUI")
 	_makeApplyButtonGreen()
 
 
@@ -589,6 +594,8 @@ Func _form_main()
 	GUICtrlSetOnEvent(-1, "_onLvDel")
 	$tabdummy = GUICtrlCreateDummy()
 	GUICtrlSetOnEvent(-1, "_onTabKey")
+	$escdummy = GUICtrlCreateDummy()
+	GUICtrlSetOnEvent(-1, "_onESCKey")
 
 	$aAccelKeys[0][0] = '{ENTER}'
 	$aAccelKeys[0][1] = $list_profiles
@@ -614,6 +621,8 @@ Func _form_main()
 	$aAccelKeys[10][1] = $dummyDown
 	$aAccelKeys[11][0] = '{TAB}'
 	$aAccelKeys[11][1] = $tabdummy
+	$aAccelKeys[12][0] = '{ESC}'
+	$aAccelKeys[12][1] = $escdummy
 	GUISetAccelerators($aAccelKeys)
 	#EndRegion accelerators
 
@@ -623,16 +632,16 @@ Func _form_main()
 		If $profiles.count > 0 Then
 			Local $profileNames = $profiles.getNames()
 			$profileName = $profileNames[0]
-			_setProperties(1, $profileName)
-		EndIf
-	EndIf
+			_setGUI(_getProfileByName($profileName))
+		Endif
+	Endif
 
 	$sStartupMode = $options.StartupMode
 	If $sStartupMode <> "1" And $sStartupMode <> "true" Then
 		GUISetState(@SW_SHOW, $hgui)
 	Else
 		TrayItemSetText($RestoreItem, $oLangStrings.traymenu.restore)
-	EndIf
+	Endif
 	$prevWinPos = WinGetPos($hgui)
 EndFunc   ;==>_form_main
 
@@ -775,50 +784,6 @@ Func _makeIpProps($label, $x, $y, $w, $h)
 	_makeBox($x, $y, $w, $h)
 EndFunc   ;==>_makeIpProps
 
-Func _makeProfileSelect($label, $x, $y, $w, $h)
-	Local $aRet = _makeHeading($label, $x + 1, $y + 1, $w - 2, -1, 0x0782FD, 0.95)
-	$headingProfiles = $aRet[0]
-	Local $headingHeight = $aRet[1]
-	$searchgraphic = GUICtrlCreatePic("", $x + 5, $y + $headingHeight + 3 + 2 * $dscale, 16, 16)
-	;_ResourceSetImageToCtrl($hGUI, $searchgraphic, "search_png")
-	_memoryToPic($searchgraphic, GetIconData($pngSearch))
-
-	$input_filter = GUICtrlCreateInput("*", $x + 12 + 11, $y + $headingHeight + 3 + 2 * $dscale, $w - 12 - 18, 15 * $dscale, -1, $WS_EX_TOOLWINDOW)
-	GUICtrlCreateLabel("", $x + 3, $y + $headingHeight + 3, $w - 6, 20 * $dscale)
-	GUICtrlSetBkColor(-1, 0xFFFFFF)
-	GUICtrlCreateLabel("", $x + 2, $y + $headingHeight + 2, $w - 4, 20 * $dscale + 2)
-	GUICtrlSetBkColor(-1, 0x777777)
-	$filter_dummy = GUICtrlCreateDummy()
-	GUICtrlSetOnEvent($filter_dummy, "_onFilter")
-
-	$list_profiles = GUICtrlCreateListView($label, $x + 1, $y + $headingHeight + 2 + 20 * $dscale + 3, $w - 2, $h - $headingHeight - 3 - 20 * $dscale - 3 - 1, BitOR($GUI_SS_DEFAULT_LISTVIEW, $LVS_NOCOLUMNHEADER, $LVS_EDITLABELS), $WS_EX_TRANSPARENT)
-	_GUICtrlListView_SetColumnWidth($list_profiles, 0, $w - 2 - 20 * $dscale)  ; sets column width
-	_GUICtrlListView_AddItem($list_profiles, "Item1")
-	GUICtrlSetOnEvent($list_profiles, "_onLvEnter")
-
-	; ListView Context Menu
-	$lvcontext = GUICtrlCreateContextMenu($list_profiles)
-	$lvcon_rename = GUICtrlCreateMenuItem($oLangStrings.lvmenu.rename, $lvcontext)
-	GUICtrlSetOnEvent(-1, "_onRename")
-	$lvcon_delete = GUICtrlCreateMenuItem($oLangStrings.lvmenu.delete, $lvcontext)
-	GUICtrlSetOnEvent(-1, "_onDelete")
-	GUICtrlCreateMenuItem("", $lvcontext)
-	$lvcon_arrAz = GUICtrlCreateMenuItem($oLangStrings.lvmenu.sortAsc, $lvcontext)
-	GUICtrlSetOnEvent(-1, "_onArrangeAz")
-	$lvcon_arrZa = GUICtrlCreateMenuItem($oLangStrings.lvmenu.sortDesc, $lvcontext)
-	GUICtrlSetOnEvent(-1, "_onArrangeZa")
-	GUICtrlCreateMenuItem("", $lvcontext)
-	$lvcreateLinkItem = GUICtrlCreateMenuItem($oLangStrings.lvmenu.shortcut, $lvcontext)
-	GUICtrlSetOnEvent(-1, "_onCreateLink")
-
-	$dummyUp = GUICtrlCreateDummy()
-	GUICtrlSetOnEvent(-1, "_onLvUp")
-
-	$dummyDown = GUICtrlCreateDummy()
-	GUICtrlSetOnEvent(-1, "_onLvDown")
-
-	_makeBox($x, $y, $w, $h)
-EndFunc   ;==>_makeProfileSelect
 
 Func _makeComboSelect($label, $x, $y, $w, $h)
 	Local $aRet = _makeHeading($label, $x + 1, $y + 1, $w - 2, -1, 0x0782FD, 0.95)
@@ -848,7 +813,7 @@ Func _makeHeading($sLabel, $x, $y, $w, $height = -1, $color = -1, $lightness = -
 	$h = $strSize[3] - 2
 	If $height <> -1 Then
 		$h = $height
-	EndIf
+	Endif
 	$labelY = $y
 
 	Local $heading = GUICtrlCreateLabel($sLabel, $labelX, $labelY)
@@ -860,7 +825,7 @@ Func _makeHeading($sLabel, $x, $y, $w, $height = -1, $color = -1, $lightness = -
 ;~ 		Local $bottomline = GUICtrlCreateLabel( "", $x, $y+$h-1, $w, 1 )
 ;~ 	GUICtrlSetBkColor(-1, 0x000880)
 ;~ 		GUICtrlSetBkColor(-1, 0x404040)
-;~ 	EndIf
+;~ 	Endif
 
 	;Local $bg = GUICtrlCreateLabel( "", $x, $y, $w, $h )
 	;GUICtrlSetBkColor(-1, 0x5C67FF)
@@ -880,7 +845,7 @@ Func _makeHeading($sLabel, $x, $y, $w, $height = -1, $color = -1, $lightness = -
 	If $color <> -1 Then
 		$baseColor = $color
 		$lightFactor = $lightness
-	EndIf
+	Endif
 
 	$baseRGB = _ColorGetRGB($baseColor)
 	$baseHSL = _ColorConvertRGBtoHSL($baseRGB)
@@ -896,7 +861,7 @@ Func _makeHeading($sLabel, $x, $y, $w, $height = -1, $color = -1, $lightness = -
 	Else
 		_WinAPI_GradientFill($hDestDC, $aVertex, 2, 3)
 		_WinAPI_GradientFill($hDestDC, $aVertex, 4, 5)
-	EndIf
+	Endif
 
 	_WinAPI_ReleaseDC($hPic, $hDC)
 	_WinAPI_SelectObject($hDestDC, $hDestSv)
@@ -907,7 +872,7 @@ Func _makeHeading($sLabel, $x, $y, $w, $height = -1, $color = -1, $lightness = -
 	Local $hObj = _SendMessage($hPic, 0x0173)
 	If $hObj <> $hBitmap Then
 		_WinAPI_DeleteObject($hBitmap)
-	EndIf
+	Endif
 
 	Local $aRet[2]
 	$aRet[0] = $heading
@@ -932,12 +897,12 @@ Func _setFont($ControlID, $size, $bkcolor = -1, $color = 0x000000)
 		$LControlID = _GUIGetLastCtrlID()
 	Else
 		$LControlID = $ControlID
-	EndIf
+	Endif
 	GUICtrlSetFont($LControlID, $size)
 	GUICtrlSetColor(-1, $color)
 	If $bkcolor <> -1 Then
 		GUICtrlSetBkColor(-1, $bkcolor)
-	EndIf
+	Endif
 EndFunc   ;==>_setFont
 
 ; #FUNCTION# ====================================================================================================================

@@ -120,7 +120,7 @@ Global $headingHeight = 20
 Global $menuHeight, $captionHeight
 Global $MinToTray, $RestoreItem, $aboutitem, $exititem, $exititemtray
 
-Global $aAccelKeys[12][2]
+Global $aAccelKeys[13][2]
 
 ;GUI Fonts
 Global $MyGlobalFontName = "Arial"
@@ -129,6 +129,19 @@ Global $MYGlobalFontSizeLarge = 11
 Global $MyGlobalFontColor = 0x000000
 Global $MyGlobalFontBKColor = $GUI_BKCOLOR_TRANSPARENT
 Global $MyGlobalFontHeight = 0
+
+;GUI Indicator Colors
+Global $values_match_bk_color = 0xFFFFFF
+Global $values_no_match_bk_color = 0xFFC17F; 0xFFDB28
+
+;GUI variables for selection update functions
+Local $tempProfiles = _Profiles()
+Global $tempProfile = _Profiles_createProfile($tempProfiles, "temp_Profile")
+Global $tempProfileStoredFlag = False
+Global $lastClickWasProfile = True
+Global $alreadyProcessedSelection = False
+Global $applyGUIFlag = False
+Global $firstScan = True
 
 ;Statusbar
 Global $statusbarHeight = 20
@@ -143,9 +156,10 @@ Global $toolsmenu, $pullitem, $disableitem, $releaseitem, $renewitem, $cycleitem
 Global $helpmenu, $helpitem, $changelogitem, $checkUpdatesItem, $debugmenuitem, $infoitem
 
 Global $lvcon_rename, $lvcon_delete, $lvcon_arrAz, $lvcon_arrZa, $lvcreateLinkItem
+Global $lvcontext
 
 ;Settings window
-Global $ck_mintoTray, $ck_startinTray, $ck_saveAdapter, $ck_autoUpdate, $cmb_langSelect
+Global $ck_mintoTray, $ck_startinTray, $ck_saveAdapter, $ck_autoUpdate, $cmb_langSelect, $ck_autoRefresh
 
 Global $timerstart, $timervalue
 
@@ -176,6 +190,10 @@ Global $oToolbar, $oToolbar2, $tbButtonApply
 
 ; LANGUAGE VARIABLES
 Global $oLangStrings
+
+; MOUSE STATUS VARIABLES
+Global $disableLeftClick = False
+Global $selected_lv_index
 #EndRegion Global Variables
 
 #include "libraries\Json\json.au3"
@@ -219,7 +237,7 @@ Global $iMsg = _WinAPI_RegisterWindowMessage('newinstance_message')
 If _Singleton("Simple IP Config", 1) = 0 Then
 	_WinAPI_PostMessage(0xffff, $iMsg, 0x101, 0)
 	Exit
-EndIf
+Endif
 
 ;begin main program
 _main()
@@ -249,11 +267,11 @@ Func _main()
 	$selectedLang = $options.Language
 	If $selectedLang <> "" And $oLangStrings.OSLang <> $selectedLang Then
 		$oLangStrings.OSLang = $selectedLang
-	EndIf
+	Endif
 	If $selectedLang = "" Then
 		$options.Language = $oLangStrings.OSLang
 		IniWrite($sProfileName, "options", "Language", $oLangStrings.OSLang)
-	EndIf
+	Endif
 
 	_setLangStrings($oLangStrings.OSLang)
 	_print("set lang")
@@ -278,7 +296,7 @@ Func _main()
 		$sStartupAdapter = $options.StartupAdapter
 		If Adapter_Exists($adapters, $sStartupAdapter) Then
 			$defaultitem = $sStartupAdapter
-		EndIf
+		Endif
 
 		$sAdapterBlacklist = $options.AdapterBlacklist
 		$aBlacklist = StringSplit($sAdapterBlacklist, "|")
@@ -289,8 +307,8 @@ Func _main()
 				If $indexBlacklist <> -1 Then ContinueLoop
 				GUICtrlSetData($combo_adapters, $adapterNames[$i], $defaultitem)
 			Next
-		EndIf
-	EndIf
+		Endif
+	Endif
 
 	_refresh(1)
 	ControlListView($hgui, "", $list_profiles, "Select", 0)
@@ -306,11 +324,11 @@ Func _main()
 	GUICtrlSetData($domainName, _DomainComputerBelongs())
 
 	$sAutoUpdate = $options.AutoUpdate
-	If ($sAutoUpdate = "true" Or $sAutoUpdate = "1") Then
+	If _StrToState($sAutoUpdate) Then
 		$suppressComError = 1
 		_checksSICUpdate()
 		$suppressComError = 0
-	EndIf
+	Endif
 
 	Local $filePath
 	_print("Running")
@@ -322,20 +340,20 @@ Func _main()
 ;~ 				_GUICtrlListView_SetInsertMark($list_profiles, $iCurr_Index, True)
 ;~ 			Else
 ;~ 				_GUICtrlListView_SetInsertMark($list_profiles, $iCurr_Index, False)
-;~ 			EndIf
-;~ 		EndIf
+;~ 			Endif
+;~ 		Endif
 
 		If $lv_doneEditing Then
 			_onLvDoneEdit()
-		EndIf
+		Endif
 
 		If $lv_startEditing And Not $lv_editing Then
 			_onRename()
-		EndIf
+		Endif
 
 		If $movetosubnet Then
 			_MoveToSubnet()
-		EndIf
+		Endif
 
 		If $OpenFileFlag Then
 			$OpenFileFlag = 0
@@ -346,8 +364,8 @@ Func _main()
 				$profiles = _Profiles()
 				_refresh(1)
 				_setStatus($oLangStrings.message.loadedFile & " " & $filePath, 0)
-			EndIf
-		EndIf
+			Endif
+		Endif
 
 		If $ImportFileFlag Then
 			$ImportFileFlag = 0
@@ -356,8 +374,8 @@ Func _main()
 				_ImportProfiles($filePath)
 				_refresh(1)
 				_setStatus($oLangStrings.message.doneImporting, 0)
-			EndIf
-		EndIf
+			Endif
+		Endif
 
 		If $ExportFileFlag Then
 			$ExportFileFlag = 0
@@ -365,19 +383,26 @@ Func _main()
 			If Not @error Then
 				If StringRight($filePath, 4) <> ".ini" Then
 					$filePath &= ".ini"
-				EndIf
+				Endif
 				FileCopy($sProfileName, $filePath, $FC_OVERWRITE)
 				_setStatus($oLangStrings.message.fileSaved & ": " & $filePath, 0)
-			EndIf
-		EndIf
+			Endif
+		Endif
 
 		If $lvTabKey And Not IsHWnd(_GUICtrlListView_GetEditControl(ControlGetHandle($hgui, "", $list_profiles))) Then
 			$lvTabKey = False
 			Send("{TAB}")
-		EndIf
+		Endif
 		
-		_updateCurrent()
-		Sleep(250)
+		if $firstScan Then
+			_onSelectionChange()
+			$firstScan = False
+		Endif
+
+		if _StrToState($options.AutoRefresh) Then
+			_updateCurrent()
+			Sleep(250)
+		Endif
 	WEnd
 EndFunc   ;==>_main
 
@@ -395,7 +420,7 @@ Func _NewInstance($hWnd, $iMsg, $iwParam, $ilParam)
 ;~ 		$aRet = _Toast_Show(0, "Simple IP Config", $sMsg, -5, False) ; Delay can be set here because script continues
 
 		_maximize()
-	EndIf
+	Endif
 EndFunc   ;==>_NewInstance
 
 
@@ -418,22 +443,22 @@ Func _setProfilesIniLocation()
 			Local $scriptPath = @ScriptDir
 			If StringRight(@ScriptDir, 1) <> "\" Then
 				$scriptPath &= "\"
-			EndIf
+			Endif
 
 			If $InstallPath = $scriptPath Then
 				$isPortable = False
 			Else
 				$isPortable = True
-			EndIf
-		EndIf
-	EndIf
+			Endif
+		Endif
+	Endif
 
 	If $isPortable Then
 		$sProfileName = @ScriptDir & "\profiles.ini"
 	Else
 		If Not FileExists(@LocalAppDataDir & "\Simple IP Config") Then
 			DirCreate(@LocalAppDataDir & "\Simple IP Config")
-		EndIf
+		Endif
 		$sProfileName = @LocalAppDataDir & "\Simple IP Config\profiles.ini"
-	EndIf
+	Endif
 EndFunc

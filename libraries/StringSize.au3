@@ -92,13 +92,13 @@ Func _StringSize($sText, $iSize = 8.5, $iWeight = 400, $iAttrib = 0, $sName = ""
 		If @error Or $aRet[0] = 0 Then
 			GUICtrlDelete($hLabel)
 			Return SetError(2, 1, 0)
-		EndIf
+		Endif
 		$hDC = $aRet[0]
 		$aRet = DllCall("user32.dll", "lparam", "SendMessage", "hwnd", $hLabel_Handle, "int", 0x0031, "wparam", 0, "lparam", 0) ; $WM_GetFont
 		If @error Or $aRet[0] = 0 Then
 			GUICtrlDelete($hLabel)
 			Return SetError(2, _StringSize_Error_Close(2, $hDC), 0)
-		EndIf
+		Endif
 		$hFont = $aRet[0]
 	Else
 		; Get default DC
@@ -114,7 +114,7 @@ Func _StringSize($sText, $iSize = 8.5, $iWeight = 400, $iAttrib = 0, $sName = ""
 			"dword", 0, "dword", 5, "dword", 0, "wstr", $sName)
 		If @error Or $aRet[0] = 0 Then Return SetError(2, _StringSize_Error_Close(4, $hDC), 0)
 		$hFont = $aRet[0]
-	EndIf
+	Endif
 
 	; Select font and store previous font
 	$aRet = DllCall("gdi32.dll", "handle", "SelectObject", "handle", $hDC, "handle", $hFont)
@@ -137,7 +137,7 @@ Func _StringSize($sText, $iSize = 8.5, $iWeight = 400, $iAttrib = 0, $sName = ""
 		; Expand tabs if required
 		If $iExpTab Then
 			$asLines[$i] = StringReplace($asLines[$i], @TAB, " XXXXXXXX")
-		EndIf
+		Endif
 		; Size line
 		$iLine_Length = StringLen($asLines[$i])
 		DllCall("gdi32.dll", "bool", "GetTextExtentPoint32W", "handle", $hDC, "wstr", $asLines[$i], "int", $iLine_Length, "ptr", DllStructGetPtr($tSize))
@@ -201,16 +201,16 @@ Func _StringSize($sText, $iSize = 8.5, $iWeight = 400, $iAttrib = 0, $sName = ""
 						; Trim leading whitespace
 						$asLines[$j] = StringStripWS($asLines[$j], 1)
 						; Repeat with remaining characters in line
-					EndIf
+					Endif
 				WEnd
 				; Add the number of wrapped lines to the count
 				$iLine_Count += $iWrap_Count
-			EndIf
+			Endif
 		Next
 		; Reset any tab expansions
 		If $iExpTab Then
 			$avSize_Info[0] = StringRegExpReplace($avSize_Info[0], "\x20?XXXXXXXX", @TAB)
-		EndIf
+		Endif
 		; Complete return array
 		$avSize_Info[1] = $iLine_Height
 		$avSize_Info[2] = $iMaxWidth
@@ -219,7 +219,7 @@ Func _StringSize($sText, $iSize = 8.5, $iWeight = 400, $iAttrib = 0, $sName = ""
 	Else ; No wrapping required
 		; Create return array (add drop margin to height)
 		Local $avSize_Info[4] = [$sText, $iLine_Height, $iLine_Width, ($asLines[0] * $iLine_Height) + 4]
-	EndIf
+	Endif
 
 	; Clear up
     DllCall("gdi32.dll", "handle", "SelectObject", "handle", $hDC, "handle", $hPrevFont)
@@ -274,6 +274,6 @@ Func _StringSize_DefaultFontName()
 		Return DllStructGetData($tLOGFONT, 14)
 	Else
 		Return "Tahoma"
-	EndIf
+	Endif
 
 EndFunc ;=>_StringSize_DefaultFontName

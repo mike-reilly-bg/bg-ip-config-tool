@@ -84,7 +84,7 @@ Func Adapter_Add(ByRef $hObject, $sName, $sMAC, $sDescription)
 		$hObject[$size][0] = $sName
 		$hObject[$size][1] = $sMAC
 		$hObject[$size][2] = $sDescription
-	EndIf
+	Endif
 
 EndFunc   ;==>Adapter_Add
 

@@ -70,6 +70,7 @@
          "delete":"Elimina",
          "sortAsc":"Ordina A->Z",
          "sortDesc":"Ordina Z->A",
+         "saveDesc":"Salva",
          "shortcut":"Crea collegamento al profilo"
       },
       "toolbar":{
@@ -146,7 +147,8 @@
          "opt1":"Avvia minimizzato nella barra di sistema",
          "opt2":"Minimizza nella barra di sistema",
          "opt3":"Salva scheda di rete nel profilo",
-         "opt4":"Controlla automaticamente aggiornamenti"
+         "opt4":"Controlla automaticamente aggiornamenti",
+         "opt5":"Automatically refresh current network info"
       },
       "message":{
          "ready":"Pronto",
