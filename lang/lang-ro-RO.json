@@ -70,6 +70,7 @@
 			"delete": "Șterge",
 			"sortAsc": "Sortează A->Z",
 			"sortDesc": "Sortează Z->A",
+			"saveDesc": "Salvează",
 			"shortcut": "Crează scurtătură pentru profil"
 		},
 		"toolbar": {
@@ -147,7 +148,8 @@
 			"opt1": "Pornește în tavă",
 			"opt2": "Minimizează în tavă",
 			"opt3": "Salvează adaptorul în profil",
-			"opt4": "Verificare automată actualizări"
+			"opt4": "Verificare automată actualizări",
+			"opt5": "Automatically refresh current network info"
 		},
 		"message": {
 			"ready": "Pregătit",
