@@ -29,7 +29,7 @@ Func _getLangsAvailable()
 		Next
 ;~ 	Else
 ;~ 		$aLangsRet[0] = "English   (en-US)"
-	Endif
+	EndIf
 
 	Return $aLangsRet
 EndFunc   ;==>_getLangsAvailable
@@ -268,14 +268,14 @@ Func _setLangStrings($langCode = "en-US", $manualUpdate = False)
 		$fileData = _getEnglish()
 		If $langCode <> "en-US" Then
 			MsgBox(1, "Error", "Error reading language file")
-		Endif
+		EndIf
 	Else
 		If $hFile = -1 Then
 			MsgBox(1, "Error", "Error reading language file")
-		Endif
+		EndIf
 		$fileData = FileRead($hFile)
 		FileClose($hFile)
-	Endif
+	EndIf
 	Local $jsonData = Json_Decode($fileData)
 
 	$oLangStrings.menu.file.file = Json_Get($jsonData, ".strings.menu.file.file")

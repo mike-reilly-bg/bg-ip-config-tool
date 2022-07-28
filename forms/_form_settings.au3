@@ -44,18 +44,18 @@ Func _formm_settings()
 		If $aLangsAvailable[$i] <> "" Then
 			If StringInStr($aLangsAvailable[$i], $strOptionsLang) Then
 				$strOptionsLang = $aLangsAvailable[$i]
-			Endif
+			EndIf
 			If Not StringInStr($langNameStr, $aLangsAvailable[$i]) And $aLangsAvailable[$i] <> "English   (en-US)" Then
 				$langNameStr &= $aLangsAvailable[$i] & "|"
-			Endif
+			EndIf
 		Else
 			ExitLoop
-		Endif
+		EndIf
 	Next
 	$cmb_langSelect = GUICtrlCreateCombo("English   (en-US)", 10 * $dScale, 28 * $dScale, $w - 20 * $dScale, -1, BitOR($CBS_DROPDOWNlist, $CBS_AUTOHSCROLL, $WS_VSCROLL))
 	If $langNameStr <> "" Then
 		GUICtrlSetData(-1, $langNameStr)
-	Endif
+	EndIf
 	ControlCommand($settingsChild, "", $cmb_langSelect, "SelectString", $strOptionsLang)
 
 	$ck_startinTray = GUICtrlCreateCheckbox($oLangStrings.settings.opt1, 10 * $dScale, 60 * $dScale, $w - 50 * $dScale, 20 * $dScale)
@@ -100,8 +100,8 @@ Func _saveOptions()
 			$updateGUI = 1
 			$oLangStrings.OSLang = $langRet
 			$options.Language = $oLangStrings.OSLang
-		Endif
-	Endif
+		EndIf
+	EndIf
 
 	IniWriteSection($sProfileName, "options", $options.getSection(), 0)
 	_ExitChild(@GUI_WinHandle)
@@ -126,7 +126,7 @@ Func _saveOptions()
 			$sStartupAdapter = $options.StartupAdapter
 			If Adapter_Exists($adapters, $sStartupAdapter) Then
 				$defaultitem = $sStartupAdapter
-			Endif
+			EndIf
 
 			$sAdapterBlacklist = $options.AdapterBlacklist
 			$aBlacklist = StringSplit($sAdapterBlacklist, "|")
@@ -137,10 +137,10 @@ Func _saveOptions()
 					If $indexBlacklist <> -1 Then ContinueLoop
 					GUICtrlSetData($combo_adapters, $adapterNames[$i], $defaultitem)
 				Next
-			Endif
-		Endif
+			EndIf
+		EndIf
 
 		_refresh(1)
 		ControlListView($hgui, "", $list_profiles, "Select", 0)
-	Endif
+	EndIf
 EndFunc   ;==>_saveOptions

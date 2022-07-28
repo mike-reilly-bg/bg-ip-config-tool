@@ -128,7 +128,7 @@ Func GuiFlatButton_Create($sText, $x, $y, $w = -1, $h = -1, $style = 0)
 	If Not IsArray($aGuiFlatButton[0][3]) Then
 		Local $aColors[12] = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 		$aGuiFlatButton[0][3] = $aColors
-	Endif
+	EndIf
 
 
 	;get parent window handle
@@ -137,17 +137,17 @@ Func GuiFlatButton_Create($sText, $x, $y, $w = -1, $h = -1, $style = 0)
 	Local $aCalcSize = GuiFlatButton_getSize($sText)
 	If $x == Default Or $x == -1 Then
 		$x = $aCalcSize[0]
-	Endif
+	EndIf
 	If $y == Default Or $y == -1 Then
 		$y = $aCalcSize[1]
-	Endif
+	EndIf
 
 	If $w == Default Or $w == -1 Then
 		$w = $aCalcSize[2]
-	Endif
+	EndIf
 	If $h == Default Or $h == -1 Then
 		$h = $aCalcSize[3]
-	Endif
+	EndIf
 
 	;create child gui to hold the button (for subclassing)
 	Local $childHWND = GUICreate("", $w, $h, $x, $y, BitOR($WS_CHILD, $WS_CLIPCHILDREN, $WS_CLIPSIBLINGS), $WS_EX_CONTROLPARENT, $parentHWND)
@@ -162,7 +162,7 @@ Func GuiFlatButton_Create($sText, $x, $y, $w = -1, $h = -1, $style = 0)
 	$idIndex = GuiFlatButton_FindControlId($buttonID)
 	If $idIndex <> -1 Then
 		GuiFlatButton_Remove($idIndex)
-	Endif
+	EndIf
 
 	; See if there is a blank line available in the array
 	Local $iIndex = 0
@@ -170,13 +170,13 @@ Func GuiFlatButton_Create($sText, $x, $y, $w = -1, $h = -1, $style = 0)
 		If $aGuiFlatButton[$i][0] == 0 Then
 			$iIndex = $i
 			ExitLoop
-		Endif
+		EndIf
 	Next
 	; If no blank line found then increase array size
 	If $iIndex == 0 Then
 		$aGuiFlatButton[0][0] += 1
 		ReDim $aGuiFlatButton[$aGuiFlatButton[0][0] + 1][UBound($aGuiFlatButton, 2)]
-	Endif
+	EndIf
 
 	;set default parameters
 	;fill the array with the default values
@@ -293,7 +293,7 @@ Func GuiFlatButton_SetBkColor($controlID, $color)
 		$aGuiFlatButton[$ControlIndex][5] = -1
 	Else
 		$aGuiFlatButton[$ControlIndex][5] = _WinAPI_SwitchColor($color)
-	Endif
+	EndIf
 
 	_WinAPI_InvalidateRect(GUICtrlGetHandle($controlID))
 
@@ -322,7 +322,7 @@ Func GuiFlatButton_SetColor($controlID, $color)
 		$aGuiFlatButton[$ControlIndex][6] = -1
 	Else
 		$aGuiFlatButton[$ControlIndex][6] = _WinAPI_SwitchColor($color)
-	Endif
+	EndIf
 
 	_WinAPI_InvalidateRect(GUICtrlGetHandle($controlID))
 
@@ -353,13 +353,13 @@ Func GuiFlatButton_SetColors($controlID, $bkColor = -1, $foreColor = -1, $border
 		$aGuiFlatButton[$ControlIndex][5] = -1
 	Else
 		$aGuiFlatButton[$ControlIndex][5] = _WinAPI_SwitchColor($bkColor)
-	Endif
+	EndIf
 
 	If $foreColor == Default Or $foreColor == -1 Then
 		$aGuiFlatButton[$ControlIndex][6] = -1
 	Else
 		$aGuiFlatButton[$ControlIndex][6] = _WinAPI_SwitchColor($foreColor)
-	Endif
+	EndIf
 
 	If $borderColor == Default Or $borderColor == -1 Then
 		$aGuiFlatButton[$ControlIndex][7] = -1
@@ -367,7 +367,7 @@ Func GuiFlatButton_SetColors($controlID, $bkColor = -1, $foreColor = -1, $border
 		$aGuiFlatButton[$ControlIndex][7] = -2
 	Else
 		$aGuiFlatButton[$ControlIndex][7] = _WinAPI_SwitchColor($borderColor)
-	Endif
+	EndIf
 
 	For $j = 8 To 16
 		$aGuiFlatButton[$ControlIndex][$j] = -1
@@ -420,15 +420,15 @@ Func GuiFlatButton_SetColorsEx($controlID, ByRef $aClrs)
 					$aGuiFlatButton[$ControlIndex][$j + 5] = -2
 				Else
 					$aGuiFlatButton[$ControlIndex][$j + 5] = _WinAPI_SwitchColor($aClrs[$j])
-				Endif
+				EndIf
 			Next
 
 		Else
 			Return 0
-		Endif
+		EndIf
 	Else
 		Return 0
-	Endif
+	EndIf
 
 	_WinAPI_InvalidateRect(GUICtrlGetHandle($controlID))
 
@@ -454,23 +454,23 @@ Func GuiFlatButton_SetDefaultColors($bkColor = -1, $foreColor = -1, $borderColor
 		$aGuiFlatButton[0][3] = $aColors
 	Else
 		$aColors = $aGuiFlatButton[0][3]
-	Endif
+	EndIf
 
 	If $bkColor <> Default And $bkColor <> -1 Then
 		$aColors[0] = _WinAPI_SwitchColor($bkColor)
-	Endif
+	EndIf
 
 	If $foreColor <> Default And $foreColor <> -1 Then
 		$aColors[1] = _WinAPI_SwitchColor($foreColor)
-	Endif
+	EndIf
 
 	If $borderColor <> Default And $borderColor <> -1 Then
 		If $borderColor == $GUI_BKCOLOR_TRANSPARENT Then
 			$aColors[2] = -2
 		Else
 			$aColors[2] = _WinAPI_SwitchColor($borderColor)
-		Endif
-	Endif
+		EndIf
+	EndIf
 
 	$aGuiFlatButton[0][3] = $aColors
 	Return 1
@@ -512,15 +512,15 @@ Func GuiFlatButton_SetDefaultColorsEx(ByRef $aClrs)
 					$aColors[$j] = -2
 				Else
 					$aColors[$j] = _WinAPI_SwitchColor($aClrs[$j])
-				Endif
+				EndIf
 			Next
 
 		Else
 			Return -2
-		Endif
+		EndIf
 	Else
 		Return -1
-	Endif
+	EndIf
 
 	$aGuiFlatButton[0][3] = $aColors
 
@@ -575,7 +575,7 @@ Func GuiFlatButton_SetState($controlID, $state)
 			$SW_State = @SW_HIDE
 		ElseIf $bShow Then
 			$SW_State = @SW_SHOWNOACTIVATE
-		Endif
+		EndIf
 
 		Local $controlHWND, $childHWND, $parentHWND
 		$controlHWND = GUICtrlGetHandle($aGuiFlatButton[$ControlIndex][1])
@@ -583,7 +583,7 @@ Func GuiFlatButton_SetState($controlID, $state)
 		$parentHWND = _WinAPI_GetParent($childHWND)
 		GUISetState($SW_State, $childHWND)
 		GUISwitch($parentHWND)
-	Endif
+	EndIf
 	GUICtrlSetState($controlID, $state)
 
 	Return 1
@@ -615,15 +615,15 @@ Func GuiFlatButton_Delete($controlID, $isDestroy = False)
 
 		If $childHWND <> 0 Then
 			DllCall("comctl32.dll", "bool", "RemoveWindowSubclass", "hwnd", $childHWND, "ptr", $aGuiFlatButton[$ControlIndex][3], "uint_ptr", $ControlIndex)
-		Endif
+		EndIf
 
 		;if window is being destroyed by GUIDelete, then let it be destroyed
 		If Not $isDestroy Then
 			GUIDelete($childHWND)
-		Endif
+		EndIf
 
 		GUISwitch($parentHWND)
-	Endif
+	EndIf
 
 	For $j = 0 To UBound($aGuiFlatButton, 2) - 1
 		$aGuiFlatButton[$ControlIndex][$j] = 0
@@ -685,14 +685,14 @@ Func GuiFlatButton_GetPos($controlID)
 			$childHWND = _WinAPI_GetParent($controlHWND)
 			$aWinPos = WinGetPos($childHWND)
 			ExitLoop
-		Endif
+		EndIf
 	Next
 
 	If IsArray($aWinPos) Then
 		Return $aWinPos
 	Else
 		Return -1
-	Endif
+	EndIf
 EndFunc   ;==>GuiFlatButton_GetPos
 
 
@@ -724,7 +724,7 @@ Func GuiFlatButton_ButtonHandler($hwnd, $iMsg, $wParam, $lParam, $idx, $pData)
 				$aGuiFlatButton[$idx][4] = True
 				DllCall('user32.dll', 'bool', 'TrackMouseEvent', 'ptr', DllStructGetPtr($sTrackMouseEvent))
 				_WinAPI_InvalidateRect($hwnd, 0, False)
-			Endif
+			EndIf
 
 		Case $WM_MOUSELEAVE
 			$aGuiFlatButton[$idx][4] = False
@@ -736,7 +736,7 @@ Func GuiFlatButton_ButtonHandler($hwnd, $iMsg, $wParam, $lParam, $idx, $pData)
 				$aGuiFlatButton[$idx][19] = _WinAPI_CopyBitmap($lParam)
 			ElseIf $wParam = $IMAGE_ICON Then
 				$aGuiFlatButton[$idx][19] = _WinAPI_CopyImage($lParam, $IMAGE_ICON)
-			Endif
+			EndIf
 
 		Case $WM_ERASEBKGND    ; prevent white background flicker
 			Return False
@@ -776,7 +776,7 @@ Func GuiFlatButton_ChildHandler($hwnd, $iMsg, $wParam, $lParam, $idx, $pData)
 				Local $retVal = GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBottom, $nItemState, $idx)
 				$tDrawItem = 0
 				Return $retVal
-			Endif
+			EndIf
 
 			$tDrawItem = 0
 
@@ -827,15 +827,15 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 	If ($bTop And $bBottom) Or $bToolButton Then
 		$bTop = 0
 		$bBottom = 0
-	Endif
+	EndIf
 	If ($bLeft And $bRight) Or $bToolButton Then
 		$bLeft = 0
 		$bRight = 0
-	Endif
+	EndIf
 
 ;~ 	If $bToolButton Then
 ;~ 		$iRight = $iLeft + $iTextWidth + 20
-;~ 	Endif
+;~ 	EndIf
 
 	Local $tRECT = DllStructCreate($tagRECT)
 	DllStructSetData($tRECT, 'Left', $iLeft)
@@ -857,23 +857,23 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 		$nClrButton = $defClrButton
 	Else
 		$nClrButton = $aGuiFlatButton[$idx][5]
-	Endif
+	EndIf
 	If $aGuiFlatButton[$idx][7] == -1 And $defClrFrame <> -2 Then
 		If $aGuiFlatButton[$idx][5] == -1 Then
 			$nClrFrame = $defClrFrame
 		Else
 			$nClrFrame = _WinAPI_ColorAdjustLuma($nClrButton, 50)
-		Endif
+		EndIf
 	ElseIf $aGuiFlatButton[$idx][7] == -2 Or $defClrFrame == -2 Then
 		$nClrFrame = $nClrButton
 	Else
 		$nClrFrame = $aGuiFlatButton[$idx][7]
-	Endif
+	EndIf
 	If $aGuiFlatButton[$idx][6] == -1 Then
 		$nClrTxt = $defClrTxt
 	Else
 		$nClrTxt = $aGuiFlatButton[$idx][6]
-	Endif
+	EndIf
 
 
 	;set default colors - focus
@@ -885,19 +885,19 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 		$nClrButton_focus = $defClrButton_focus
 	Else
 		$nClrButton_focus = $aGuiFlatButton[$idx][8]
-	Endif
+	EndIf
 	If $aGuiFlatButton[$idx][10] == -1 And $defClrFrame_focus <> -2 Then
 		$nClrFrame_focus = $defClrFrame_focus
 	ElseIf $aGuiFlatButton[$idx][10] == -2 Or $defClrFrame_focus == -2 Then
 		$nClrFrame_focus = $nClrButton_focus
 	Else
 		$nClrFrame_focus = $aGuiFlatButton[$idx][10]
-	Endif
+	EndIf
 	If $aGuiFlatButton[$idx][9] == -1 Then
 		$nClrTxt_focus = $defClrTxt_focus
 	Else
 		$nClrTxt_focus = $aGuiFlatButton[$idx][9]
-	Endif
+	EndIf
 
 	;set default colors - hover
 	Local $defClrButton_hover = (($aGuiFlatButton[0][3])[6] == -1) ? _WinAPI_ColorAdjustLuma($nClrButton, 10) : ($aGuiFlatButton[0][3])[6]
@@ -908,19 +908,19 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 		$nClrButton_Hover = $defClrButton_hover
 	Else
 		$nClrButton_Hover = $aGuiFlatButton[$idx][11]
-	Endif
+	EndIf
 	If $aGuiFlatButton[$idx][13] == -1 And $defClrFrame_hover <> -2 Then
 		$nClrFrame_Hover = $defClrFrame_hover
 	ElseIf $aGuiFlatButton[$idx][13] == -2 Or $defClrFrame_hover == -2 Then
 		$nClrFrame_Hover = $nClrButton_Hover
 	Else
 		$nClrFrame_Hover = $aGuiFlatButton[$idx][13]
-	Endif
+	EndIf
 	If $aGuiFlatButton[$idx][12] == -1 Then
 		$nClrTxt_Hover = $defClrTxt_hover
 	Else
 		$nClrTxt_Hover = $aGuiFlatButton[$idx][12]
-	Endif
+	EndIf
 
 	;set default colors - select
 	Local $defClrButton_select = (($aGuiFlatButton[0][3])[9] == -1) ? _WinAPI_ColorAdjustLuma($nClrButton, -3) : ($aGuiFlatButton[0][3])[9]
@@ -931,19 +931,19 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 		$nClrButton_select = $defClrButton_select
 	Else
 		$nClrButton_select = $aGuiFlatButton[$idx][14]
-	Endif
+	EndIf
 	If $aGuiFlatButton[$idx][16] == -1 And $defClrFrame_select <> -2 Then
 		$nClrFrame_select = $defClrFrame_select
 	ElseIf $aGuiFlatButton[$idx][16] == -2 Or $defClrFrame_select == -2 Then
 		$nClrFrame_select = $nClrButton_select
 	Else
 		$nClrFrame_select = $aGuiFlatButton[$idx][16]
-	Endif
+	EndIf
 	If $aGuiFlatButton[$idx][15] == -1 Then
 		$nClrTxt_select = $defClrTxt_select
 	Else
 		$nClrTxt_select = $aGuiFlatButton[$idx][15]
-	Endif
+	EndIf
 
 	;check button state and select the colors
 	Local $hBrush, $hBrushFrame
@@ -964,7 +964,7 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 		$colorButton = $nClrButton
 		$colorFrame = $nClrFrame
 		$colorText = $nClrTxt
-	Endif
+	EndIf
 
 	$hBrush = _WinAPI_CreateSolidBrush($colorButton)
 	$hBrushFrame = _WinAPI_CreateSolidBrush($colorFrame)
@@ -973,8 +973,8 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 			$colorText = 0xBBBBBB
 		Else
 			$colorText = 0x5E5E5E
-		Endif
-	Endif
+		EndIf
+	EndIf
 	Local $nOldClrTxt = _WinAPI_SetTextColor($hDC, $colorText)
 
 	Local $nClrBk = _WinAPI_SetBkColor($hDC, $colorButton) ;text background
@@ -999,7 +999,7 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 	If $bSelected Then
 		$iconOffsetX = 1
 ;~ 		$iconOffsetY = 2
-	Endif
+	EndIf
 	Local $bmWidth, $bmHeight
 	Local $useTextHeight = 0
 	If $aGuiFlatButton[$idx][19] <> Null Then
@@ -1018,7 +1018,7 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 			$useTextHeight = 0
 			If $iTextHeight > $bmHeight Then
 				$useTextHeight = 1
-			Endif
+			EndIf
 
 			If $bBottom Then
 				If $bLeft Then
@@ -1027,13 +1027,13 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 					$iIconX = $iRight - $bmWidth - 2
 				Else
 					$iIconX = ($iRight - $iLeft) / 2 - $bmWidth / 2
-				Endif
+				EndIf
 
 				If $useTextHeight Then
 					$iIconY = $iBottom - 2 - $iTextHeight / 2 - $bmHeight / 2
 				Else
 					$iIconY = $iBottom - $bmHeight - 2
-				Endif
+				EndIf
 			ElseIf $bTop Then
 				If $bLeft Then
 					$iIconX = 2
@@ -1041,13 +1041,13 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 					$iIconX = $iRight - $bmWidth - 2
 				Else
 					$iIconX = ($iRight - $iLeft) / 2 - $bmWidth / 2
-				Endif
+				EndIf
 
 				If $useTextHeight Then
 					$iIconY = 2 + $iTextHeight / 2 - $bmHeight / 2
 				Else
 					$iIconY = 2
-				Endif
+				EndIf
 			ElseIf $bLeft Then
 				$iIconX = 2
 				$iIconY = $iButtonH / 2 - $bmHeight / 2
@@ -1060,7 +1060,7 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 			Else
 				$iIconX = ($iRight - $iLeft) / 2 - ($iTextWidth + $bmWidth + 2) / 2 - 1
 				$iIconY = $iButtonH / 2 - $bmHeight / 2
-			Endif
+			EndIf
 
 			$iIconX += $iconOffsetX
 			$iIconY += $iconOffsetY
@@ -1084,7 +1084,7 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 				_WinAPI_DeleteDC($hSrcDC)
 				_WinAPI_DrawState($hDC, 0, $hDestBmp, $iIconX, $iIconY, 0, 0, BitOR($DST_BITMAP, $DSS_DISABLED))
 				_WinAPI_DeleteObject($hDestBmp)
-			Endif
+			EndIf
 		ElseIf $aGuiFlatButton[$idx][18] = $IMAGE_ICON Then
 			Local $aIconInfo = _WinAPI_GetIconInfo($aGuiFlatButton[$idx][19])
 
@@ -1100,7 +1100,7 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 				$useTextHeight = 0
 				If $iTextHeight > $bmHeight Then
 					$useTextHeight = 1
-				Endif
+				EndIf
 
 				If $bBottom Then
 					If $bLeft Then
@@ -1109,13 +1109,13 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 						$iIconX = $iRight - $bmWidth - 2
 					Else
 						$iIconX = ($iRight - $iLeft) / 2 - $bmWidth / 2
-					Endif
+					EndIf
 
 					If $useTextHeight Then
 						$iIconY = $iBottom - 2 - $iTextHeight / 2 - $bmHeight / 2
 					Else
 						$iIconY = $iBottom - $bmHeight - 2
-					Endif
+					EndIf
 				ElseIf $bTop Then
 					If $bLeft Then
 						$iIconX = 2
@@ -1123,13 +1123,13 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 						$iIconX = $iRight - $bmWidth - 2
 					Else
 						$iIconX = ($iRight - $iLeft) / 2 - $bmWidth / 2
-					Endif
+					EndIf
 
 					If $useTextHeight Then
 						$iIconY = 2 + $iTextHeight / 2 - $bmHeight / 2
 					Else
 						$iIconY = 2
-					Endif
+					EndIf
 				ElseIf $bLeft Then
 					$iIconX = 2
 					$iIconY = $iButtonH / 2 - $bmHeight / 2
@@ -1142,7 +1142,7 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 				Else
 					$iIconX = ($iRight - $iLeft) / 2 - ($iTextWidth + $bmWidth + 2) / 2 - 1
 					$iIconY = $iButtonH / 2 - $bmHeight / 2
-				Endif
+				EndIf
 
 				$iIconX += $iconOffsetX
 				$iIconY += $iconOffsetY
@@ -1153,21 +1153,21 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 					$iState = $DSS_NORMAL
 				Else
 					$iState = $DSS_DISABLED
-				Endif
+				EndIf
 				_WinAPI_DrawState($hDC, 0, $aGuiFlatButton[$idx][19], $iIconX, $iIconY, 0, 0, BitOR($DST_ICON, $iState))
-			Endif
+			EndIf
 		Else
 			Return -1
-		Endif
+		EndIf
 
-	Endif
+	EndIf
 
 	;text position setup
 	Local $nTmpLeft, $nTmpTop, $nTmpRight, $nTmpBottom
 	$useTextHeight = 0
 	If $iTextHeight > $bmHeight Then
 		$useTextHeight = 1
-	Endif
+	EndIf
 	If $bBottom Then
 		If $bLeft Then
 			$nTmpLeft = $bmWidth + 2 + 1
@@ -1176,7 +1176,7 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 				$nTmpTop = $iBottom - $iTextHeight - 2
 			Else
 				$nTmpTop = $iBottom - 2 - $bmHeight / 2 - $iTextHeight / 2
-			Endif
+			EndIf
 			$nTmpBottom = $nTmpTop + $iTextHeight
 		ElseIf $bRight Then
 			$iIconX = $iRight - $bmWidth - 2
@@ -1186,14 +1186,14 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 				$nTmpTop = $iBottom - $iTextHeight - 2
 			Else
 				$nTmpTop = $iBottom - 2 - $bmHeight / 2 - $iTextHeight / 2
-			Endif
+			EndIf
 			$nTmpBottom = $nTmpTop + $iTextHeight
 		Else
 			$nTmpLeft = ($iRight - $iLeft) / 2 - ($iTextWidth) / 2
 			$nTmpRight = $iRight - ($nTmpLeft - $iLeft)
 			$nTmpTop = $iBottom - $bmHeight - 2 - $iTextHeight - 1
 			$nTmpBottom = $nTmpTop + $iTextHeight
-		Endif
+		EndIf
 	ElseIf $bTop Then
 		If $bLeft Then
 			$nTmpLeft = $bmWidth + 2 + 1
@@ -1202,7 +1202,7 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 				$nTmpTop = $iTop + 2
 			Else
 				$nTmpTop = $iTop + 2 + $bmHeight / 2 - $iTextHeight / 2
-			Endif
+			EndIf
 			$nTmpBottom = $nTmpTop + $iTextHeight
 		ElseIf $bRight Then
 			$iIconX = $iRight - $bmWidth - 2
@@ -1212,14 +1212,14 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 				$nTmpTop = $iTop + 2
 			Else
 				$nTmpTop = $iTop + 2 + $bmHeight / 2 - $iTextHeight / 2
-			Endif
+			EndIf
 			$nTmpBottom = $nTmpTop + $iTextHeight
 		Else
 			$nTmpLeft = ($iRight - $iLeft) / 2 - ($iTextWidth) / 2
 			$nTmpRight = $iRight - ($nTmpLeft - $iLeft)
 			$nTmpTop = $iTop + $bmHeight + 2 + 1
 			$nTmpBottom = $nTmpTop + $iTextHeight
-		Endif
+		EndIf
 	ElseIf $bLeft Then
 		$nTmpLeft = $bmWidth + 2 + 1
 		$nTmpRight = $iRight - ($nTmpLeft - $iLeft)
@@ -1240,12 +1240,12 @@ Func GuiFlatButton_DrawButton($hwnd, $hCtrl, $hDC, $iLeft, $iTop, $iRight, $iBot
 		$nTmpRight = $iRight - ($nTmpLeft - $iLeft)
 		$nTmpTop = $iTop
 		$nTmpBottom = $iBottom
-	Endif
+	EndIf
 
 	If $bSelected Then
 		$nTmpLeft = $nTmpLeft + 1
 ;~ 		$nTmpTop = $nTmpTop + 2
-	Endif
+	EndIf
 
 	;draw the text
 	Local $iFlags = BitOR($DT_NOCLIP, $DT_VCENTER)
@@ -1336,7 +1336,7 @@ Func GuiFlatButton_prevControlId($controlID)
 		Return _WinAPI_GetDlgCtrlID(GUICtrlGetHandle(-1))
 	Else
 		Return $controlID
-	Endif
+	EndIf
 EndFunc   ;==>GuiFlatButton_prevControlId
 
 ; #INTERNAL_USE_ONLY# ===========================================================================================================
@@ -1350,7 +1350,7 @@ Func GuiFlatButton_FindControlId($controlID)
 		If Not $aGuiFlatButton[$i][0] Then ContinueLoop
 		If $aGuiFlatButton[$i][1] == $controlID Then
 			Return $i
-		Endif
+		EndIf
 	Next
 
 	Return -1

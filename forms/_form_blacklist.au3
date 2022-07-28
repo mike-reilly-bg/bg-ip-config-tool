@@ -55,9 +55,9 @@ Func _form_blacklist()
 			GUICtrlCreateListViewItem($aAdapters[$i], $blacklistLV)
 			If _ArraySearch($aBlacklist, $aAdapters[$i]) <> -1 Then
 				_GUICtrlListView_SetItemChecked($blacklistLV, $i)
-			Endif
+			EndIf
 		Next
-	Endif
+	EndIf
 
 	$bt_Ok = GUICtrlCreateButton($oLangStrings.buttonSave, $w - 20 * $dScale - 75 * $dScale, $h - 27 * $dScale, 75 * $dScale, 22 * $dScale)
 	GUICtrlSetOnEvent(-1, "_onExitBlacklistOk")
@@ -87,7 +87,7 @@ Func _onExitBlacklistOk()
 	For $i = 0 To $itemCount - 1
 		If _GUICtrlListView_GetItemChecked($blacklistLV, $i) Then
 			$newBlacklist &= _GUICtrlListView_GetItemTextString($blacklistLV, $i) & "|"
-		Endif
+		EndIf
 	Next
 	$newBlacklist = StringLeft($newBlacklist, StringLen($newBlacklist) - 1)
 

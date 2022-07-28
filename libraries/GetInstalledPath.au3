@@ -51,11 +51,11 @@ Func _GetInstalledPath($sProgamName, ByRef $sDisplayName, $fExtendedSearchFlag =
             Else
                 $sDisplayName = RegRead($sBasePath & $sProgamName, "DisplayName")
                 $sInstalledPath = StringLeft($sInstalledPath, StringInStr($sInstalledPath, "\", 0, -1))
-            Endif
-        Endif
+            EndIf
+        EndIf
         If $sInstalledPath <> "" Then
             ExitLoop
-        Endif
+        EndIf
     Next
 
     If $sInstalledPath = "" Then
@@ -73,7 +73,7 @@ Func _GetInstalledPath($sProgamName, ByRef $sDisplayName, $fExtendedSearchFlag =
                         ExitLoop
                     Else
                         $sDisplayName = RegRead($sBasePath & $sCurrentKey, "DisplayName")
-                    Endif
+                    EndIf
 
                     If ($fSlidingSearch And StringInStr($sDisplayName, $sProgamName)) Or ($sDisplayName = $sProgamName) Then
                         ;Program name found in DisplayName
@@ -89,25 +89,25 @@ Func _GetInstalledPath($sProgamName, ByRef $sDisplayName, $fExtendedSearchFlag =
                                 $sDisplayName = ""
                             Else
                                 $sInstalledPath = StringLeft($sInstalledPath, StringInStr($sInstalledPath, "\", 0, -1))
-                            Endif
+                            EndIf
                             ExitLoop
-                        Endif
+                        EndIf
                         ExitLoop
-                    Endif
+                    EndIf
                     $iCurrentKeyIndex += 1
                 WEnd
                 If $sInstalledPath <> "" Then
                     ; Path found so stop looking
                     ExitLoop
-                Endif
+                EndIf
             Next
         Else
             $sDisplayName = ""
             Return SetError(1, 0, "") ; Path Not found
-        Endif
+        EndIf
     Else
         Return $sInstalledPath
-    Endif
+    EndIf
 
     If $sInstalledPath = "" Then
         ; program not found
@@ -115,5 +115,5 @@ Func _GetInstalledPath($sProgamName, ByRef $sDisplayName, $fExtendedSearchFlag =
         Return SetError($iErrorCode, 0, "")
     Else
         Return $sInstalledPath
-    Endif
+    EndIf
 EndFunc   ;==>_GetInstalledPath

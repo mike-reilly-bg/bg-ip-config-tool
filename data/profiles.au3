@@ -71,7 +71,7 @@ Func _Profiles_addProfile($oSelf, $oProfile)
 	Local $aNames = $oSelf.names
 	If $oSelf.count > UBound($oSelf.names) Then
 		ReDim $aNames[$oSelf.count]
-	Endif
+	EndIf
 
 	$aNames[$oSelf.count-1] = $oProfile.ProfileName
 	$oSelf.names = $aNames
@@ -91,7 +91,7 @@ Func _Profiles_moveProfile($oSelf, $sName, $indexTo)
 		_ArrayInsert($aNames, $indexTo, $sName)
 	Else
 		_ArrayAdd($aNames, $sName)
-	Endif
+	EndIf
 
 	Local $i = 0
 	For $oProfile in $oSelf.Profiles
@@ -100,13 +100,13 @@ Func _Profiles_moveProfile($oSelf, $sName, $indexTo)
 			$oProfilesTemp.add($oProfile)
 		Else
 			$oProfilesTemp.add($oProfile)
-		Endif
+		EndIf
 		$i += 1
 	Next
 
 	If $indexTo = UBound($aNames)-1 Then
 		$oProfilesTemp.add($oProfileMove)
-	Endif
+	EndIf
 
 	$oSelf.Profiles = 0
 	$oSelf.Profiles = $oProfilesTemp
@@ -130,7 +130,7 @@ Func _Profiles_exists($oSelf, $sName)
 		If $oProfile.ProfileName = $sName Then
 			$bMatch = True
 			ExitLoop
-		Endif
+		EndIf
 	Next
 
 	Return $bMatch
@@ -142,7 +142,7 @@ Func _Profiles_removeProfile($oSelf, $sName)
 		If $oProfile.ProfileName = $sName Then
 			$oSelf.Profiles.remove($index)
 			ExitLoop
-		Endif
+		EndIf
 		$index += 1
 	Next
 
@@ -152,7 +152,7 @@ Func _Profiles_removeProfile($oSelf, $sName)
 		If $name = $sName Then
 			_ArrayDelete($aNames, $index)
 			ExitLoop
-		Endif
+		EndIf
 		$index += 1
 	Next
 	$oSelf.names = $aNames
@@ -173,7 +173,7 @@ Func _Profiles_getProfile($oSelf, $sName)
 	For $oProfile In $oSelf.Profiles
 		If $oProfile.ProfileName = $sName Then
 			Return $oProfile
-		Endif
+		EndIf
 	Next
 
 	Return -1
@@ -183,7 +183,7 @@ Func _Profiles_setProfile($oSelf, $sName, $oNewProfile)
 	For $oProfile In $oSelf.Profiles
 		If $oProfile.ProfileName = $sName Then
 			$oProfile = $oNewProfile
-		Endif
+		EndIf
 	Next
 
 	Return -1
@@ -217,7 +217,7 @@ Func _Profiles_getAsSectionStr($oSelf, $sName)
 		Return $sSection
 	Else
 		Return 1
-	Endif
+	EndIf
 EndFunc   ;==>_Profiles_getAsSectionStr
 
 Func _Profile_getSectionStr($oSelf)

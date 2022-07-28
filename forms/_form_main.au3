@@ -38,10 +38,10 @@ Func _form_main()
 			$xpos = $iFullDesktopWidth - ($guiWidth * $dscale)
 		ElseIf $xpos < $ixCoordMin Then
 			$xpos = 1
-		Endif
+		EndIf
 	Else
 		$xpos = @DesktopWidth / 2 - $guiWidth * $dscale / 2
-	Endif
+	EndIf
 	Local $sPositionY = $options.PositionY
 	If $sPositionY <> "" Then
 		$ypos = $sPositionY
@@ -49,10 +49,10 @@ Func _form_main()
 			$ypos = $iFullDesktopHeight - ($guiHeight * $dscale)
 		ElseIf $ypos < $iyCoordMin Then
 			$ypos = 1
-		Endif
+		EndIf
 	Else
 		$ypos = @DesktopHeight / 2 - $guiHeight * $dscale / 2
-	Endif
+	EndIf
 
 	; ---- create the main GUI
 	$hgui = GUICreate($winName & " " & $winVersion, $guiWidth * $dscale, $guiHeight * $dscale, $xpos, $ypos, BitOR($GUI_SS_DEFAULT_GUI, $WS_CLIPCHILDREN), $WS_EX_COMPOSITED)
@@ -271,7 +271,7 @@ Func _form_main()
 		$computerName = GUICtrlCreateLabel($oLangStrings.interface.computername & ": ________", $x + 3, $y + 2, $w / 2, $h)
 	Else
 		$computerName = GUICtrlCreateLabel($oLangStrings.interface.computername & ": " & @ComputerName, $x + 3, $y + 2, $w / 2, $h)
-	Endif
+	EndIf
 	GUICtrlSetBkColor($computerName, 0x1a81d7)
 	_setFont($computerName, 8, -1, 0xFFFFFF)
 
@@ -279,7 +279,7 @@ Func _form_main()
 		$domainName = GUICtrlCreateLabel("", $w / 2, $y + 2, $w / 2 - 3, $h, $SS_RIGHT)
 		GUICtrlSetBkColor($domainName, 0x1a81d7)
 		_setFont($domainName, 8, -1, 0xFFFFFF)
-	Endif
+	EndIf
 	#EndRegion footer
 
 
@@ -633,15 +633,15 @@ Func _form_main()
 			Local $profileNames = $profiles.getNames()
 			$profileName = $profileNames[0]
 			_setGUI(_getProfileByName($profileName))
-		Endif
-	Endif
+		EndIf
+	EndIf
 
 	$sStartupMode = $options.StartupMode
 	If $sStartupMode <> "1" And $sStartupMode <> "true" Then
 		GUISetState(@SW_SHOW, $hgui)
 	Else
 		TrayItemSetText($RestoreItem, $oLangStrings.traymenu.restore)
-	Endif
+	EndIf
 	$prevWinPos = WinGetPos($hgui)
 EndFunc   ;==>_form_main
 
@@ -813,7 +813,7 @@ Func _makeHeading($sLabel, $x, $y, $w, $height = -1, $color = -1, $lightness = -
 	$h = $strSize[3] - 2
 	If $height <> -1 Then
 		$h = $height
-	Endif
+	EndIf
 	$labelY = $y
 
 	Local $heading = GUICtrlCreateLabel($sLabel, $labelX, $labelY)
@@ -825,7 +825,7 @@ Func _makeHeading($sLabel, $x, $y, $w, $height = -1, $color = -1, $lightness = -
 ;~ 		Local $bottomline = GUICtrlCreateLabel( "", $x, $y+$h-1, $w, 1 )
 ;~ 	GUICtrlSetBkColor(-1, 0x000880)
 ;~ 		GUICtrlSetBkColor(-1, 0x404040)
-;~ 	Endif
+;~ 	EndIf
 
 	;Local $bg = GUICtrlCreateLabel( "", $x, $y, $w, $h )
 	;GUICtrlSetBkColor(-1, 0x5C67FF)
@@ -845,7 +845,7 @@ Func _makeHeading($sLabel, $x, $y, $w, $height = -1, $color = -1, $lightness = -
 	If $color <> -1 Then
 		$baseColor = $color
 		$lightFactor = $lightness
-	Endif
+	EndIf
 
 	$baseRGB = _ColorGetRGB($baseColor)
 	$baseHSL = _ColorConvertRGBtoHSL($baseRGB)
@@ -861,7 +861,7 @@ Func _makeHeading($sLabel, $x, $y, $w, $height = -1, $color = -1, $lightness = -
 	Else
 		_WinAPI_GradientFill($hDestDC, $aVertex, 2, 3)
 		_WinAPI_GradientFill($hDestDC, $aVertex, 4, 5)
-	Endif
+	EndIf
 
 	_WinAPI_ReleaseDC($hPic, $hDC)
 	_WinAPI_SelectObject($hDestDC, $hDestSv)
@@ -872,7 +872,7 @@ Func _makeHeading($sLabel, $x, $y, $w, $height = -1, $color = -1, $lightness = -
 	Local $hObj = _SendMessage($hPic, 0x0173)
 	If $hObj <> $hBitmap Then
 		_WinAPI_DeleteObject($hBitmap)
-	Endif
+	EndIf
 
 	Local $aRet[2]
 	$aRet[0] = $heading
@@ -897,12 +897,12 @@ Func _setFont($ControlID, $size, $bkcolor = -1, $color = 0x000000)
 		$LControlID = _GUIGetLastCtrlID()
 	Else
 		$LControlID = $ControlID
-	Endif
+	EndIf
 	GUICtrlSetFont($LControlID, $size)
 	GUICtrlSetColor(-1, $color)
 	If $bkcolor <> -1 Then
 		GUICtrlSetBkColor(-1, $bkcolor)
-	Endif
+	EndIf
 EndFunc   ;==>_setFont
 
 ; #FUNCTION# ====================================================================================================================

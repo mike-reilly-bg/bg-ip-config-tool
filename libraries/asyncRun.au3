@@ -41,7 +41,7 @@ Func asyncRun($sCmd, $CallbackFunc, $sDescription = "", $iTimeout = 10000)
 		$sStdOut = ""
 		_setStatus("")
 		$CallbackFunc($sDescription, $sDescription, "")
-	Endif
+	EndIf
 	AdlibRegister("_asyncRun_Process", 100)
 EndFunc   ;==>asyncRun
 
@@ -75,8 +75,8 @@ Func _asyncRun_Process()
 			Local $countdown = 10 - Round(TimerDiff($pRuntime) / 1000)
 			If $countdown <= 5 Then
 				$__asyncProcess__Data[0][3] = $countdown
-			Endif
-		Endif
+			EndIf
+		EndIf
 
 		If $pDone Then
 			Local $desc = $__asyncProcess__Data[1][2]
@@ -85,7 +85,7 @@ Func _asyncRun_Process()
 				$__asyncProcess__Data[0][2] = 1
 			Else
 				$nextdesc = $__asyncProcess__Data[2][2]
-			Endif
+			EndIf
 			ProcessClose($__asyncProcess__Data[0][0])
 			$__asyncProcess__Data[0][0] = -1
 			AdlibUnRegister("_asyncRun_Process")
@@ -94,7 +94,7 @@ Func _asyncRun_Process()
 			$myFunc($desc, $nextdesc, $sStdOut)    ;callback function
 			_ArrayDelete($__asyncProcess__Data, 1)
 			AdlibRegister("_asyncRun_Process", 100)
-		Endif
+		EndIf
 	ElseIf UBound($__asyncProcess__Data) > 1 Then    ;if process is finished, start next command
 		;Run command and end with a unique string so we know the command is finished
 		$__asyncProcess__Data[0][0] = Run(@ComSpec & " /k " & $__asyncProcess__Data[1][0] & "& echo __asyncRun cmd done", "", @SW_HIDE, $STDIN_CHILD + $STDERR_MERGED)
@@ -103,7 +103,7 @@ Func _asyncRun_Process()
 	Else    ;done processing, no commands left
 		$__asyncProcess__Data[0][2] = 1            ;idle status to 1
 		AdlibUnRegister("_asyncRun_Process")    ;only run when necessary
-	Endif
+	EndIf
 EndFunc   ;==>_asyncRun_Process
 
 Func asyncRun_isIdle()

@@ -27,7 +27,7 @@ Func _form_update($thisVersion, $currentVersion, $isNew = 0)
 	Else
 		$x = @DesktopWidth / 2 - $w / 2
 		$y = @DesktopHeight / 2 - $h / 2
-	Endif
+	EndIf
 
 	$UpdateChild = GUICreate($oLangStrings.updates.title, $w, $h, $x, $y, $WS_CAPTION, -1, $hgui)
 	GUISetOnEvent($GUI_EVENT_CLOSE, "_onExitChild")
@@ -75,7 +75,7 @@ Func _form_update($thisVersion, $currentVersion, $isNew = 0)
 	Else
 		$desc = $oLangStrings.updates.latestMessage
 		$descX = 60
-	Endif
+	EndIf
 	GUICtrlCreateLabel($desc, $descX * $dscale, 110 * $dscale, $w - 20, 20 * $dscale)
 	GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 

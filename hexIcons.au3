@@ -353,7 +353,7 @@ Func _Base64Encode($input)
 
 	If @error Or Not $a_Call[0] Then
 		Return SetError(1, 0, "") ; error calculating the length of the buffer needed
-	Endif
+	EndIf
 
 	Local $a = DllStructCreate("char[" & DllStructGetData($strc, 1) & "]")
 
@@ -366,7 +366,7 @@ Func _Base64Encode($input)
 
 	If @error Or Not $a_Call[0] Then
 		Return SetError(2, 0, "") ; error encoding
-	Endif
+	EndIf
 
 	Return DllStructGetData($a, 1)
 
@@ -387,7 +387,7 @@ Func _Base64Decode($input_string)
 
 	If @error Or Not $a_Call[0] Then
 		Return SetError(1, 0, "") ; error calculating the length of the buffer needed
-	Endif
+	EndIf
 
 	Local $a = DllStructCreate("byte[" & DllStructGetData($struct, 1) & "]")
 
@@ -402,7 +402,7 @@ Func _Base64Decode($input_string)
 
 	If @error Or Not $a_Call[0] Then
 		Return SetError(2, 0, "") ; error decoding
-	Endif
+	EndIf
 
 	Return DllStructGetData($a, 1)
 

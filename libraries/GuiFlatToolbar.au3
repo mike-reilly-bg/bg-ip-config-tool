@@ -89,7 +89,7 @@ Global $GFTB_TOP = 1, $GFTB_BOTTOM = 2, $GFTB_LEFT = 4, $GFTB_RIGHT = 8, $GFTB_V
 Func _GuiFlatToolbarCreate($iStyle = -1, $iOffsetX = 0, $iOffsetY = 0, $iButtonWidth = 50, $iButtonHeight = 50, $aColorsEx = 0)
 	If $iStyle = -1 Then
 		$iStyle = 33
-	Endif
+	EndIf
 
 	Local $aToolBar[1][12]
 
@@ -121,13 +121,13 @@ Func _GuiFlatToolbarCreate($iStyle = -1, $iOffsetX = 0, $iOffsetY = 0, $iButtonW
 					$x = $aClientSize[0] - $iButtonWidth - $iOffsetX
 				Else
 					$x = $iOffsetX
-				Endif
+				EndIf
 
 				If $bBottom Then
 					$y = 0
 				Else
 					$y = $iOffsetY
-				Endif
+				EndIf
 			Else
 				$w = $aClientSize[0] - $iOffsetX
 				$h = $iButtonHeight
@@ -135,15 +135,15 @@ Func _GuiFlatToolbarCreate($iStyle = -1, $iOffsetX = 0, $iOffsetY = 0, $iButtonW
 					$x = 0
 				Else
 					$x = $iOffsetX
-				Endif
+				EndIf
 
 				If $bBottom Then
 					$y = $aClientSize[1] - $iButtonHeight - $iOffsetY
 				Else
 					$y = $iOffsetY
-				Endif
-			Endif
-		Endif
+				EndIf
+			EndIf
+		EndIf
 	Else
 		Local $aClientSize = WinGetClientSize($aToolBar[0][1])
 		If IsArray($aClientSize) Then
@@ -154,13 +154,13 @@ Func _GuiFlatToolbarCreate($iStyle = -1, $iOffsetX = 0, $iOffsetY = 0, $iButtonW
 					$x = $aClientSize[0] - $iButtonWidth - $iOffsetX
 				Else
 					$x = $iOffsetX
-				Endif
+				EndIf
 
 				If $bBottom Then
 					$y = $aClientSize[1] - $iOffsetY
 				Else
 					$y = $iOffsetY
-				Endif
+				EndIf
 			Else
 				$w = 0
 				$h = $iButtonHeight
@@ -168,16 +168,16 @@ Func _GuiFlatToolbarCreate($iStyle = -1, $iOffsetX = 0, $iOffsetY = 0, $iButtonW
 					$x = $aClientSize[0] - $iOffsetX
 				Else
 					$x = $iOffsetX
-				Endif
+				EndIf
 
 				If $bBottom Then
 					$y = $aClientSize[1] - $iButtonHeight - $iOffsetY
 				Else
 					$y = $iOffsetY
-				Endif
-			Endif
-		Endif
-	Endif
+				EndIf
+			EndIf
+		EndIf
+	EndIf
 
 	$aToolBar[0][2] = GUICreate("", $w, $h, $x, $y, BitOR($WS_CHILD, $WS_CLIPCHILDREN, $WS_CLIPSIBLINGS), -1, $aToolBar[0][1])
 	_WinAPI_SetWindowPos($aToolBar[0][2], $HWND_TOP, 0, 0, 0, 0, BitOR($SWP_NOMOVE, $SWP_NOSIZE))
@@ -211,13 +211,13 @@ Func _GuiFlatToolbar_AddButton(ByRef $aToolBar, $sText = "", $hIcon = Null, $iPa
 		If $aToolBar[$i][0] = 0 Then
 			$iIndex = $i
 			ExitLoop
-		Endif
+		EndIf
 	Next
 	; If no blank line found then increase array size
 	If $iIndex == 0 Then
 		$aToolBar[0][0] += 1
 		ReDim $aToolBar[$aToolBar[0][0] + 1][UBound($aToolBar, 2)]
-	Endif
+	EndIf
 	Local $count = $aToolBar[0][0]
 
 	$flags = 0
@@ -230,16 +230,16 @@ Func _GuiFlatToolbar_AddButton(ByRef $aToolBar, $sText = "", $hIcon = Null, $iPa
 					$y = $aClientSize[1] - $iButtonHeight
 				Else
 					$y = ($count - 1) * $iButtonHeight
-				Endif
+				EndIf
 			Else
 				If $bRight Then
 					$x = $aClientSize[0] - $iButtonWidth
 				Else
 					$x = ($count - 1) * $iButtonWidth
-				Endif
+				EndIf
 				$y = 0
-			Endif
-		Endif
+			EndIf
+		EndIf
 		$flags = BitOR($SWP_NOMOVE, $SWP_NOSIZE)
 	Else
 		Local $aClientSize = WinGetClientSize($aToolBar[0][1])
@@ -254,13 +254,13 @@ Func _GuiFlatToolbar_AddButton(ByRef $aToolBar, $sText = "", $hIcon = Null, $iPa
 					$xWnd = $aClientSize[0] - $iButtonWidth - $iOffsetX
 				Else
 					$xWnd = $iOffsetX
-				Endif
+				EndIf
 
 				If $bBottom Then
 					$yWnd = $aClientSize[1] - ($count - 1) * $iButtonHeight - $iOffsetY
 				Else
 					$yWnd = $iOffsetY
-				Endif
+				EndIf
 			Else
 				$w = $count * $iButtonWidth
 				$h = $iButtonHeight
@@ -271,16 +271,16 @@ Func _GuiFlatToolbar_AddButton(ByRef $aToolBar, $sText = "", $hIcon = Null, $iPa
 					$xWnd = $aClientSize[0] - ($count - 1) * $iButtonWidth - $iOffsetX
 				Else
 					$xWnd = $iOffsetX
-				Endif
+				EndIf
 
 				If $bBottom Then
 					$yWnd = $aClientSize[1] - $iButtonHeight - $iOffsetY
 				Else
 					$yWnd = $iOffsetY
-				Endif
-			Endif
-		Endif
-	Endif
+				EndIf
+			EndIf
+		EndIf
+	EndIf
 
 	GUISwitch($hWndChild)
 
@@ -290,16 +290,16 @@ Func _GuiFlatToolbar_AddButton(ByRef $aToolBar, $sText = "", $hIcon = Null, $iPa
 	GUISetStyle(-1, 0, $parentWnd) ;remove $WS_EX_CONTROLPARENT style to prevent dragging of the toolbar
 	If IsArray($aColorsEx) Then
 		GuiFlatButton_SetColorsEx($aToolBar[$i][0], $aColorsEx)
-	Endif
+	EndIf
 	If $hIcon <> Null Then
 		_WinAPI_DeleteObject(_SendMessage(GUICtrlGetHandle($aToolBar[$i][0]), $BM_SETIMAGE, $IMAGE_ICON, $hIcon))
-	Endif
+	EndIf
 
 	GUISwitch($hWnd)
 
 	If Not $bExtend Then
 		_WinAPI_SetWindowPos($hWndChild, $HWND_TOP, $xWnd, $yWnd, $w, $h, 0)
-	Endif
+	EndIf
 
 	If $bExtend And $bVertical And $bBottom Then
 		For $j = 1 To $count - 1
@@ -312,7 +312,7 @@ Func _GuiFlatToolbar_AddButton(ByRef $aToolBar, $sText = "", $hIcon = Null, $iPa
 			GuiFlatButton_SetPos($aToolBar[$j][0], $aClientSize[0] - $count * $iButtonWidth + ($j - 1) * $iButtonWidth, $y)
 			ConsoleWrite($aClientSize[0] - $count * $iButtonWidth + ($j - 1) * $iButtonWidth & @CRLF)
 		Next
-	Endif
+	EndIf
 
 
 	Return $aToolBar[$i][0]
@@ -326,7 +326,7 @@ Func _GuiFlatToolbar_SetAutoWidth(ByRef $aToolBar)
 		$stringsize = _StringSize($string, $MyGlobalFontSize, 400, 0, $MyGlobalFontName)
 		If $stringsize[2] > $maxWidth Then
 			$maxWidth = $stringsize[2]
-		Endif
+		EndIf
 	Next
 	Local $padding = 10
 	$aToolBar[0][6] = $maxWidth + $padding

@@ -237,7 +237,7 @@ Global $iMsg = _WinAPI_RegisterWindowMessage('newinstance_message')
 If _Singleton("Simple IP Config", 1) = 0 Then
 	_WinAPI_PostMessage(0xffff, $iMsg, 0x101, 0)
 	Exit
-Endif
+EndIf
 
 ;begin main program
 _main()
@@ -267,11 +267,11 @@ Func _main()
 	$selectedLang = $options.Language
 	If $selectedLang <> "" And $oLangStrings.OSLang <> $selectedLang Then
 		$oLangStrings.OSLang = $selectedLang
-	Endif
+	EndIf
 	If $selectedLang = "" Then
 		$options.Language = $oLangStrings.OSLang
 		IniWrite($sProfileName, "options", "Language", $oLangStrings.OSLang)
-	Endif
+	EndIf
 
 	_setLangStrings($oLangStrings.OSLang)
 	_print("set lang")
@@ -296,7 +296,7 @@ Func _main()
 		$sStartupAdapter = $options.StartupAdapter
 		If Adapter_Exists($adapters, $sStartupAdapter) Then
 			$defaultitem = $sStartupAdapter
-		Endif
+		EndIf
 
 		$sAdapterBlacklist = $options.AdapterBlacklist
 		$aBlacklist = StringSplit($sAdapterBlacklist, "|")
@@ -307,8 +307,8 @@ Func _main()
 				If $indexBlacklist <> -1 Then ContinueLoop
 				GUICtrlSetData($combo_adapters, $adapterNames[$i], $defaultitem)
 			Next
-		Endif
-	Endif
+		EndIf
+	EndIf
 
 	_refresh(1)
 	ControlListView($hgui, "", $list_profiles, "Select", 0)
@@ -328,7 +328,7 @@ Func _main()
 		$suppressComError = 1
 		_checksSICUpdate()
 		$suppressComError = 0
-	Endif
+	EndIf
 
 	Local $filePath
 	_print("Running")
@@ -340,20 +340,20 @@ Func _main()
 ;~ 				_GUICtrlListView_SetInsertMark($list_profiles, $iCurr_Index, True)
 ;~ 			Else
 ;~ 				_GUICtrlListView_SetInsertMark($list_profiles, $iCurr_Index, False)
-;~ 			Endif
-;~ 		Endif
+;~ 			EndIf
+;~ 		EndIf
 
 		If $lv_doneEditing Then
 			_onLvDoneEdit()
-		Endif
+		EndIf
 
 		If $lv_startEditing And Not $lv_editing Then
 			_onRename()
-		Endif
+		EndIf
 
 		If $movetosubnet Then
 			_MoveToSubnet()
-		Endif
+		EndIf
 
 		If $OpenFileFlag Then
 			$OpenFileFlag = 0
@@ -364,8 +364,8 @@ Func _main()
 				$profiles = _Profiles()
 				_refresh(1)
 				_setStatus($oLangStrings.message.loadedFile & " " & $filePath, 0)
-			Endif
-		Endif
+			EndIf
+		EndIf
 
 		If $ImportFileFlag Then
 			$ImportFileFlag = 0
@@ -374,8 +374,8 @@ Func _main()
 				_ImportProfiles($filePath)
 				_refresh(1)
 				_setStatus($oLangStrings.message.doneImporting, 0)
-			Endif
-		Endif
+			EndIf
+		EndIf
 
 		If $ExportFileFlag Then
 			$ExportFileFlag = 0
@@ -383,26 +383,26 @@ Func _main()
 			If Not @error Then
 				If StringRight($filePath, 4) <> ".ini" Then
 					$filePath &= ".ini"
-				Endif
+				EndIf
 				FileCopy($sProfileName, $filePath, $FC_OVERWRITE)
 				_setStatus($oLangStrings.message.fileSaved & ": " & $filePath, 0)
-			Endif
-		Endif
+			EndIf
+		EndIf
 
 		If $lvTabKey And Not IsHWnd(_GUICtrlListView_GetEditControl(ControlGetHandle($hgui, "", $list_profiles))) Then
 			$lvTabKey = False
 			Send("{TAB}")
-		Endif
+		EndIf
 		
 		if $firstScan Then
 			_onSelectionChange()
 			$firstScan = False
-		Endif
+		EndIf
 
 		if _StrToState($options.AutoRefresh) Then
 			_updateCurrent()
 			Sleep(250)
-		Endif
+		EndIf
 	WEnd
 EndFunc   ;==>_main
 
@@ -420,7 +420,7 @@ Func _NewInstance($hWnd, $iMsg, $iwParam, $ilParam)
 ;~ 		$aRet = _Toast_Show(0, "Simple IP Config", $sMsg, -5, False) ; Delay can be set here because script continues
 
 		_maximize()
-	Endif
+	EndIf
 EndFunc   ;==>_NewInstance
 
 
@@ -443,22 +443,22 @@ Func _setProfilesIniLocation()
 			Local $scriptPath = @ScriptDir
 			If StringRight(@ScriptDir, 1) <> "\" Then
 				$scriptPath &= "\"
-			Endif
+			EndIf
 
 			If $InstallPath = $scriptPath Then
 				$isPortable = False
 			Else
 				$isPortable = True
-			Endif
-		Endif
-	Endif
+			EndIf
+		EndIf
+	EndIf
 
 	If $isPortable Then
 		$sProfileName = @ScriptDir & "\profiles.ini"
 	Else
 		If Not FileExists(@LocalAppDataDir & "\Simple IP Config") Then
 			DirCreate(@LocalAppDataDir & "\Simple IP Config")
-		Endif
+		EndIf
 		$sProfileName = @LocalAppDataDir & "\Simple IP Config\profiles.ini"
-	Endif
+	EndIf
 EndFunc

@@ -39,7 +39,7 @@ Func _onExit()
 		$options.PositionX = $currentWinPos[0]
 		$options.PositionY = $currentWinPos[1]
 		IniWriteSection($sProfileName, "options", $options.getSection, 0)
-	Endif
+	EndIf
 
 	Exit
 EndFunc   ;==>_onExit
@@ -67,7 +67,7 @@ Func _OnTrayClick()
 		_maximize()
 	Else
 		_SendToTray()
-	Endif
+	EndIf
 EndFunc   ;==>_OnTrayClick
 
 ;------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ Func _OnRestore()
 		_maximize()
 	Else
 		_SendToTray()
-	Endif
+	EndIf
 EndFunc   ;==>_OnRestore
 
 ;------------------------------------------------------------------------------
@@ -130,7 +130,7 @@ Func _onSelectionChange()
 		Else
 			$GUIProfile = _getGUI()
 			_storeTempProfileValues($GUIProfile)
-		Endif
+		EndIf
 		$lastClickWasProfile = False
 		_setAllGUILabelsDefault()
 		_setAllListViewLabelsDefault()
@@ -148,7 +148,7 @@ Func _onSelectionChange()
 		$GUIProfile = _getGUI()
 		if Not $lastClickWasProfile Then
 			_storeTempProfileValues($GUIProfile)
-		Endif
+		EndIf
 		$lastClickWasProfile = True
 		$selectedProfile = _getSelectedProfile()
 		_setGUI($selectedProfile)
@@ -166,7 +166,7 @@ Func _onSelectionChange()
 		_updateLabelColor($ck_dnsReg, $selectedProfile.RegisterDns, $tempProfile.RegisterDns)
 	Else
 		return
-	Endif
+	EndIf
 
 	_updateApplyButtonColor()
 EndFunc   ;==>_onSelectionChange
@@ -186,9 +186,9 @@ Func _highlightListViewItemGUIMismatch($guiProfile_1)
 			_updateLabelColor($label_CurrGateway,0)
 			;_updateLabelColor(_GUICtrlListView_GetItemParam($list_profiles,_GUICtrlListView_GetSelectedIndices($list_profiles)),0)
 			;~ _onRefresh()
-		Endif
+		EndIf
 		
-	Endif
+	EndIf
 EndFunc
 
 
@@ -218,7 +218,7 @@ Func _updateLabelColor($labelHandle, $param1 = 1 , $param2 = 1)
 		GUICtrlSetBkColor($labelHandle, $values_match_bk_color)
 	Else
 		GUICtrlSetBkColor($labelHandle, $values_no_match_bk_color)
-	Endif
+	EndIf
 EndFunc
 
 
@@ -258,7 +258,7 @@ EndFunc   ;==>_onArrangeZa
 Func _onRename()
 	If Not _ctrlHasFocus($list_profiles) Then
 		Return
-	Endif
+	EndIf
 	$Index = _GUICtrlListView_GetSelectedIndices($list_profiles)
 	$lvEditHandle = _GUICtrlListView_EditLabel(ControlGetHandle($hgui, "", $list_profiles), $Index)
 EndFunc   ;==>_onRename
@@ -284,7 +284,7 @@ Func _onTabKey()
 		GUISetAccelerators(0)
 		Send("{TAB}")
 		GUISetAccelerators($aAccelKeys)
-	Endif
+	EndIf
 EndFunc
 
 
@@ -364,7 +364,7 @@ Func _onLvDel()
 		GUISetAccelerators(0)
 		Send("{DEL}")
 		GUISetAccelerators($aAccelKeys)
-	Endif
+	EndIf
 EndFunc   ;==>_onLvDel
 
 ;------------------------------------------------------------------------------
@@ -383,7 +383,7 @@ Func _onLvUp()
 		GUISetAccelerators(0)
 		Send("{Up}")
 		GUISetAccelerators($aAccelKeys)
-	Endif
+	EndIf
 EndFunc   ;==>_onLvUp
 
 ;------------------------------------------------------------------------------
@@ -402,7 +402,7 @@ Func _onLvDown()
 		GUISetAccelerators(0)
 		Send("{Down}")
 		GUISetAccelerators($aAccelKeys)
-	Endif
+	EndIf
 EndFunc   ;==>_onLvDown
 
 
@@ -420,7 +420,7 @@ Func _onLvEnter()
 		GUISetAccelerators(0)
 		Send("{ENTER}")
 		GUISetAccelerators($aAccelKeys)
-	Endif
+	EndIf
 EndFunc   ;==>_onLvEnter
 
 
@@ -438,7 +438,7 @@ Func _onESCKey()
 		GUISetAccelerators(0)
 		Send("{ESC}")
 		GUISetAccelerators($aAccelKeys)
-	Endif
+	EndIf
 EndFunc
 
 
@@ -582,7 +582,7 @@ Func _OnCombo()
 		_setStatus("An error occurred while saving the selected adapter", 1)
 	Else
 		$options.StartupAdapter = $adap
-	Endif
+	EndIf
 EndFunc   ;==>_OnCombo
 
 
@@ -688,7 +688,7 @@ Func WM_COMMAND($hWnd, $iMsg, $wParam, $lParam)
 					Case $combo_adapters
 						GUICtrlSendToDummy($combo_dummy)
 				EndSwitch
-			Endif
+			EndIf
 	EndSwitch
 	Return $GUI_RUNDEFMSG
 EndFunc   ;==>WM_COMMAND
@@ -737,16 +737,16 @@ Func WM_NOTIFY($hWnd, $iMsg, $wParam, $lParam)
 									If $lv_newItem = 1 Then
 										_GUICtrlListView_DeleteItem(ControlGetHandle($hgui, "", $list_profiles), $lv_editIndex)
 										$lv_newItem = 0
-									Endif
+									EndIf
 									$lv_aboutEditing = 1
-								Endif
+								EndIf
 							Else
 								If $lv_newItem = 1 Then
 									_GUICtrlListView_DeleteItem(ControlGetHandle($hgui, "", $list_profiles), $lv_editIndex)
 									$lv_newItem = 0
-								Endif
+								EndIf
 								$lv_aboutEditing = 1
-							Endif
+							EndIf
 					EndSwitch
 				Case $ip_Ip
 					Switch $iCode
