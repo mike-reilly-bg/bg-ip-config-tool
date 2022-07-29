@@ -362,9 +362,18 @@ Func _form_main()
 	$filter_dummy = GUICtrlCreateDummy()
 	GUICtrlSetOnEvent($filter_dummy, "_onFilter")
 
-	$list_profiles = GUICtrlCreateListView($oLangStrings.interface.profiles, $x + 1, $y + 2 + 20 * $dscale + 3, $w - 2, $h - 3 - 20 * $dscale - 3 - 1, BitOR($GUI_SS_DEFAULT_LISTVIEW, $LVS_NOCOLUMNHEADER, $LVS_EDITLABELS), $WS_EX_TRANSPARENT)
+	$iLVx = $x + 1
+	$iLVy = $y + 2 + 20 * $dscale + 3
+	$iLVw = $w - 2
+	$iLVh = $h - 3 - 20 * $dscale - 3 - 1
+	$list_profiles = GUICtrlCreateListView($oLangStrings.interface.profiles, $iLVx, $iLVy, $iLVw, $iLVh, BitOR($GUI_SS_DEFAULT_LISTVIEW, $LVS_NOCOLUMNHEADER, $LVS_EDITLABELS), $WS_EX_TRANSPARENT)
+	GUICtrlSendMsg( $list_profiles, $LVM_SETEXTENDEDLISTVIEWSTYLE, $LVS_EX_ONECLICKACTIVATE, $LVS_EX_TRACKSELECT )
+	$hLV = GUICtrlGetHandle( $list_profiles )
 	_GUICtrlListView_SetColumnWidth($list_profiles, 0, $w - 2 - 20 * $dscale)  ; sets column width
-	_GUICtrlListView_AddItem($list_profiles, "Item1")
+	Local $hHeader = _GUICtrlListView_GetHeader( $hLV )
+  	Local $aPos = WinGetPos( $hHeader )
+	$iLVy += $aPos[3]
+  	$iLVh -= $aPos[3]
 	GUICtrlSetOnEvent($list_profiles, "_onLvEnter")
 
 	; ListView Context Menu
@@ -578,10 +587,10 @@ Func _form_main()
 	GUICtrlSetFont(-1, 8.5)
 
 	;MAKE THE APPLY BUTTON
-	$tbButtonApply = GuiFlatButton_Create($oLangStrings.toolbar.apply, $x + 8 * $dscale, $yText_offset + $textHeight * 10 + $textSpacer * 10, $wRight - 2 * (8 * $dscale), 50 * $dscale)
+	$tbButtonApply = GuiFlatButton_Create($oLangStrings.toolbar.apply, $x + 8 * $dscale, $yText_offset + $textHeight * 10 + $textSpacer * 10, ($wRight - 2 * (8 * $dscale))/2 - 10, 50 * $dscale)
 	GUICtrlSetTip(-1, $oLangStrings.toolbar.apply_tip)
 	GUICtrlSetOnEvent(-1, "_applyGUI")
-	_makeApplyButtonGreen()
+	_makeApplyButtonYellow()
 
 
 	_makeBox($x, $y, $w, $h)

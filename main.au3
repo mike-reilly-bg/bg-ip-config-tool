@@ -132,16 +132,24 @@ Global $MyGlobalFontHeight = 0
 
 ;GUI Indicator Colors
 Global $values_match_bk_color = 0xFFFFFF
-Global $values_no_match_bk_color = 0xFFC17F; 0xFFDB28
+Global $values_no_match_bk_color = 0xFFDEBB
 
 ;GUI variables for selection update functions
-Local $tempProfiles = _Profiles()
-Global $tempProfile = _Profiles_createProfile($tempProfiles, "temp_Profile")
-Global $tempProfileStoredFlag = False
-Global $lastClickWasProfile = True
-Global $alreadyProcessedSelection = False
-Global $applyGUIFlag = False
+Local $stashedGuiProfiles = _Profiles()
+Global $stashedGuiProfile = _Profiles_createProfile($stashedGuiProfiles, "stashedGuiProfile")
+Global $blockApplyButtonColorUpdate
+Global $lastHoverWasProfile = False
 Global $firstScan = True
+
+; GUI listview color control variables
+GLobal $fCursorInListView 
+Global $iLVx
+Global $iLVy
+Global $iLVw
+Global $iLVh
+Global $hLV
+Global $iHot
+Global $iHotPrev
 
 ;Statusbar
 Global $statusbarHeight = 20
@@ -332,6 +340,7 @@ Func _main()
 
 	Local $filePath
 	_print("Running")
+	$counter = 0
 	While 1
 ;~ 		If $dragging Then
 ;~ 			Local $aLVHit = _GUICtrlListView_HitTest(GUICtrlGetHandle($list_profiles))
@@ -395,14 +404,38 @@ Func _main()
 		EndIf
 		
 		if $firstScan Then
-			_onSelectionChange()
+			_GUICtrlListView_SetItemSelected($list_profiles, 0)
+			$selectedProfile = _getSelectedProfile()
+			_setGUI($selectedProfile)
+			_stashGuiProfile()
+			_setAllGUILabelsDefault()
+			_setAllListViewLabelsDefault()
+			$iHot = -1
 			$firstScan = False
 		EndIf
 
+		Switch GUIGetMsg()
+			Case $GUI_EVENT_CLOSE
+				Exit
+		EndSwitch
+
 		if _StrToState($options.AutoRefresh) Then
 			_updateCurrent()
-			Sleep(250)
 		EndIf
+
+		_handleHoverItemChange()
+		_highlightUnsavedProfile()
+
+		Local $selectedItemIndex = _GUICtrlListView_GetSelectedIndices($list_profiles)
+		if $selectedItemIndex <> $iHot And $iHot <> -1 Then
+			$blockApplyButtonColorUpdate = True
+		Else
+			$blockApplyButtonColorUpdate = False
+		EndIf
+		_updateApplyButtonColor()
+
+		Sleep(100)
+		
 	WEnd
 EndFunc   ;==>_main
 

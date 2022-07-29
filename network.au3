@@ -70,9 +70,9 @@ Func _cycleDhcp()
 EndFunc   ;==>_cycleDhcp
 
 Func _getIPs($adaptername)
-	Local $props[9]
+	Local $props[10]
 	Local $colItems, $thismac
-	Local $ip, $subnet, $gateway, $dnspri, $dnsalt, $dnsServer, $dhcpServer, $dhcpEnabled, $sDNS
+	Local $ip, $subnet, $gateway, $dnspri, $dnsalt, $dnsServer, $dhcpServer, $dhcpEnabled, $sDNS, $regAddr
 
 	Local $aIPAllAddrTable = _Network_IPAllAddressTable(1, 0, 1)    ; get info about all adapters (Vista+)
 	Local $nInterfaces = @extended
@@ -126,6 +126,7 @@ Func _getIPs($adaptername)
 		$props[6] = $adapstate
 		$props[7] = _doRegGetValue($adaptername, "EnableDHCP")
 		$props[8] = _doRegGetValue($adaptername, "NameServer")
+		$props[9] = _doRegGetValue($adaptername, "RegistrationEnabled")
 
 	Else
 		For $i = 0 To $nInterfaces - 1
@@ -187,6 +188,7 @@ Func _getIPs($adaptername)
 				$props[5] = $dhcpServer
 				$props[7] = _doRegGetValue($adaptername, "EnableDHCP")
 				$props[8] = _doRegGetValue($adaptername, "NameServer")
+				$props[9] = _doRegGetValue($adaptername, "RegistrationEnabled")
 				ExitLoop
 			EndIf
 		Next

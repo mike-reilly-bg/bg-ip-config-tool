@@ -102,124 +102,24 @@ Func _onRadio()
 EndFunc   ;==>_onRadio
 
 ;------------------------------------------------------------------------------
-; Title........: _onSelectionChange
+; Title........: _onClick
 ; Description..: Set IP address information from profile
 ; Events.......: Click on profile list item / deselect a list item
 ;------------------------------------------------------------------------------
-Func _onSelectionChange()
-	if $alreadyProcessedSelection Then return
-	$alreadyProcessedSelection = True
-
-	; clicked apply button, pressed enter, or double-clicked
-	If $firstScan Then
-		$selectedProfile = _getSelectedProfile()
-		_setGUI($selectedProfile)
-		_storeTempProfileValues($selectedProfile)
-		_setAllGUILabelsDefault()
-		_setAllListViewLabelsDefault()
-	Elseif $applyGUIFlag Then
-		$lastClickWasProfile = False
-		$GUIProfile = _getGUI()
-		_storeTempProfileValues($GUIProfile)
-		_setAllGUILabelsDefault()
+Func _onClick()
 	; clicking in blank listview space or pressing Escape
-	Elseif _GUICtrlListView_GetSelectedCount($list_profiles) = 0 Then
-		if $lastClickWasProfile Then
-			$GUIProfile = _dumpTempProfileValues()
-			_setGUI($GUIProfile)
-		Else
-			$GUIProfile = _getGUI()
-			_storeTempProfileValues($GUIProfile)
-		EndIf
-		$lastClickWasProfile = False
-		_setAllGUILabelsDefault()
+	if _GUICtrlListView_GetSelectedCount($list_profiles) = 0 Then
 		_setAllListViewLabelsDefault()
-	; clicked while editing GUI values
-	ElseIf (Not _checkMouse($list_profiles)) And _
-	(StringInStr(ControlGetFocus($hgui),"edit") Or StringInStr(ControlGetFocus($hgui),"button"))  Then
-		$lastClickWasProfile = False
-		$GUIProfile = _getGUI()
-		_storeTempProfileValues($GUIProfile)
-		_setAllGUILabelsDefault()
-		_setAllListViewLabelsDefault()
-		_highlightListViewItemGUIMismatch($GUIProfile)
 	; clicked on a profile
 	Elseif _checkMouse($list_profiles) Then
-		$GUIProfile = _getGUI()
-		if Not $lastClickWasProfile Then
-			_storeTempProfileValues($GUIProfile)
-		EndIf
-		$lastClickWasProfile = True
-		$selectedProfile = _getSelectedProfile()
-		_setGUI($selectedProfile)
+		_setGUI(_getSelectedProfile())
+		$blockApplyButtonColorUpdate = False
+		_updateApplyButtonColor()
+		_stashGuiProfile()
+		_setAllGUILabelsDefault()
 		_setAllListViewLabelsDefault()
-
-		; update label colors based on whether the profile and previous gui values match
-		_updateLabelColor($radio_IpAuto, $selectedProfile.IpAuto, $tempProfile.IpAuto)
-		_updateLabelColor($radio_IpMan, $selectedProfile.IpAuto, $tempProfile.IpAuto)
-		_updateLabelColor($label_ip, $selectedProfile.IpAddress, $tempProfile.IpAddress)
-		_updateLabelColor($label_subnet, $selectedProfile.IpSubnet, $tempProfile.IpSubnet)
-		_updateLabelColor($label_gateway, $selectedProfile.IpGateway, $tempProfile.IpGateway)
-		_updateLabelColor($radio_DnsAuto, $selectedProfile.DnsAuto, $tempProfile.DnsAuto)
-		_updateLabelColor($label_DnsPri, $selectedProfile.IpDnsPref, $tempProfile.IpDnsPref)
-		_updateLabelColor($label_DnsAlt, $selectedProfile.IpDnsAlt, $tempProfile.IpDnsAlt)
-		_updateLabelColor($ck_dnsReg, $selectedProfile.RegisterDns, $tempProfile.RegisterDns)
-	Else
-		return
 	EndIf
-
-	_updateApplyButtonColor()
-EndFunc   ;==>_onSelectionChange
-
-
-Func _highlightListViewItemGUIMismatch($guiProfile_1)
-	if _GUICtrlListView_GetSelectedCount($list_profiles) <> 0 Then
-		$selectedProfile = _getSelectedProfile()
-		if $selectedProfile.IpAuto <> $guiProfile_1.IpAuto Or _
-		$selectedProfile.IpAddress <> $guiProfile_1.IpAddress Or _
-		$selectedProfile.IpSubnet <> $guiProfile_1.IpSubnet Or _
-		$selectedProfile.IpGateway <> $guiProfile_1.IpGateway Or _
-		$selectedProfile.DnsAuto <> $guiProfile_1.DnsAuto Or _
-		$selectedProfile.IpDnsPref <> $guiProfile_1.IpDnsPref Or _
-		$selectedProfile.IpDnsAlt <> $guiProfile_1.IpDnsAlt Or _
-		$selectedProfile.RegisterDns <> $guiProfile_1.RegisterDns Then
-			_updateLabelColor($label_CurrGateway,0)
-			;_updateLabelColor(_GUICtrlListView_GetItemParam($list_profiles,_GUICtrlListView_GetSelectedIndices($list_profiles)),0)
-			;~ _onRefresh()
-		EndIf
-		
-	EndIf
-EndFunc
-
-
-Func _setAllGUILabelsDefault()
-	_updateLabelColor($radio_IpAuto)
-	_updateLabelColor($radio_IpMan)
-	_updateLabelColor($label_ip)
-	_updateLabelColor($label_subnet)
-	_updateLabelColor($label_gateway)
-	_updateLabelColor($radio_DnsAuto)
-	_updateLabelColor($label_DnsPri)
-	_updateLabelColor($label_DnsAlt)
-	_updateLabelColor($ck_dnsReg)
-EndFunc
-
-
-Func _setAllListViewLabelsDefault()
-	_updateLabelColor($label_CurrGateway)
-	;~ for $i = 0 to (_GUICtrlListView_GetItemCount($list_profiles) - 1)
-	;~ 	_updateLabelColor(_GUICtrlListView_GetItemParam($list_profiles,$i))
-	;~ Next
-EndFunc
-
-
-Func _updateLabelColor($labelHandle, $param1 = 1 , $param2 = 1)
-	if $param1 = $param2 Then
-		GUICtrlSetBkColor($labelHandle, $values_match_bk_color)
-	Else
-		GUICtrlSetBkColor($labelHandle, $values_no_match_bk_color)
-	EndIf
-EndFunc
+EndFunc   ;==>_onClick
 
 
 ;------------------------------------------------------------------------------
@@ -306,7 +206,7 @@ Func _onNewItem()
 	GUISwitch($hgui)
 	ControlFocus($hgui, "", $list_profiles)
 	GUICtrlCreateListViewItem($newname, $list_profiles)
-	GUICtrlSetOnEvent(-1, "_onSelectionChange")
+	GUICtrlSetOnEvent(-1, "_onClick")
 	$lv_newItem = 1
 	$Index = ControlListView($hgui, "", $list_profiles, "GetItemCount")
 	ControlListView($hgui, "", $list_profiles, "Select", $Index - 1)
@@ -373,12 +273,10 @@ EndFunc   ;==>_onLvDel
 ; Events.......: UP key accelerator
 ;------------------------------------------------------------------------------
 Func _onLvUp()
-	$alreadyProcessedSelection = False
-	
 	If _ctrlHasFocus($list_profiles) Then
 		$Index = ControlListView($hgui, "", $list_profiles, "GetSelected")
 		ControlListView($hgui, "", $list_profiles, "Select", $Index - 1)
-		_onSelectionChange()
+		_onClick()
 	Else
 		GUISetAccelerators(0)
 		Send("{Up}")
@@ -392,12 +290,10 @@ EndFunc   ;==>_onLvUp
 ; Events.......: DOWN key accelerator
 ;------------------------------------------------------------------------------
 Func _onLvDown()
-	$alreadyProcessedSelection = False
-	
 	If _ctrlHasFocus($list_profiles) Then
 		$Index = ControlListView($hgui, "", $list_profiles, "GetSelected")
 		ControlListView($hgui, "", $list_profiles, "Select", $Index + 1)
-		_onSelectionChange()
+		_onClick()
 	Else
 		GUISetAccelerators(0)
 		Send("{Down}")
@@ -432,8 +328,7 @@ EndFunc   ;==>_onLvEnter
 Func _onESCKey()
 	If _ctrlHasFocus($list_profiles) Then
 		_GUICtrlListView_SetItemSelected($list_profiles, -1, False)
-		$alreadyProcessedSelection = False
-		_onSelectionChange()
+		_onClick()
 	Else
 		GUISetAccelerators(0)
 		Send("{ESC}")
@@ -747,7 +642,50 @@ Func WM_NOTIFY($hWnd, $iMsg, $wParam, $lParam)
 								EndIf
 								$lv_aboutEditing = 1
 							EndIf
+						Case $LVN_HOTTRACK
+							Local $tInfo = DllStructCreate( $tagNMLISTVIEW, $lParam )
+							$iHot = DllStructGetData( $tInfo, "Item" )
+							If $iHot <> $iHotPrev Then
+							If Not $fCursorInListView Then
+								AdlibRegister( "ResetHotRow", 100 )
+								$fCursorInListView = True
+							EndIf
+							If $iHot <> -1 Then _GUICtrlListView_RedrawItems( $hLV, $iHot, $iHot )
+							If $iHotPrev <> -1 Then _GUICtrlListView_RedrawItems( $hLV, $iHotPrev, $iHotPrev )
+							If $iHot <> $iHotPrev Then
+								If $iHot <> -1 Then
+								$iHotPrev = $iHot
+								ElseIf $iHotPrev <> -1 Then
+								$iHot = $iHotPrev
+								_GUICtrlListView_RedrawItems( $hLV, $iHot, $iHot )
+								EndIf
+							EndIf
+							EndIf
+
+						Case $NM_CUSTOMDRAW
+						Local $tNMLVCUSTOMDRAW = DllStructCreate( $tagNMLVCUSTOMDRAW, $lParam )
+						Local $dwDrawStage = DllStructGetData( $tNMLVCUSTOMDRAW, "dwDrawStage" )
+
+						Switch $dwDrawStage             ; Holds a value that specifies the drawing stage
+
+							Case $CDDS_PREPAINT           ; Before the paint cycle begins
+							Return $CDRF_NOTIFYITEMDRAW ; Notify the parent window of any ITEM-related drawing operations
+
+							Case $CDDS_ITEMPREPAINT       ; Before painting an item
+							Local $dwItemSpec = DllStructGetData( $tNMLVCUSTOMDRAW, "dwItemSpec" )  ; Item index
+							If $dwItemSpec = $iHot Then ; Hot row
+								DllStructSetData( $tNMLVCUSTOMDRAW, "ClrText",   0x000000 )
+								DllStructSetData( $tNMLVCUSTOMDRAW, "ClrTextBk", 0xFFE8D8 ) ; Light blue, BGR
+							Else ; Other rows
+								DllStructSetData( $tNMLVCUSTOMDRAW, "ClrText",   0x000000 )
+								DllStructSetData( $tNMLVCUSTOMDRAW, "ClrTextBk", 0xFFFFFF )
+							EndIf
+							Return $CDRF_NEWFONT        ; $CDRF_NEWFONT must be returned after changing font or colors
+
+						EndSwitch
+
 					EndSwitch
+
 				Case $ip_Ip
 					Switch $iCode
 						Case $IPN_FIELDCHANGED ; Sent when the user changes a field in the control or moves from one field to another
@@ -755,7 +693,30 @@ Func WM_NOTIFY($hWnd, $iMsg, $wParam, $lParam)
 ;~ 							$movetosubnet = DllStructGetData($tInfo, "hWndFrom")
 							$movetosubnet = 1
 					EndSwitch
+
 			EndSwitch
+
 	EndSwitch
+
 	Return $GUI_RUNDEFMSG
 EndFunc   ;==>WM_NOTIFY
+
+Func ResetHotRow()
+	Local $aPos = GUIGetCursorInfo()
+	Local $lastIndex = _GUICtrlListView_GetItemCount($list_profiles)-1
+	Local $lastItemX = _GUICtrlListView_GetItemPositionX($list_profiles, $lastIndex)
+	Local $lastItemY = _GUICtrlListView_GetItemPositionY($list_profiles, $lastIndex)
+	Local $itemHeight = _GUICtrlListView_GetItemSpacingY($list_profiles)
+	If IsArray($aPos) Then
+		If $aPos[0] < $iLVx Or $aPos[0] > $iLVx + $iLVw Or _
+			$aPos[1] < $iLVy Or $aPos[1] > $iLVy + $iLVh Or _
+			$aPos[1] > $lastItemY + $iLVy + $itemHeight Then
+				$iHot = -1
+				_GUICtrlListView_RedrawItems( $hLV, $iHotPrev, $iHotPrev )
+				AdlibUnRegister( "ResetHotRow" )
+				$fCursorInListView = False
+				$iHotPrev = -1
+				_GUICtrlListView_SetHotItem($list_profiles, -1)
+		EndIf
+	EndIf
+EndFunc

@@ -362,8 +362,6 @@ EndFunc   ;==>_checkMouse
 ; Return value....:
 ;------------------------------------------------------------------------------
 Func _clickDn()
-	$alreadyProcessedSelection = False
-
 	Static $dragItemPrev
 	$dragitem = ControlListView($hgui, "", $list_profiles, "GetSelected")
 
@@ -413,12 +411,12 @@ Func _clickUp()
 	EndIf
 
 	If _checkMouse($list_profiles) And _ctrlHasFocus($list_profiles) Then
-		MouseClick($MOUSE_CLICK_PRIMARY)
 		If $mdblClick Then
 			_applyGUI()
 			$mdblClick = 0
 		Else
 			If $dragging Then
+				MouseClick($MOUSE_CLICK_PRIMARY)
 				$newitem = ControlListView($hgui, "", $list_profiles, "GetSelected")
 				$dragtext = ControlListView($hgui, "", $list_profiles, "GetText", $dragitem)
 				$newtext = ControlListView($hgui, "", $list_profiles, "GetText", $newitem)
@@ -434,7 +432,7 @@ Func _clickUp()
 	EndIf
 	$dragging = False
 
-	_onSelectionChange()
+	_onClick()
 EndFunc   ;==>_clickUp
 
 
@@ -629,9 +627,6 @@ Func _getGUI()
 EndFunc
 
 Func _applyGUI()
-	$applyGUIFlag = True
-	_onSelectionChange()
-	$applyGUIFlag = False
 	Local $GP = _getGUI()
 	_apply($GP.IpAuto, $GP.IpAddress, $GP.IpSubnet, $GP.IpGateway, $GP.DnsAuto, $GP.IpDnsPref, $GP.IpDnsAlt, $GP.RegisterDns, $GP.AdapterName, RunCallback)
 EndFunc   ;==>_applyGUI
@@ -1137,21 +1132,14 @@ Func _refresh($init = 0)
 EndFunc   ;==>_refresh
 
 
-Func _storeTempProfileValues($fromProfile)
-	$tempProfile = $fromProfile
-	$tempProfileStoredFlag = True
-EndFunc   ;==>_storeTempProfileValues
+Func _stashGuiProfile()
+	$stashedGuiProfile = _getGUI()
+EndFunc   ;==>_stashGuiProfile
 
-Func _dumpTempProfileValues()
-	if $tempProfileStoredFlag Then
-		$toProfile = $tempProfile
-		$tempProfileStoredFlag = False
-	Else
-		$toProfile = _getGUI()
-	EndIf
-	return $toProfile
-EndFunc   ;==>_dumpTempProfileValues
 
+Func _restoreStashedGuiProfile()
+	_setGUI($stashedGuiProfile)
+EndFunc
 
 
 Func _getSelectedProfile()
@@ -1165,6 +1153,18 @@ Func _getSelectedProfile()
 	$profileName = StringReplace(GUICtrlRead(GUICtrlRead($list_profiles)), "|", "")
 	return _getProfileByName($profileName)
 EndFunc
+
+	;------------------------------------------------------------------------------
+	; Title...........: _getProfileByIndex
+	; Description.....: Return a profile object using the list view index
+	;
+	; Parameters......:
+	; Return value....:
+	;------------------------------------------------------------------------------
+Func _getProfileByIndex($index)
+	$profileName = StringReplace(_GUICtrlListView_GetItemTextString($list_profiles, $index), "|", "")
+	return _getProfileByName($profileName)
+EndFunc   ;==>_getProfileByIndex
 
 
 Func _getProfileByName($profileName)
@@ -1435,18 +1435,18 @@ Func _updateProfileList()
 
 	If Not $diff Then Return
 
-	$selItem = ControlListView($hgui, "", $list_profiles, "GetSelected")
 	_GUICtrlListView_DeleteAllItems(GUICtrlGetHandle($list_profiles))
 	If IsArray($ap_names) Then
 		For $i = 0 To UBound($ap_names) - 1
 			GUICtrlCreateListViewItem($ap_names[$i], $list_profiles)
-			GUICtrlSetOnEvent(-1, "_onSelectionChange")
+			GUICtrlSetOnEvent(-1, "_onClick")
 		Next
 	Else
 		_setStatus($oLangStrings.message.errorOccurred, 1)
 		Return 1
 	EndIf
-	If $selItem < UBound($ap_names) Then
+	$selItem = ControlListView($hgui, "", $list_profiles, "GetSelected")
+	If $selItem < UBound($ap_names) and ($selItem <> "") Then
 		ControlListView($hgui, "", $list_profiles, "Select", $selItem)
 	Else
 		ControlListView($hgui, "", $list_profiles, "Select", UBound($ap_names) - 1)
@@ -1479,7 +1479,8 @@ Func _elementExists($array, $element)
     Return True ; element is in array bounds
 EndFunc
 
-Func _updateApplyButtonColor($init = 0)
+Func _updateApplyButtonColor()
+	if $blockApplyButtonColorUpdate Then return 
 	$dhcp = (GUICtrlRead($radio_IpAuto) = $GUI_CHECKED) ? "1" : "0"
 	$ip = _ctrlGetIP($ip_Ip)
 	$subnet = _ctrlGetIP($ip_Subnet)
@@ -1487,14 +1488,12 @@ Func _updateApplyButtonColor($init = 0)
 	$dnsDhcp = (GUICtrlRead($radio_DnsAuto) = $GUI_CHECKED) ? "true" : "false"
 	$dnsp = _ctrlGetIP($ip_DnsPri)
 	$dnsa = _ctrlGetIP($ip_DnsAlt)
-	$dnsreg = (BitAND(GUICtrlRead($ck_dnsReg), $GUI_CHECKED) = $GUI_CHECKED) ? "true" : "false"
+	$dnsreg = (BitAND(GUICtrlRead($ck_dnsReg), $GUI_CHECKED) = $GUI_CHECKED) ? 	1 : 0
 	$adapter = GUICtrlRead($combo_adapters)
 
 	$selected_adapter = GUICtrlRead($combo_adapters)
 	$props = _getIPs($selected_adapter)
 	local $values_match = 1
-
-	;MsgBox(0,"title",_doRegGetValue($selected_adapter, "DhcpNameServer"))
 
 	; check if dhcp mode is off
 	if ($dhcp = 0) Or ($props[7] = 0) Then
@@ -1504,23 +1503,30 @@ Func _updateApplyButtonColor($init = 0)
 			$values_match = 0
 		EndIf
 	EndIf
-	
+
 	local $nameservers = StringSplit($props[8],",",2)
 	; check if autodns mode is on
 	if (_StrToState($dnsDhcp)) Then
 		; nameservers registry entry should be empty
 		if $props[8] <> "" Then $values_match = 0
-	Elseif (Not _StrToState($dnsDhcp)) Then
-		; if primary dns is not left blank, values should match
-		if ($dnsp <> "") And ($dnsp <> $props[3]) Then $values_match = 0
-		; if primary dns is left blank, there should not be a manual nameserver entry
-		if ($dnsp = "") And ($nameservers[0] <> "") Then $values_match = 0
-		; secondary dns values should match
-		if ($dnsa <> $props[4]) Then $values_match = 0
-	EndIf
 
-if ($values_match = 1) Then _makeApplyButtonGreen()
-if ($values_match = 0) Then _makeApplyButtonYellow()
+	Elseif (Not _StrToState($dnsDhcp)) Then
+		; Nameservers should not be blank if dnsDhcp is off
+		if $nameservers[0] <> "" Then
+			; primary dns should not be blank and values should match
+			if ($dnsp = "") Or ($dnsp <> $props[3]) Then $values_match = 0
+			; secondary dns values should match
+			if (UBound($nameservers) > 1 and ($dnsp = "")) Or ($dnsa <> $props[4]) Then $values_match = 0
+		Else
+			; primary and secondary dns should be blank if nameservers is blank
+			if ($dnsp <> "") And ($dnsp <> "") Or ($dnsa <> "") Then $values_match = 0
+		EndIf
+		; "Register Addresses" flags should match if a primary dns is specified
+		if ($dnsp <> "") And ($dnsreg <> $props[9]) Then $values_match = 0
+	Endif
+
+	if ($values_match = 1) Then _makeApplyButtonGreen()
+	if ($values_match = 0) Then _makeApplyButtonYellow()
 EndFunc   ;==>_updateApplyButtonColor
 
 
@@ -1562,8 +1568,6 @@ Func _updateCurrent($init = 0, $selected_adapter = "")
 	Else
 		GUICtrlSetData($disableitem, $oLangStrings.menu.tools.disable)
 	EndIf
-
-	_updateApplyButtonColor()
 EndFunc   ;==>_updateCurrent
 
 
@@ -1576,7 +1580,6 @@ Func _filterProfiles()
 	$aNames = $profiles.getNames()
 	If $strPattern <> "" Then
 		$pattern = '(?i)(?U)' & StringReplace($strPattern, "*", ".*")
-		;MsgBox(0,"",$pattern)
 		For $k = 0 To UBound($aNames) - 1
 			$matched = StringRegExp($aNames[$k], $pattern, $STR_REGEXPMATCH)
 			If $matched = 1 Then
@@ -1589,7 +1592,7 @@ Func _filterProfiles()
 
 	For $i = 0 To UBound($aArray) - 1
 		GUICtrlCreateListViewItem($aArray[$i], $list_profiles)
-		GUICtrlSetOnEvent(-1, "_onSelectionChange")
+		GUICtrlSetOnEvent(-1, "_onClick")
 	Next
 EndFunc   ;==>_filterProfiles
 
@@ -1943,3 +1946,93 @@ Func _regex_stringLiteralDecode($sString)
 ;~ 	$sNewString = StringRight($sNewString, StringLen($sNewString)-2)
 	Return $sNewString
 EndFunc   ;==>_regex_stringLiteralDecode
+
+
+Func _handleHoverItemChange()
+	if (winActive($hgui) = 0) Then
+		_setAllGUILabelsDefault()
+		$lastHoverWasProfile = False
+		return
+	ElseIf ($iHot = -1 and $lastHoverWasProfile) Then
+		_setAllGUILabelsDefault()
+		_restoreStashedGuiProfile()
+		$lastHoverWasProfile = False
+		return
+	ElseIf $iHot = -1 Then
+		_setAllGUILabelsDefault()
+		return
+	ElseIf ($iHot <> -1) And ($lastHoverWasProfile = False) Then
+		_stashGuiProfile()
+	Endif
+
+	$lastHoverWasProfile = True
+	Local $index = $iHot
+	if $index = -1 then return
+	Local $hoverProfile = _getProfileByIndex($index)
+	_setGUI($hoverProfile)
+
+	; update label colors based on whether the profile and previous gui values match
+	_updateLabelColor($radio_IpAuto, $hoverProfile.IpAuto, $stashedGuiProfile.IpAuto)
+	_updateLabelColor($radio_IpMan, $hoverProfile.IpAuto, $stashedGuiProfile.IpAuto)
+	_updateLabelColor($label_ip, $hoverProfile.IpAddress, $stashedGuiProfile.IpAddress)
+	_updateLabelColor($label_subnet, $hoverProfile.IpSubnet, $stashedGuiProfile.IpSubnet)
+	_updateLabelColor($label_gateway, $hoverProfile.IpGateway, $stashedGuiProfile.IpGateway)
+	_updateLabelColor($radio_DnsAuto, $hoverProfile.DnsAuto, $stashedGuiProfile.DnsAuto)
+	_updateLabelColor($label_DnsPri, $hoverProfile.IpDnsPref, $stashedGuiProfile.IpDnsPref)
+	_updateLabelColor($label_DnsAlt, $hoverProfile.IpDnsAlt, $stashedGuiProfile.IpDnsAlt)
+	_updateLabelColor($ck_dnsReg, $hoverProfile.RegisterDns, $stashedGuiProfile.RegisterDns)
+EndFunc   ;==>_highlightHoverItemGuiMismatch
+
+
+Func _highlightUnsavedProfile()
+	$guiProfile = _getGUI()
+	if _GUICtrlListView_GetSelectedCount($list_profiles) <> 0 Then
+		$selectedProfile = _getSelectedProfile()
+		if $selectedProfile.IpAuto <> $guiProfile.IpAuto Or _
+		$selectedProfile.IpAddress <> $guiProfile.IpAddress Or _
+		$selectedProfile.IpSubnet <> $guiProfile.IpSubnet Or _
+		$selectedProfile.IpGateway <> $guiProfile.IpGateway Or _
+		$selectedProfile.DnsAuto <> $guiProfile.DnsAuto Or _
+		$selectedProfile.IpDnsPref <> $guiProfile.IpDnsPref Or _
+		$selectedProfile.IpDnsAlt <> $guiProfile.IpDnsAlt Or _
+		$selectedProfile.RegisterDns <> $guiProfile.RegisterDns Then
+			
+		EndIf
+	EndIf
+EndFunc
+
+
+Func _setAllGUILabelsDefault()
+	_updateLabelColor($radio_IpAuto)
+	_updateLabelColor($radio_IpMan)
+	_updateLabelColor($label_ip)
+	_updateLabelColor($label_subnet)
+	_updateLabelColor($label_gateway)
+	_updateLabelColor($radio_DnsAuto)
+	_updateLabelColor($label_DnsPri)
+	_updateLabelColor($label_DnsAlt)
+	_updateLabelColor($ck_dnsReg)
+EndFunc
+
+
+Func _setAllListViewLabelsDefault()
+	for $i = 0 to (_GUICtrlListView_GetItemCount($list_profiles) - 1)
+		_updateLabelColor(_GUICtrlListView_GetItemParam($list_profiles,$i))
+		$index = _GUICtrlListView_GetItemCount($list_profiles)-1
+		_GUICtrlListView_RedrawItems($list_profiles, 0, $index)
+	Next
+EndFunc
+
+
+Func _updateLabelColor($labelHandle, $param1 = 1 , $param2 = 1)
+	if $param1 = $param2 Then
+		GUICtrlSetBkColor($labelHandle, $values_match_bk_color)
+	Else
+		GUICtrlSetBkColor($labelHandle, $values_no_match_bk_color)
+	EndIf
+EndFunc
+
+
+Func d($str)
+	MsgBox(0,"",$str)
+Endfunc
