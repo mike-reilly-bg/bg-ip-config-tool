@@ -1,3 +1,15 @@
+#NoTrayIcon
+#RequireAdmin
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Icon=icon.ico
+#AutoIt3Wrapper_Outfile=Simple IP Config 2.9.7.exe
+#AutoIt3Wrapper_Outfile_x64=Simple IP Config 2.9.7-x64.exe
+#AutoIt3Wrapper_Compile_Both=y
+#AutoIt3Wrapper_UseX64=n
+#AutoIt3Wrapper_Res_Description=Simple IP Config
+#AutoIt3Wrapper_Res_Fileversion=2.9.7.0
+#AutoIt3Wrapper_Res_HiDpi=y
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 #Region license
 ; -----------------------------------------------------------------------------
 ; Simple IP Config is free software: you can redistribute it and/or modify
@@ -38,8 +50,6 @@
 ;==============================================================================
 
 
-#RequireAdmin
-#NoTrayIcon    ;prevent double icon when checking for already running instance
 
 #include <WindowsConstants.au3>
 #include <APIConstants.au3>
@@ -79,12 +89,7 @@ TraySetClick(16)
 #EndRegion options
 
 ; autoit wrapper options
-#AutoIt3Wrapper_Res_HiDpi=y
-#AutoIt3Wrapper_UseX64=N
-#AutoIt3Wrapper_Icon=icon.ico
-#AutoIt3Wrapper_OutFile=Simple IP Config 2.9.7.exe
-#AutoIt3Wrapper_Res_Fileversion=2.9.7
-#AutoIt3Wrapper_Res_Description=Simple IP Config
+;#AutoIt3Wrapper_UseX64=Y
 
 #Region Global Variables
 Global $options
@@ -135,8 +140,9 @@ Global $values_match_bk_color = 0xFFFFFF
 Global $values_no_match_bk_color = 0xFFDEBB
 
 ;GUI variables for selection update functions
-Local $stashedGuiProfiles = _Profiles()
-Global $stashedGuiProfile = _Profiles_createProfile($stashedGuiProfiles, "stashedGuiProfile")
+;Local $stashedGuiProfiles = _Profiles()
+;Global $stashedGuiProfile = _Profiles_createProfile($stashedGuiProfiles, "stashedGuiProfile")
+Global $stashedGuiProfile
 Global $blockApplyButtonColorUpdate
 Global $lastHoverWasProfile = False
 Global $firstScan = True
@@ -403,36 +409,36 @@ Func _main()
 			Send("{TAB}")
 		EndIf
 		
-		;~ if $firstScan Then
-		;~ 	_GUICtrlListView_SetItemSelected($list_profiles, 0)
-		;~ 	$selectedProfile = _getSelectedProfile()
-		;~ 	_setGUI($selectedProfile)
-		;~ 	_stashGuiProfile()
-		;~ 	_setAllGUILabelsDefault()
-		;~ 	_setAllListViewLabelsDefault()
-		;~ 	$iHot = -1
-		;~ 	$firstScan = False
-		;~ EndIf
+		if $firstScan Then
+			_GUICtrlListView_SetItemSelected($list_profiles, 0)
+			$selectedProfile = _getSelectedProfile()
+			_setGUI($selectedProfile)
+			_stashGuiProfile()
+			_setAllGUILabelsDefault()
+			_setAllListViewLabelsDefault()
+			$iHot = -1
+			$firstScan = False
+		EndIf
 
-		;~ Switch GUIGetMsg()
-		;~ 	Case $GUI_EVENT_CLOSE
-		;~ 		Exit
-		;~ EndSwitch
+		Switch GUIGetMsg()
+			Case $GUI_EVENT_CLOSE
+				Exit
+		EndSwitch
 
-		;~ if _StrToState($options.AutoRefresh) Then
-		;~ 	_updateCurrent()
-		;~ EndIf
+		if _StrToState($options.AutoRefresh) Then
+			_updateCurrent()
+		EndIf
 
-		;~ _handleHoverItemChange()
-		;~ _highlightUnsavedProfile()
+		_handleHoverItemChange()
+		_highlightUnsavedProfile()
 
-		;~ Local $selectedItemIndex = _GUICtrlListView_GetSelectedIndices($list_profiles)
-		;~ if $selectedItemIndex <> $iHot And $iHot <> -1 Then
-		;~ 	$blockApplyButtonColorUpdate = True
-		;~ Else
-		;~ 	$blockApplyButtonColorUpdate = False
-		;~ EndIf
-		;~ _updateApplyButtonColor()
+		Local $selectedItemIndex = _GUICtrlListView_GetSelectedIndices($list_profiles)
+		if $selectedItemIndex <> $iHot And $iHot <> -1 Then
+			$blockApplyButtonColorUpdate = True
+		Else
+			$blockApplyButtonColorUpdate = False
+		EndIf
+		_updateApplyButtonColor()
 
 		Sleep(100)
 		
