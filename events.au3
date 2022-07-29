@@ -642,47 +642,47 @@ Func WM_NOTIFY($hWnd, $iMsg, $wParam, $lParam)
 								EndIf
 								$lv_aboutEditing = 1
 							EndIf
-						Case $LVN_HOTTRACK
-							Local $tInfo = DllStructCreate( $tagNMLISTVIEW, $lParam )
-							$iHot = DllStructGetData( $tInfo, "Item" )
-							If $iHot <> $iHotPrev Then
-							If Not $fCursorInListView Then
-								AdlibRegister( "ResetHotRow", 100 )
-								$fCursorInListView = True
-							EndIf
-							If $iHot <> -1 Then _GUICtrlListView_RedrawItems( $hLV, $iHot, $iHot )
-							If $iHotPrev <> -1 Then _GUICtrlListView_RedrawItems( $hLV, $iHotPrev, $iHotPrev )
-							If $iHot <> $iHotPrev Then
-								If $iHot <> -1 Then
-								$iHotPrev = $iHot
-								ElseIf $iHotPrev <> -1 Then
-								$iHot = $iHotPrev
-								_GUICtrlListView_RedrawItems( $hLV, $iHot, $iHot )
-								EndIf
-							EndIf
-							EndIf
+						;~ Case $LVN_HOTTRACK
+						;~ 	Local $tInfo = DllStructCreate( $tagNMLISTVIEW, $lParam )
+						;~ 	$iHot = DllStructGetData( $tInfo, "Item" )
+						;~ 	If $iHot <> $iHotPrev Then
+						;~ 	If Not $fCursorInListView Then
+						;~ 		AdlibRegister( "ResetHotRow", 100 )
+						;~ 		$fCursorInListView = True
+						;~ 	EndIf
+						;~ 	If $iHot <> -1 Then _GUICtrlListView_RedrawItems( $hLV, $iHot, $iHot )
+						;~ 	If $iHotPrev <> -1 Then _GUICtrlListView_RedrawItems( $hLV, $iHotPrev, $iHotPrev )
+						;~ 	If $iHot <> $iHotPrev Then
+						;~ 		If $iHot <> -1 Then
+						;~ 		$iHotPrev = $iHot
+						;~ 		ElseIf $iHotPrev <> -1 Then
+						;~ 		$iHot = $iHotPrev
+						;~ 		_GUICtrlListView_RedrawItems( $hLV, $iHot, $iHot )
+						;~ 		EndIf
+						;~ 	EndIf
+						;~ 	EndIf
 
-						Case $NM_CUSTOMDRAW
-						Local $tNMLVCUSTOMDRAW = DllStructCreate( $tagNMLVCUSTOMDRAW, $lParam )
-						Local $dwDrawStage = DllStructGetData( $tNMLVCUSTOMDRAW, "dwDrawStage" )
+						;~ Case $NM_CUSTOMDRAW
+						;~ Local $tNMLVCUSTOMDRAW = DllStructCreate( $tagNMLVCUSTOMDRAW, $lParam )
+						;~ Local $dwDrawStage = DllStructGetData( $tNMLVCUSTOMDRAW, "dwDrawStage" )
 
-						Switch $dwDrawStage             ; Holds a value that specifies the drawing stage
+						;~ Switch $dwDrawStage             ; Holds a value that specifies the drawing stage
 
-							Case $CDDS_PREPAINT           ; Before the paint cycle begins
-							Return $CDRF_NOTIFYITEMDRAW ; Notify the parent window of any ITEM-related drawing operations
+						;~ 	Case $CDDS_PREPAINT           ; Before the paint cycle begins
+						;~ 	Return $CDRF_NOTIFYITEMDRAW ; Notify the parent window of any ITEM-related drawing operations
 
-							Case $CDDS_ITEMPREPAINT       ; Before painting an item
-							Local $dwItemSpec = DllStructGetData( $tNMLVCUSTOMDRAW, "dwItemSpec" )  ; Item index
-							If $dwItemSpec = $iHot Then ; Hot row
-								DllStructSetData( $tNMLVCUSTOMDRAW, "ClrText",   0x000000 )
-								DllStructSetData( $tNMLVCUSTOMDRAW, "ClrTextBk", 0xFFE8D8 ) ; Light blue, BGR
-							Else ; Other rows
-								DllStructSetData( $tNMLVCUSTOMDRAW, "ClrText",   0x000000 )
-								DllStructSetData( $tNMLVCUSTOMDRAW, "ClrTextBk", 0xFFFFFF )
-							EndIf
-							Return $CDRF_NEWFONT        ; $CDRF_NEWFONT must be returned after changing font or colors
+						;~ 	Case $CDDS_ITEMPREPAINT       ; Before painting an item
+						;~ 	Local $dwItemSpec = DllStructGetData( $tNMLVCUSTOMDRAW, "dwItemSpec" )  ; Item index
+						;~ 	If $dwItemSpec = $iHot Then ; Hot row
+						;~ 		DllStructSetData( $tNMLVCUSTOMDRAW, "ClrText",   0x000000 )
+						;~ 		DllStructSetData( $tNMLVCUSTOMDRAW, "ClrTextBk", 0xFFE8D8 ) ; Light blue, BGR
+						;~ 	Else ; Other rows
+						;~ 		DllStructSetData( $tNMLVCUSTOMDRAW, "ClrText",   0x000000 )
+						;~ 		DllStructSetData( $tNMLVCUSTOMDRAW, "ClrTextBk", 0xFFFFFF )
+						;~ 	EndIf
+						;~ 	Return $CDRF_NEWFONT        ; $CDRF_NEWFONT must be returned after changing font or colors
 
-						EndSwitch
+						;~ EndSwitch
 
 					EndSwitch
 

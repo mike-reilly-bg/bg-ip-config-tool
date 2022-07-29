@@ -403,36 +403,36 @@ Func _main()
 			Send("{TAB}")
 		EndIf
 		
-		if $firstScan Then
-			_GUICtrlListView_SetItemSelected($list_profiles, 0)
-			$selectedProfile = _getSelectedProfile()
-			_setGUI($selectedProfile)
-			_stashGuiProfile()
-			_setAllGUILabelsDefault()
-			_setAllListViewLabelsDefault()
-			$iHot = -1
-			$firstScan = False
-		EndIf
+		;~ if $firstScan Then
+		;~ 	_GUICtrlListView_SetItemSelected($list_profiles, 0)
+		;~ 	$selectedProfile = _getSelectedProfile()
+		;~ 	_setGUI($selectedProfile)
+		;~ 	_stashGuiProfile()
+		;~ 	_setAllGUILabelsDefault()
+		;~ 	_setAllListViewLabelsDefault()
+		;~ 	$iHot = -1
+		;~ 	$firstScan = False
+		;~ EndIf
 
-		Switch GUIGetMsg()
-			Case $GUI_EVENT_CLOSE
-				Exit
-		EndSwitch
+		;~ Switch GUIGetMsg()
+		;~ 	Case $GUI_EVENT_CLOSE
+		;~ 		Exit
+		;~ EndSwitch
 
-		if _StrToState($options.AutoRefresh) Then
-			_updateCurrent()
-		EndIf
+		;~ if _StrToState($options.AutoRefresh) Then
+		;~ 	_updateCurrent()
+		;~ EndIf
 
-		_handleHoverItemChange()
-		_highlightUnsavedProfile()
+		;~ _handleHoverItemChange()
+		;~ _highlightUnsavedProfile()
 
-		Local $selectedItemIndex = _GUICtrlListView_GetSelectedIndices($list_profiles)
-		if $selectedItemIndex <> $iHot And $iHot <> -1 Then
-			$blockApplyButtonColorUpdate = True
-		Else
-			$blockApplyButtonColorUpdate = False
-		EndIf
-		_updateApplyButtonColor()
+		;~ Local $selectedItemIndex = _GUICtrlListView_GetSelectedIndices($list_profiles)
+		;~ if $selectedItemIndex <> $iHot And $iHot <> -1 Then
+		;~ 	$blockApplyButtonColorUpdate = True
+		;~ Else
+		;~ 	$blockApplyButtonColorUpdate = False
+		;~ EndIf
+		;~ _updateApplyButtonColor()
 
 		Sleep(100)
 		
