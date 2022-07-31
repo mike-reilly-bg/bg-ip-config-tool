@@ -4,11 +4,14 @@
 #AutoIt3Wrapper_Icon=icon.ico
 #AutoIt3Wrapper_Outfile=Simple IP Config 2.9.7.exe
 #AutoIt3Wrapper_Outfile_x64=Simple IP Config 2.9.7-x64.exe
-#AutoIt3Wrapper_Compile_Both=y
+#AutoIt3Wrapper_Compile_Both=n
 #AutoIt3Wrapper_UseX64=n
+#AutoIt3Wrapper_Change2CUI=y
 #AutoIt3Wrapper_Res_Description=Simple IP Config
 #AutoIt3Wrapper_Res_Fileversion=2.9.7.0
+#AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #AutoIt3Wrapper_Res_HiDpi=y
+#AutoIt3Wrapper_AU3Check_Stop_OnWarning=y
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 #Region license
 ; -----------------------------------------------------------------------------
