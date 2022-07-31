@@ -140,9 +140,8 @@ Global $values_match_bk_color = 0xFFFFFF
 Global $values_no_match_bk_color = 0xFFDEBB
 
 ;GUI variables for selection update functions
-;Local $stashedGuiProfiles = _Profiles()
-;Global $stashedGuiProfile = _Profiles_createProfile($stashedGuiProfiles, "stashedGuiProfile")
-Global $stashedGuiProfile
+Local $stashedGuiProfiles = _Profiles()
+Global $stashedGuiProfile = _Profiles_createProfile($stashedGuiProfiles, "stashedGuiProfile")
 Global $blockApplyButtonColorUpdate
 Global $lastHoverWasProfile = False
 Global $firstScan = True
