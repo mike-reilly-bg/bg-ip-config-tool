@@ -107,6 +107,7 @@ EndFunc   ;==>_onRadio
 ; Events.......: Click on profile list item / deselect a list item
 ;------------------------------------------------------------------------------
 Func _onClick()
+	_updateApplyButtonColor()
 	; clicking in blank listview space or pressing Escape
 	if _GUICtrlListView_GetSelectedCount($list_profiles) = 0 Then
 		_setAllListViewLabelsDefault()
@@ -470,6 +471,7 @@ EndFunc   ;==>_onFilter
 ;------------------------------------------------------------------------------
 Func _OnCombo()
 	_updateCurrent()
+	_setButtonYellow($tbButtonAddRoute)
 	$adap = GUICtrlRead($combo_adapters)
 	$iniAdap = iniNameEncode($adap)
 	$ret = IniWrite($sProfileName, "options", "StartupAdapter", $iniAdap)
@@ -706,10 +708,10 @@ Func ResetHotRow()
 	Local $lastIndex = _GUICtrlListView_GetItemCount($list_profiles)-1
 	Local $lastItemX = _GUICtrlListView_GetItemPositionX($list_profiles, $lastIndex)
 	Local $lastItemY = _GUICtrlListView_GetItemPositionY($list_profiles, $lastIndex)
-	Local $itemHeight = _GUICtrlListView_GetItemSpacingY($list_profiles)
+	Local $itemHeight = 20
 	If IsArray($aPos) Then
 		If $aPos[0] < $iLVx Or $aPos[0] > $iLVx + $iLVw Or _
-			$aPos[1] < $iLVy Or $aPos[1] > $iLVy + $iLVh Or _
+			$aPos[1] < $iLVy Or _;$aPos[1] > $iLVy + $iLVh Or _
 			$aPos[1] > $lastItemY + $iLVy + $itemHeight Then
 				$iHot = -1
 				_GUICtrlListView_RedrawItems( $hLV, $iHotPrev, $iHotPrev )

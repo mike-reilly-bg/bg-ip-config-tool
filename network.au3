@@ -27,7 +27,7 @@ Func _loadAdapters()
 	Local $nInterfaces = @extended
 
 	Local $tadapters = _GetAdapters()    ; get list of adapter names from 'network connections'
-	Local $ladapters[1][3] = [[0, 0, 0]]
+	Local $ladapters[1][4] = [[0, 0, 0, 0]]
 	Adapter_DeleteAll($adapters)
 	For $i = 0 To UBound($tadapters) - 1
 		$index = _ArraySearch($aIPAllAddrTable, $tadapters[$i], 0)
@@ -36,8 +36,9 @@ Func _loadAdapters()
 		If ($index <> -1) Then
 			$mac = $aIPAllAddrTable[$index][4]
 			$desc = $aIPAllAddrTable[$index][6]
+			$ifIndex = $aIPAllAddrTable[$index][0]
 		EndIf
-		Adapter_Add($adapters, $tadapters[$i], $mac, $desc)
+		Adapter_Add($adapters, $tadapters[$i], $mac, $desc, $ifIndex)
 	Next
 	Return $ladapters
 
@@ -116,6 +117,9 @@ Func _getIPs($adaptername)
 			$dnspri = $sDNS
 			$dnsalt = ""
 		EndIf
+
+		; Get the interface number
+		Run("powershell get-netadapter | where-object {$_.name -match ")
 
 		$props[0] = $ip
 		$props[1] = $subnet

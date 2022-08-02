@@ -586,12 +586,29 @@ Func _form_main()
 	GUICtrlSetBkColor(-1, 0xFFFFFF)
 	GUICtrlSetFont(-1, 8.5)
 
+	$totalButtonSpaceWidth = ($wRight - 2 * (8 * $dscale))
+
+	$applyButtonXPos = $x + 13 * $dscale
+	$applyButtonYPos = $yText_offset + $textHeight * 10 + $textSpacer * 10
+	$applyButtonWidth = $totalButtonSpaceWidth/2 - 10
+	$applyButtonHeight = 50 * $dscale
 	;MAKE THE APPLY BUTTON
-	$tbButtonApply = GuiFlatButton_Create($oLangStrings.toolbar.apply, $x + 8 * $dscale, $yText_offset + $textHeight * 10 + $textSpacer * 10, ($wRight - 2 * (8 * $dscale))/2 - 10, 50 * $dscale)
+	$tbButtonApply = GuiFlatButton_Create($oLangStrings.toolbar.apply, _
+	$applyButtonXPos, $applyButtonYPos, $applyButtonWidth, $applyButtonHeight)
 	GUICtrlSetTip(-1, $oLangStrings.toolbar.apply_tip)
 	GUICtrlSetOnEvent(-1, "_applyGUI")
-	_makeApplyButtonYellow()
+	_setButtonYellow($tbButtonApply)
 
+	$addRouteButtonXPos = $applyButtonXPos + $totalButtonSpaceWidth/2 + 2
+	$addRouteButtonYPos = $applyButtonYPos
+	$addRouteButtonWidth = $applyButtonWidth
+	$addRouteButtonHeight = $applyButtonHeight
+	;MAKE THE STATIC ROUTE BUTTON
+	$tbButtonAddRoute = GuiFlatButton_Create($oLangStrings.toolbar.addRoute, _
+	$addRouteButtonXPos, $addRouteButtonYPos, $addRouteButtonWidth, $addRouteButtonHeight)
+	GUICtrlSetTip(-1, $oLangStrings.toolbar.addRoute)
+	GUICtrlSetOnEvent(-1, "_applyRoute")
+	_setButtonYellow($tbButtonAddRoute)
 
 	_makeBox($x, $y, $w, $h)
 	#EndRegion set-ip-properties
@@ -642,6 +659,9 @@ Func _form_main()
 			Local $profileNames = $profiles.getNames()
 			$profileName = $profileNames[0]
 			_setGUI(_getProfileByName($profileName))
+			_stashGuiProfile()
+			_setAllGUILabelsDefault()
+			_setAllListViewLabelsDefault()
 		EndIf
 	EndIf
 

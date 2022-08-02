@@ -16,11 +16,11 @@
 ; -----------------------------------------------------------------------------
 
 #Region -- adapters --
-Global Enum $ADAPTER_Name, $ADAPTER_Description, $ADAPTER_MAC, $ADAPTER_MAX
+Global Enum $ADAPTER_Name, $ADAPTER_Description, $ADAPTER_MAC, $ADAPTER_ifINDEX, $ADAPTER_MAX
 
 ; Constructor
 Func Adapter()
-	Local $hObject[1][3] = [[0, 0, 0]]  ; [0]-name, [1]-mac, [2]-description, [3]-GUID
+	Local $hObject[1][4] = [[0, 0, 0, 0]]  ; [0]-name, [1]-mac, [2]-description, [3]-GUID
 
 	; Return the 'object'
 	Return $hObject
@@ -69,21 +69,30 @@ Func Adapter_GetDescription(ByRef $hObject, $sName)
 	Return $iIndex <> -1 ? $hObject[$iIndex][2] : Null
 EndFunc   ;==>Adapter_GetDescription
 
+Func Adapter_GetIfIndex(ByRef $hObject, $sName)
+	If Not _Adapter_IsObject($hObject) Then Return
+
+	Local $iIndex = _ArraySearch($hObject, $sName)
+	Return $iIndex <> -1 ? $hObject[$iIndex][3] : Null
+EndFunc   ;==>Adapter_GetIfIndex
+
 ; add adapter
-Func Adapter_Add(ByRef $hObject, $sName, $sMAC, $sDescription)
+Func Adapter_Add(ByRef $hObject, $sName, $sMAC, $sDescription, $ifIndex)
 	If Not _Adapter_IsObject($hObject) Then Return
 
 	If UBound($hObject) = 1 And $hObject[0][0] = "" Then
 		$hObject[0][0] = $sName
 		$hObject[0][1] = $sMAC
 		$hObject[0][2] = $sDescription
+		$hObject[0][3] = $ifIndex
 	Else
 ;~ 		$ret = _ArrayAdd($hObject, $sName & "|" & $sMAC & "|" & $sDescription, 0, "|")
 		Local $size = UBound($hObject)
-		ReDim $hObject[$size+1][3]
+		ReDim $hObject[$size+1][4]
 		$hObject[$size][0] = $sName
 		$hObject[$size][1] = $sMAC
 		$hObject[$size][2] = $sDescription
+		$hObject[$size][3] = $ifIndex
 	EndIf
 
 EndFunc   ;==>Adapter_Add

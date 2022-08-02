@@ -3,7 +3,7 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Icon=icon.ico
 #AutoIt3Wrapper_Outfile=Simple IP Config 2.9.7.exe
-#AutoIt3Wrapper_Outfile_x64=Simple IP Config 2.9.7-x64.exe
+#AutoIt3Wrapper_Outfile_x64=Simp le IP Config 2.9.7-x64.exe
 #AutoIt3Wrapper_Compile_Both=n
 #AutoIt3Wrapper_UseX64=n
 #AutoIt3Wrapper_Change2CUI=y
@@ -202,7 +202,8 @@ Global $label_CurrIp, $label_CurrSubnet, $label_CurrGateway, $label_CurrDnsPri, 
 Global $label_DnsPri, $label_DnsAlt, $ck_dnsReg, $label_ip, $label_subnet, $label_gateway
 
 ; TOOLBAR
-Global $oToolbar, $oToolbar2, $tbButtonApply
+Global $oToolbar, $oToolbar2, $tbButtonApply, $tbButtonAddRoute
+Global $updateAddRouteButtonFlag = True
 
 ; LANGUAGE VARIABLES
 Global $oLangStrings
@@ -210,6 +211,12 @@ Global $oLangStrings
 ; MOUSE STATUS VARIABLES
 Global $disableLeftClick = False
 Global $selected_lv_index
+
+; ASYNC COORDINATION
+Global $_reserveAsync = False
+Global $last_command = ""
+
+; ASYNC HALT VARIABLE
 #EndRegion Global Variables
 
 #include "libraries\Json\json.au3"
@@ -254,6 +261,7 @@ If _Singleton("Simple IP Config", 1) = 0 Then
 	_WinAPI_PostMessage(0xffff, $iMsg, 0x101, 0)
 	Exit
 EndIf
+
 
 ;begin main program
 _main()
@@ -344,11 +352,14 @@ Func _main()
 		$suppressComError = 1
 		_checksSICUpdate()
 		$suppressComError = 0
+		_updateAddRouteButtonColor()
 	EndIf
 
+	$iHot = -1
+
+	$counter = 1
 	Local $filePath
 	_print("Running")
-	$counter = 0
 	While 1
 ;~ 		If $dragging Then
 ;~ 			Local $aLVHit = _GUICtrlListView_HitTest(GUICtrlGetHandle($list_profiles))
@@ -375,7 +386,7 @@ Func _main()
 		If $OpenFileFlag Then
 			$OpenFileFlag = 0
 			$filePath = FileOpenDialog($oLangStrings.dialog.selectFile, @ScriptDir, $oLangStrings.dialog.ini & " (*.ini)", $FD_FILEMUSTEXIST, "profiles.ini")
-			If Not @error Then
+			If Not @error Then 
 				$sProfileName = $filePath
 				$options = _Options()
 				$profiles = _Profiles()
@@ -410,17 +421,6 @@ Func _main()
 			$lvTabKey = False
 			Send("{TAB}")
 		EndIf
-		
-		if $firstScan Then
-			_GUICtrlListView_SetItemSelected($list_profiles, 0)
-			$selectedProfile = _getSelectedProfile()
-			_setGUI($selectedProfile)
-			_stashGuiProfile()
-			_setAllGUILabelsDefault()
-			_setAllListViewLabelsDefault()
-			$iHot = -1
-			$firstScan = False
-		EndIf
 
 		Switch GUIGetMsg()
 			Case $GUI_EVENT_CLOSE
@@ -440,8 +440,15 @@ Func _main()
 		Else
 			$blockApplyButtonColorUpdate = False
 		EndIf
-		_updateApplyButtonColor()
 
+		if Mod($counter, 100) = 0 and not $_reserveAsync Then
+			_updateAddRouteButtonColor()
+			_updateApplyButtonColor()
+			$counter = 1
+		Endif
+
+		$counter = $counter + 1
+		;~ _updateApplyButtonColor()
 		Sleep(100)
 		
 	WEnd

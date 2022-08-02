@@ -155,7 +155,7 @@ Func GuiFlatButton_Create($sText, $x, $y, $w = -1, $h = -1, $style = 0)
 	GUISetState(@SW_SHOWNOACTIVATE)
 	;create the new button
 	$buttonID = GUICtrlCreateButton("", 0, 0, $w, $h)
-	GUICtrlSetStyle($buttonID, BitOR($WS_TABSTOP, $BS_NOTIFY, $BS_OWNERDRAW)) ; Set the ownerdrawn flag
+	GUICtrlSetStyle($buttonID, BitOR($WS_TABSTOP, $BS_NOTIFY, $BS_OWNERDRAW, $style)) ; Set the ownerdrawn flag
 	GUICtrlSetData($buttonID, $sText)
 
 	;check to see if control ID exists (which means it has been deleted outside of this UDF)
@@ -429,9 +429,7 @@ Func GuiFlatButton_SetColorsEx($controlID, ByRef $aClrs)
 	Else
 		Return 0
 	EndIf
-
 	_WinAPI_InvalidateRect(GUICtrlGetHandle($controlID))
-
 
 	Return 1
 EndFunc   ;==>GuiFlatButton_SetColorsEx

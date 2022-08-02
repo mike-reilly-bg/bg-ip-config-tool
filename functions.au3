@@ -27,7 +27,7 @@ Func MyErrFunc($oError)
 	If Not $suppressComError Then
 		SetError(1)
 		; Do anything here.
-		MsgBox(1, "COM " & $oLangStrings.message.error, "Simple IP Config COM " & $oLangStrings.message.error & @CRLF & "Error Number: " & Hex($oError.number) & @CRLF & $oError.windescription)
+		MsgBox(1, "COM " & $oLangStrings.message.error, "Simple IP Config COM " & $oLangStrings.message.error & @CRLF & "Error Number: " & Hex($oError.number) & @CRLF & $oError.windescription & @CRLF & "Source: " & $oError.source & @CRLF & "Line: " & $oError.scriptline)
 	EndIf
 EndFunc   ;==>MyErrFunc
 
@@ -46,47 +46,42 @@ EndFunc   ;==>MyErrFunc
 ; Return value....:
 ;------------------------------------------------------------------------------
 Func RunCallback($sDescription, $sNextDescription, $sStdOut)
+	;~ d("stdout: " & $sStdOut)
 	If $sStdOut = $oLangStrings.message.commandTimeout Then
-
 		_setStatus($oLangStrings.message.timedout, 1)
+		_asyncrun_clear()
 		If asyncRun_isIdle() Then
 ;~ 			_GUICtrlToolbar_EnableButton($hToolbar, $tb_apply, True)
 			GuiFlatButton_SetState($tbButtonApply, $GUI_ENABLE)
-		Else
-;~ 			_GUICtrlToolbar_EnableButton($hToolbar, $tb_apply, False)
-			GuiFlatButton_SetState($tbButtonApply, $GUI_DISABLE)
-		EndIf
+			Endif
 	Else
 		If StringInStr($sStdOut, "failed") Then
 			_setStatus(StringReplace($sStdOut, @CRLF, " "), 1)
 			If asyncRun_isIdle() Then
-;~ 				_GUICtrlToolbar_EnableButton($hToolbar, $tb_apply, True)
 				GuiFlatButton_SetState($tbButtonApply, $GUI_ENABLE)
+				_asyncrun_clear()
 			EndIf
 		ElseIf StringInStr($sStdOut, "exists") Then
 			_setStatus(StringReplace($sStdOut, @CRLF, " "), 1)
-;~ 			_GUICtrlToolbar_EnableButton($hToolbar, $tb_apply, True)
 			GuiFlatButton_SetState($tbButtonApply, $GUI_ENABLE)
-			_asyncRun_Clear()
-		Else
-			If $sDescription = $sNextDescription Then
-				If Not $showWarning Then _setStatus($sNextDescription)
-;~ 				_GUICtrlToolbar_EnableButton($hToolbar, $tb_apply, False)
-				GuiFlatButton_SetState($tbButtonApply, $GUI_DISABLE)
-			ElseIf asyncRun_isIdle() Then
-;~ 				_GUICtrlToolbar_EnableButton($hToolbar, $tb_apply, True)
-				GuiFlatButton_SetState($tbButtonApply, $GUI_ENABLE)
-				If Not $showWarning Then _setStatus($oLangStrings.message.ready)
-;~ 				_GUICtrlToolbar_EnableButton($hToolbar, $tb_apply, True)
-				GuiFlatButton_SetState($tbButtonApply, $GUI_ENABLE)
-			Else
-				If Not $showWarning Then _setStatus($sNextDescription)
-;~ 				_GUICtrlToolbar_EnableButton($hToolbar, $tb_apply, False)
-				GuiFlatButton_SetState($tbButtonApply, $GUI_DISABLE)
-			EndIf
+;~ 		ElseIf StringInStr($sStdOut, "already") Then
+;~ 			_setStatus(StringReplace($sStdOut, @CRLF, " "), 1)
+;~ ;~ 			_GUICtrlToolbar_EnableButton($hToolbar, $tb_apply, True)
+;~ 			GuiFlatButton_SetState($tbButtonApply, $GUI_ENABLE)
+		Elseif $sNextDescription = "" Then
+			$_reserveAsync = False
+			GuiFlatButton_SetState($tbButtonApply, $GUI_ENABLE)
+
+			$selected_adapter = GUICtrlRead($combo_adapters)
+			If Not $showWarning Then
+				if _getIPs($selected_adapter)[7] <> (GUICtrlRead($radio_IpAuto) = $GUI_CHECKED) Then
+					_setStatus("DHCP could not be set.")
+				Else
+					_setStatus($oLangStrings.message.ready)
+				EndIf
+			Endif
 		EndIf
 	EndIf
-
 	_updateCurrent()
 EndFunc   ;==>RunCallback
 
@@ -647,6 +642,11 @@ Func _apply($dhcp, $ip, $subnet, $gateway, $dnsDhcp, $dnsp, $dnsa, $dnsreg, $ada
 		Return 1
 	EndIf
 
+	if _warnUserDuplicateIP($adapter) then Return
+	AdlibUnRegister("_asyncRun_Process")
+	$_reserveAsync = True
+	_asyncrun_clear()
+
 	$cmd1 = 'netsh interface ip set address '
 	$cmd2 = '"' & $adapter & '"'
 	$cmd3 = ""
@@ -657,9 +657,11 @@ Func _apply($dhcp, $ip, $subnet, $gateway, $dnsDhcp, $dnsp, $dnsa, $dnsreg, $ada
 	Else
 		If $ip = "" Then
 			_setStatus($oLangStrings.message.enterIP, 1)
+			$_reserveAsync = False
 			Return 1
 		ElseIf $subnet = "" Then
 			_setStatus($oLangStrings.message.enterSubnet, 1)
+			$_reserveAsync = False
 			Return 1
 		Else
 			If $gateway = "" Then
@@ -1122,6 +1124,8 @@ Func _refresh($init = 0)
 	_loadProfiles()
 	_updateProfileList()
 	_updateCurrent()
+	_updateAddRouteButtonColor()
+	_updateApplyButtonColor()
 	If $pIdle Then
 		If Not $init Or ($init And Not $showWarning) Then
 			_setStatus($oLangStrings.message.ready)
@@ -1213,7 +1217,7 @@ Func _setGUI($oProfile)
 	If $oProfile.AdapterName <> "" And (_StrToState($options.SaveAdapterToProfile) Or _StrToState($options.SaveAdapterToProfile)) Then
 		ControlCommand($hgui, "", $combo_adapters, "SelectString", $oProfile.AdapterName)
 	EndIf
-	
+	_updateAddRouteButtonColor()
 	_radios()
 EndFunc   ;==>_setGUI
 
@@ -1454,24 +1458,24 @@ Func _updateProfileList()
 EndFunc   ;==>_updateProfileList
 
 
-Func _makeApplyButtonGreen()
+Func _setButtonGreen($buttonHandle)
 	Local $aColorsEx = _
 			[0x73f773, 0x111111, 0x666666, _     ; normal 	: Background, Text, Border
 			0x8ef98e, 0x111111, 0x999999, _     ; focus 	: Background, Text, Border
 			0xbbfbbb, 0x333333, 0x666666, _      ; hover 	: Background, Text, Border
 			0x73f773, 0x111111, 0x666666]        ; selected 	: Background, Text, Border
-	GuiFlatButton_SetColorsEx($tbButtonApply, $aColorsEx)
-EndFunc   ;==>_makeApplyButtonGreen
+	GuiFlatButton_SetColorsEx($buttonHandle, $aColorsEx)
+EndFunc   ;==>_setButtonGreen
 
 
-Func _makeApplyButtonYellow()
+Func _setButtonYellow($buttonHandle)
 	Local $aColorsEx = _
 			[0xFFDB28, 0x111111, 0x666666, _     ; normal 	: Background, Text, Border
 			0xFFE564, 0x111111, 0x999999, _     ; focus 	: Background, Text, Border
 			0xFFEE9A, 0x333333, 0x666666, _      ; hover 	: Background, Text, Border
 			0xFFDB28, 0x111111, 0x666666]        ; selected 	: Background, Text, Border
-	GuiFlatButton_SetColorsEx($tbButtonApply, $aColorsEx)
-EndFunc   ;==>_makeApplyButtonYellow
+	GuiFlatButton_SetColorsEx($buttonHandle, $aColorsEx)
+EndFunc   ;==>_setButtonYellow
 
 
 Func _elementExists($array, $element)
@@ -1480,6 +1484,7 @@ Func _elementExists($array, $element)
 EndFunc
 
 Func _updateApplyButtonColor()
+	If $cmdLine Then Return
 	if $blockApplyButtonColorUpdate Then return 
 	$dhcp = (GUICtrlRead($radio_IpAuto) = $GUI_CHECKED) ? "1" : "0"
 	$ip = _ctrlGetIP($ip_Ip)
@@ -1525,9 +1530,90 @@ Func _updateApplyButtonColor()
 		if ($dnsp <> "") And ($dnsreg <> $props[9]) Then $values_match = 0
 	Endif
 
-	if ($values_match = 1) Then _makeApplyButtonGreen()
-	if ($values_match = 0) Then _makeApplyButtonYellow()
+	if ($values_match = 1) Then _setButtonGreen($tbButtonApply)
+	if ($values_match = 0) Then _setButtonYellow($tbButtonApply)
 EndFunc   ;==>_updateApplyButtonColor
+
+
+
+
+Func _applyRoute()
+	If $cmdLine Then Return
+	_setButtonYellow($tbButtonAddRoute)
+	_setStatus("Updating 172.0.0.0/8 route for current gateway...")
+	$selected_adapter = GUICtrlRead($combo_adapters)
+
+	$ifIndex = Adapter_GetIfIndex($adapters, $selected_adapter)
+	$ip_props = _getIPs($selected_adapter)
+	$gateway = StringSplit($ip_props[2],".",2)
+	$ip_address = StringSplit($ip_props[0],".",2)
+	if not isarray($gateway) or not IsArray($ip_address) Then
+		MsgBox(0,"'ROUTE ADD' Failed","The adapter IP settings must be set before a route can be added. Be sure to apply the IP settings before setting the route. Settings may not apply if the adapter is unplugged.")
+		return
+	Elseif $gateway[0] <> 172 Or $ip_address[0] <> 172 Then
+		MsgBox(0,"'ROUTE ADD' Failed","'ROUTE ADD' failed. The IP and gateway addresses should both start with 172. Be sure to apply the IP settings before setting the route. Settings may not apply if the adapter is unplugged.")
+		return
+	Elseif $gateway[1] <> $ip_address[1] Then
+		MsgBox(0,"ROUTE ADD Error","Error: The second octet of the IP and gateway addresses should match. Be sure to apply the IP settings before setting the route. Settings may not apply if the adapter is unplugged.")
+		return
+	Elseif $gateway[2] <> $ip_address[2] Then
+		MsgBox(0,"ROUTE ADD Error","Error: The third octet of the IP and gateway addresses should match. Be sure to apply the IP settings before setting the route. Settings may not apply if the adapter is unplugged.")
+		return
+	Endif
+
+	$cmd = "powershell route delete 172.0.0.0; route add 172.0.0.0 mask 255.0.0.0 " & $ip_props[2] & " if " & $ifIndex
+	asyncrun($cmd, _applyRouteCallback, "Apply Route")
+EndFunc
+
+
+Func _applyRouteCallback($desc, $nextdesc, $sStdOut)
+	If StringRight(StringStripWS($sStdOut, $STR_STRIPALL),3) = "OK!" Then
+		_setStatus("Route was successfully updated!")
+	Else
+		_setStatus($sStdOut)
+	Endif
+	GuiFlatButton_SetState($tbButtonAddRoute, $GUI_ENABLE)
+	_updateAddRouteButtonColor()
+EndFunc
+
+
+Func _updateAddRouteButtonColor()
+	If $cmdLine Then Return
+	$selected_adapter = GUICtrlRead($combo_adapters)
+
+	$ifIndex = Adapter_GetIfIndex($adapters, $selected_adapter)
+	$gateway = _getIPs($selected_adapter)[2]
+	$cmd = 'powershell.exe -nologo -executionpolicy bypass -noprofile -command ' & _
+	'"' & 'get-netroute | where-object ' & _ 
+	'{$_.DestinationPrefix -eq ' & "'" & '172.0.0.0/8' & "'" & ' -and $_.NextHop -eq ' & _
+	"'" & $gateway & "'" & ' -and $_.InterfaceIndex -eq ' & $ifIndex & '}"'
+
+	$desc = "Updating route button color"
+	asyncRun($cmd, _updateAddRouteButtonColor_callback,$desc, Default, True, False)
+EndFunc
+
+
+Func _updateAddRouteButtonColor_callback($desc, $nextdesc, $sStdOut)
+	if StringStripWS($sStdOut, $STR_STRIPALL) = "" Then
+		;~ d(StringStripWS($sStdOut, $STR_STRIPALL) & @crlf &@crlf & StringStripWS($sStdOut, $STR_STRIPALL) = "")
+		_setButtonYellow($tbButtonAddRoute)
+	Else
+		;~ d(StringStripWS($sStdOut, $STR_STRIPALL))
+		_setButtonGreen($tbButtonAddRoute)
+	EndIf
+	GuiFlatButton_SetState($tbButtonAddRoute, $GUI_ENABLE)
+EndFunc
+
+
+Func _getDOSOutput($command, $wd='')
+    Local $text = '', $Pid = Run('"' & @ComSpec & '" /c ' & $command, $wd, @SW_HIDE, 2 + 4)
+    While 1
+            $text &= StdoutRead($Pid, False, False)
+            If @error Then ExitLoop
+            Sleep(10)
+    WEnd
+    Return StringStripWS($text, 7)
+ EndFunc   ;==>_getDOSOutput
 
 
 Func _updateCurrent($init = 0, $selected_adapter = "")
@@ -1570,6 +1656,30 @@ Func _updateCurrent($init = 0, $selected_adapter = "")
 	EndIf
 EndFunc   ;==>_updateCurrent
 
+
+Func _warnUserDuplicateIP($currentAdapter)
+	if (GUICtrlRead($radio_IpAuto) = $GUI_CHECKED) then Return
+	_setStatus("Checking for duplicate IP assignments...") 
+	$ip = _ctrlGetIP($ip_Ip)
+
+	$adapterNames = Adapter_GetNames($adapters)
+	$ip = _ctrlGetIP($ip_Ip)
+	for $adapterName in $adapterNames
+		if $ip = _getIPs($adapterName)[0] And $adapterName <> $currentAdapter Then
+			$yesno = Msgbox(4,'Set IP Error', 'Warning' & @CRLF & @CRLF & 'IP ' & $ip & ' is already assigned to interface "' & $adapterName & '".' & @CRLF & 'Delete IP from "' & $adapterName & '"?')
+			if $yesno = 6 Then
+				$cmd = 'powershell.exe -nologo -executionpolicy bypass -noprofile -command ' & _
+				'"' & 'remove-netipaddress ' & $ip & ' -confirm:$false'
+				_setStatus("Removing IP Address " & $ip & " from adapter " & $adapterName)
+				_getDOSOutput($cmd)
+			Else
+				If Not $showWarning Then _setStatus($oLangStrings.message.ready)
+				return 1
+			EndIf
+		EndIf
+	Next
+	return 0
+EndFunc
 
 Func _filterProfiles()
 	Local $aArray[1] = [0]
@@ -1949,6 +2059,7 @@ EndFunc   ;==>_regex_stringLiteralDecode
 
 
 Func _handleHoverItemChange()
+	If $cmdLine Then Return
 	if (winActive($hgui) = 0) Then
 		_setAllGUILabelsDefault()
 		$lastHoverWasProfile = False
@@ -1966,11 +2077,10 @@ Func _handleHoverItemChange()
 	Endif
 
 	$lastHoverWasProfile = True
-	Local $index = $iHot
+	Local $index = ($ihot)
 	if $index = -1 then return
 	Local $hoverProfile = _getProfileByIndex($index)
 	_setGUI($hoverProfile)
-
 	; update label colors based on whether the profile and previous gui values match
 	_updateLabelColor($radio_IpAuto, $hoverProfile.IpAuto, $stashedGuiProfile.IpAuto)
 	_updateLabelColor($radio_IpMan, $hoverProfile.IpAuto, $stashedGuiProfile.IpAuto)
@@ -1985,6 +2095,7 @@ EndFunc   ;==>_highlightHoverItemGuiMismatch
 
 
 Func _highlightUnsavedProfile()
+	If $cmdLine Then Return
 	$guiProfile = _getGUI()
 	if _GUICtrlListView_GetSelectedCount($list_profiles) <> 0 Then
 		$selectedProfile = _getSelectedProfile()
@@ -2003,6 +2114,7 @@ EndFunc
 
 
 Func _setAllGUILabelsDefault()
+	If $cmdLine Then Return
 	_updateLabelColor($radio_IpAuto)
 	_updateLabelColor($radio_IpMan)
 	_updateLabelColor($label_ip)
@@ -2016,6 +2128,7 @@ EndFunc
 
 
 Func _setAllListViewLabelsDefault()
+	If $cmdLine Then Return
 	for $i = 0 to (_GUICtrlListView_GetItemCount($list_profiles) - 1)
 		_updateLabelColor(_GUICtrlListView_GetItemParam($list_profiles,$i))
 		$index = _GUICtrlListView_GetItemCount($list_profiles)-1
@@ -2025,6 +2138,7 @@ EndFunc
 
 
 Func _updateLabelColor($labelHandle, $param1 = 1 , $param2 = 1)
+	If $cmdLine Then Return
 	if $param1 = $param2 Then
 		GUICtrlSetBkColor($labelHandle, $values_match_bk_color)
 	Else
@@ -2035,4 +2149,14 @@ EndFunc
 
 Func d($str)
 	MsgBox(0,"",$str)
+Endfunc
+
+
+Func _haltAsync()
+	$asyncHalt = True
+Endfunc
+
+
+Func _restartAsync()
+	$asyncHalt = True
 Endfunc

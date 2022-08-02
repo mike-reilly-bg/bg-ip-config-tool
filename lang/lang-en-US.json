@@ -74,13 +74,15 @@
          "shortcut":"Create shortcut to profile"
       },
       "toolbar":{
-         "apply":"Apply",
+         "apply":"Apply IP settings",
+         "addRoute":"Add static route: 172.0.0.0/8.",
          "refresh":"Refresh",
          "new":"New",
          "save":"Save",
          "delete":"Delete",
          "clear":"Clear",
          "apply_tip":"Apply",
+         "addRoute_tip":"Add static route: 172.0.0.0/8.",
          "refresh_tip":"Refresh",
          "new_tip":"Create new profile",
          "save_tip":"Save profile",
