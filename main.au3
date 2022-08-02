@@ -2,13 +2,13 @@
 #RequireAdmin
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Icon=icon.ico
-#AutoIt3Wrapper_Outfile=Simple IP Config 2.9.7.exe
+#AutoIt3Wrapper_Outfile=RPW IP Config Tool.exe
 #AutoIt3Wrapper_Outfile_x64=Simp le IP Config 2.9.7-x64.exe
 #AutoIt3Wrapper_Compile_Both=n
 #AutoIt3Wrapper_UseX64=n
-#AutoIt3Wrapper_Change2CUI=y
-#AutoIt3Wrapper_Res_Description=Simple IP Config
-#AutoIt3Wrapper_Res_Fileversion=2.9.7.0
+#AutoIt3Wrapper_Change2CUI=n
+#AutoIt3Wrapper_Res_Description=RPW IP Config Tool
+#AutoIt3Wrapper_Res_Fileversion=3.0
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #AutoIt3Wrapper_Res_HiDpi=y
 #AutoIt3Wrapper_AU3Check_Stop_OnWarning=y
@@ -113,9 +113,9 @@ _setProfilesIniLocation()
 
 
 ;GUI stuff
-Global $winName = "Simple IP Config"
-Global $winVersion = "2.9.7"
-Global $winDate = "6/14/2022"
+Global $winName = "RPW IP Config Tool"
+Global $winVersion = "3.0"
+Global $winDate = "8/2/2022"
 Global $hgui
 Global $guiWidth = 600
 Global $guiHeight = 625
@@ -257,7 +257,7 @@ Global $iMsg = _WinAPI_RegisterWindowMessage('newinstance_message')
 
 ;Check if already running. If running, send a message to the first
 ;instance to show a popup message then close this instance.
-If _Singleton("Simple IP Config", 1) = 0 Then
+If _Singleton("RPW IP Config Tool", 1) = 0 Then
 	_WinAPI_PostMessage(0xffff, $iMsg, 0x101, 0)
 	Exit
 EndIf
@@ -342,8 +342,8 @@ Func _main()
 	$mDblClickTime = $retval[0]
 
 	;see if we should display the changelog
-	_checkChangelog()
-	
+	;~ _checkChangelog()
+
 	;get the domain
 	GUICtrlSetData($domainName, _DomainComputerBelongs())
 
@@ -429,6 +429,11 @@ Func _main()
 
 		if _StrToState($options.AutoRefresh) Then
 			_updateCurrent()
+			if Mod($counter, 10) = 0 Then ;and not $_reserveAsync Then
+				_updateAddRouteButtonColor()
+				_updateApplyButtonColor()
+				$counter = 1
+			Endif
 		EndIf
 
 		_handleHoverItemChange()
@@ -440,12 +445,6 @@ Func _main()
 		Else
 			$blockApplyButtonColorUpdate = False
 		EndIf
-
-		if Mod($counter, 10) = 0 Then ;and not $_reserveAsync Then
-			_updateAddRouteButtonColor()
-			_updateApplyButtonColor()
-			$counter = 1
-		Endif
 
 		$counter = $counter + 1
 		;~ _updateApplyButtonColor()
@@ -481,7 +480,7 @@ Func _setProfilesIniLocation()
 	Else
 		;get install path and check if running from installed or other directory
 		Local $sDisplayName
-		Local $InstallPath = _GetInstalledPath("Simple IP Config", $sDisplayName)
+		;~ Local $InstallPath = _GetInstalledPath("Simple IP Config", $sDisplayName)
 
 		If @error Then
 			;program is not installed
@@ -493,20 +492,20 @@ Func _setProfilesIniLocation()
 				$scriptPath &= "\"
 			EndIf
 
-			If $InstallPath = $scriptPath Then
-				$isPortable = False
-			Else
+			;~ If $InstallPath = $scriptPath Then
+			;~ 	$isPortable = False
+			;~ Else
 				$isPortable = True
-			EndIf
+			;~ EndIf
 		EndIf
 	EndIf
 
 	If $isPortable Then
 		$sProfileName = @ScriptDir & "\profiles.ini"
 	Else
-		If Not FileExists(@LocalAppDataDir & "\Simple IP Config") Then
-			DirCreate(@LocalAppDataDir & "\Simple IP Config")
+		If Not FileExists(@LocalAppDataDir & "\RPW IP Config") Then
+			DirCreate(@LocalAppDataDir & "\RPW IP Config")
 		EndIf
-		$sProfileName = @LocalAppDataDir & "\Simple IP Config\profiles.ini"
+		$sProfileName = @LocalAppDataDir & "\RPW IP Config\profiles.ini"
 	EndIf
 EndFunc

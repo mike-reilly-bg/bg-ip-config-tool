@@ -536,12 +536,14 @@ Func _getEnglish()
 			'      },' & _
 			'      "toolbar":{' & _
 			'         "apply":"Apply",' & _
+			'		  "addRoute":"Add static route: 172.0.0.0/8.",' & _
 			'         "refresh":"Refresh",' & _
 			'         "new":"New",' & _
 			'         "save":"Save",' & _
 			'         "delete":"Delete",' & _
 			'         "clear":"Clear",' & _
 			'         "apply_tip":"Apply",' & _
+			'         "addRoute_tip":"Add static route: 172.0.0.0/8.",' & _
 			'         "refresh_tip":"Refresh",' & _
 			'         "new_tip":"Create new profile",' & _
 			'         "save_tip":"Save profile",' & _

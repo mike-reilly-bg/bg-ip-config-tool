@@ -106,19 +106,20 @@ EndFunc   ;==>_onRadio
 ; Description..: Set IP address information from profile
 ; Events.......: Click on profile list item / deselect a list item
 ;------------------------------------------------------------------------------
-Func _onClick()
-	_updateApplyButtonColor()
+Func _onClick($forceApply = False)
 	; clicking in blank listview space or pressing Escape
 	if _GUICtrlListView_GetSelectedCount($list_profiles) = 0 Then
 		_setAllListViewLabelsDefault()
 	; clicked on a profile
-	Elseif _checkMouse($list_profiles) Then
+	Elseif _checkMouse($list_profiles) or $forceApply Then
 		_setGUI(_getSelectedProfile())
 		$blockApplyButtonColorUpdate = False
 		_stashGuiProfile()
 		_setAllGUILabelsDefault()
 		_setAllListViewLabelsDefault()
 	EndIf
+	_updateApplyButtonColor()
+	_updateAddRouteButtonColor()
 EndFunc   ;==>_onClick
 
 
@@ -276,7 +277,7 @@ Func _onLvUp()
 	If _ctrlHasFocus($list_profiles) Then
 		$Index = ControlListView($hgui, "", $list_profiles, "GetSelected")
 		ControlListView($hgui, "", $list_profiles, "Select", $Index - 1)
-		_onClick()
+		_onClick(True)
 	Else
 		GUISetAccelerators(0)
 		Send("{Up}")
@@ -293,7 +294,7 @@ Func _onLvDown()
 	If _ctrlHasFocus($list_profiles) Then
 		$Index = ControlListView($hgui, "", $list_profiles, "GetSelected")
 		ControlListView($hgui, "", $list_profiles, "Select", $Index + 1)
-		_onClick()
+		_onClick(True)
 	Else
 		GUISetAccelerators(0)
 		Send("{Down}")
@@ -439,7 +440,7 @@ EndFunc   ;==>_onDebugItem
 ; Events.......: Help menu "Show Change Log" item
 ;------------------------------------------------------------------------------
 Func _onChangelog()
-	_form_changelog()
+	;~ _form_changelog()
 EndFunc   ;==>_onChangelog
 
 

@@ -83,6 +83,7 @@ Func RunCallback($sDescription, $sNextDescription, $sStdOut)
 		EndIf
 	EndIf
 	_updateCurrent()
+	_updateApplyButtonColor()
 EndFunc   ;==>RunCallback
 
 
@@ -408,8 +409,10 @@ Func _clickUp()
 	If _checkMouse($list_profiles) And _ctrlHasFocus($list_profiles) Then
 		MouseClick($MOUSE_CLICK_PRIMARY)
 		If $mdblClick Then
+			_GUICtrlListView_CancelEditLabel($list_profiles)
 			_applyGUI()
 			$mdblClick = 0
+			;_GUICtrlListView_GetItem($list_profiles,_GUICtrlListView_GetSelectedIndices($list_profiles)))
 		Else
 			If $dragging Then
 				$newitem = ControlListView($hgui, "", $list_profiles, "GetSelected")
