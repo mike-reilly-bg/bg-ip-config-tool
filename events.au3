@@ -115,7 +115,6 @@ Func _onClick()
 	Elseif _checkMouse($list_profiles) Then
 		_setGUI(_getSelectedProfile())
 		$blockApplyButtonColorUpdate = False
-		_updateApplyButtonColor()
 		_stashGuiProfile()
 		_setAllGUILabelsDefault()
 		_setAllListViewLabelsDefault()

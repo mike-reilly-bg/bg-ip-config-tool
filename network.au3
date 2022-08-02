@@ -118,9 +118,6 @@ Func _getIPs($adaptername)
 			$dnsalt = ""
 		EndIf
 
-		; Get the interface number
-		Run("powershell get-netadapter | where-object {$_.name -match ")
-
 		$props[0] = $ip
 		$props[1] = $subnet
 		$props[2] = $gateway

@@ -36,10 +36,13 @@ Func asyncRun($sCmd, $CallbackFunc, $sDescription = "", $iTimeout = 4000, $dontC
 	; check if process is already in stack
 	if $sDescription <> "" and ubound( $__asyncProcess__Data) > 1 Then
 		for $i = 1 to ubound($__asyncProcess__Data,1)-1
-			if $__asyncProcess__Data[$i][2] = $sDescription Then Return
+			if $__asyncProcess__Data[$i][2] = $sDescription Then
+				Return
+			endif
 		next
 	Endif
 	_ArrayAdd($__asyncProcess__Data, $sCmd, Default, "!")
+
 	;~ d("size of array at add: " & UBound($__asyncProcess__Data) & @crlf & @crlf & $sCmd)
 
 	
@@ -54,13 +57,14 @@ Func asyncRun($sCmd, $CallbackFunc, $sDescription = "", $iTimeout = 4000, $dontC
 	Endif
 	$__asyncProcess__Data[0][2] = 0
 	If $size = 2 Then
-		If not $dontCallbackTwice Then
-			$sStdOut = ""
-			_setStatus("")
-			$CallbackFunc($sDescription, $sDescription, "")
-		Endif
+		;~ If not $dontCallbackTwice Then
+			;$sStdOut = ""
+			;_setStatus("")
+			;$CallbackFunc($sDescription, $sDescription, "")
+		;~ Endif
 	EndIf
 	AdlibRegister("_asyncRun_Process", 100)
+	;~ d("queue size: " & ubound($__asyncProcess__Data,1)-1& @crlf & @crlf & $scmd)
 EndFunc   ;==>asyncRun
 
 Func _asyncRun_Execute($sCmd)
@@ -74,14 +78,23 @@ Func _asyncRun_Clear()
 EndFunc   ;==>_asyncRun_Clear
 
 Func _asyncRun_Process()
+	;~ $str = ""
+	;~ for $i = 1 to ubound($__asyncProcess__Data)-1
+	;~ 	$str = $str & @CRLF & @CRLF & "command " & $i & ": " & $__asyncProcess__Data[$i][0] & @CRLF & @crlf & "description " & $i & ": " & $__asyncProcess__Data[$i][2] & @CRLF & @crlf
+	;~ next
+	;~ $str = $str & $last_command
+	;~ if ubound($__asyncProcess__Data) > 1 Then d($str)
+
 	Local $endingString = "__asyncRun cmd done"
 	Local $pExists = ProcessExists($__asyncProcess__Data[0][0])
 	If $pExists Then    ;if process exists, check if finished
 		Local $pDone
-		$sStdOut = StdoutRead($__asyncProcess__Data[0][0])
-		$sStdErr = StderrRead($__asyncProcess__Data[0][0])
+		$sStdOut = $sStdOut & StdoutRead($__asyncProcess__Data[0][0])
+		;~ d("pexist: " &  $sStdOut)
+		$sStdErr = $sStdOut & StderrRead($__asyncProcess__Data[0][0])
 		If StringInStr($sStdOut, $endingString) Then    ;look for our unique phrase to signal we're done
 			$sStdOut = StringLeft($sStdOut, StringInStr($sStdOut, $endingString) - 1)
+			;~ d("clipped, done: " & $sStdOut)
 			$pDone = 1
 		ElseIf TimerDiff($__asyncProcess__Data[0][1]) > $__asyncProcess__Data[1][3] Then    ;if timeout expired
 			$sStdOut = "Command timeout"
@@ -109,14 +122,14 @@ Func _asyncRun_Process()
 			$myFunc($desc, $nextdesc, $sStdOut)    ;callback function
 			$d = $__asyncProcess__Data[1][0]
 			_ArrayDelete($__asyncProcess__Data, 1)
-			;~ d("size of array at finish, after deleting: " & UBound($__asyncProcess__Data) & @crlf & @crlf & $d)
+			;~ d("size of array at finish, after deleting: " & UBound($__asyncProcess__Data)-1 & @crlf & @crlf & $d & @crlf & @crlf & "stdout: " & $sStdOut & @crlf & @crlf & "stderr: " & $sStdErr)
 			AdlibRegister("_asyncRun_Process", 100)
-			$last_command = ""
+			$last_command = ""; $__asyncProcess__Data[1][0]
 		EndIf
 	ElseIf UBound($__asyncProcess__Data) > 1 Then    ;if process is finished, start next command
 		; check if the process failed
 		if $__asyncProcess__Data[1][0] = $last_command Then
-			_setstatus($oLangStrings.message.ready)
+			if $__asyncProcess__Data[1][4] Then _setstatus($oLangStrings.message.ready)
 			AdlibUnRegister("_asyncRun_Process")
 			Local $myFunc = $__asyncProcess__Data[1][1]
 			$desc = $__asyncProcess__Data[1][2]
@@ -126,25 +139,30 @@ Func _asyncRun_Process()
 			Else
 				$nextdesc = $__asyncProcess__Data[2][2]
 			EndIf
-			$myFunc($desc, $nextdesc, "")    ;callback function
+			$sStdOut = $sStdOut & StdoutRead($__asyncProcess__Data[0][0])
+			$sStdOut = StringLeft($sStdOut, StringInStr($sStdOut, $endingString) - 1)
+			;~ d("error section: " & $sStdOut)
+			$sStdErr = $sStdErr &   StderrRead($__asyncProcess__Data[0][0])
+			$myFunc($desc, $nextdesc, $sstdout)    ;callback function
 			$d = $__asyncProcess__Data[1][0]
 			;~ d("size of array at error, before deleting: " & UBound($__asyncProcess__Data) & @crlf & @crlf & $d)
 			_ArrayDelete($__asyncProcess__Data, 1)
-			;~ d("size of array at error, after deleting: " & UBound($__asyncProcess__Data) & @crlf & @crlf & $d)
+			;~ d("size of array at error, after deleting: " & UBound($__asyncProcess__Data)-1 & @crlf & @crlf & $d & @crlf & @crlf & "stdout: " & $sStdOut & @crlf & @crlf & "stderr: " & $sStdErr)
 			AdlibRegister("_asyncRun_Process", 100)
 			$__asyncProcess__Data[0][0] = -1
-			$last_command = ""
+			$last_command = ""; $__asyncProcess__Data[1][0]
 			return
 		EndIf
-		;~ D("RUN")
 		$d = $__asyncProcess__Data[1][0]
-		;~ d("size of array at call: " & UBound($__asyncProcess__Data) & @crlf & @crlf & $d)
-		$last_command = $__asyncProcess__Data[1][0]
+		;~ d("size of array at call: " & UBound($__asyncProcess__Data)-1 & @crlf & @crlf & $d)
+		$sStdOut = ""
+		$sStdErr = ""
 		;Run command and end with a unique string so we know the command is finished
-		$__asyncProcess__Data[0][0] = Run(@ComSpec & " /k " & $__asyncProcess__Data[1][0] & "& echo __asyncRun cmd done", "", @SW_HIDE, $STDIN_CHILD + $STDERR_MERGED)
+		$__asyncProcess__Data[0][0] = Run(@ComSpec & " /c " & $__asyncProcess__Data[1][0] & " & echo __asyncRun cmd done", "", @SW_HIDE, $STDIN_CHILD + $STDERR_MERGED)
+		$last_command = $__asyncProcess__Data[1][0]
 		if $__asyncProcess__Data[1][4] Then _setstatus($__asyncProcess__Data[1][2])
 		;~ d("process: " & $__asyncProcess__Data[0][0])
-		$__asyncProcess__Data[0][1] = TimerInit()    ;start runtime timer
+		$__asyncProcess__Data[0][1] =  TimerInit()    ;start runtime timer
 		$__asyncProcess__Data[0][2] = 0                ;set Idle status to 0
 	Else    ;done processing, no commands left
 		$__asyncProcess__Data[0][2] = 1            ;idle status to 1

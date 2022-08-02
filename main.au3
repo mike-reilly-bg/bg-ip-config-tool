@@ -216,7 +216,7 @@ Global $selected_lv_index
 Global $_reserveAsync = False
 Global $last_command = ""
 
-; ASYNC HALT VARIABLE
+; ASYNC HALT  VARIABLE
 #EndRegion Global Variables
 
 #include "libraries\Json\json.au3"
@@ -343,7 +343,7 @@ Func _main()
 
 	;see if we should display the changelog
 	_checkChangelog()
-
+	
 	;get the domain
 	GUICtrlSetData($domainName, _DomainComputerBelongs())
 
@@ -441,7 +441,7 @@ Func _main()
 			$blockApplyButtonColorUpdate = False
 		EndIf
 
-		if Mod($counter, 100) = 0 and not $_reserveAsync Then
+		if Mod($counter, 10) = 0 Then ;and not $_reserveAsync Then
 			_updateAddRouteButtonColor()
 			_updateApplyButtonColor()
 			$counter = 1

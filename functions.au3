@@ -49,7 +49,7 @@ Func RunCallback($sDescription, $sNextDescription, $sStdOut)
 	;~ d("stdout: " & $sStdOut)
 	If $sStdOut = $oLangStrings.message.commandTimeout Then
 		_setStatus($oLangStrings.message.timedout, 1)
-		_asyncrun_clear()
+		;_asyncrun_clear()
 		If asyncRun_isIdle() Then
 ;~ 			_GUICtrlToolbar_EnableButton($hToolbar, $tb_apply, True)
 			GuiFlatButton_SetState($tbButtonApply, $GUI_ENABLE)
@@ -59,7 +59,7 @@ Func RunCallback($sDescription, $sNextDescription, $sStdOut)
 			_setStatus(StringReplace($sStdOut, @CRLF, " "), 1)
 			If asyncRun_isIdle() Then
 				GuiFlatButton_SetState($tbButtonApply, $GUI_ENABLE)
-				_asyncrun_clear()
+				;_asyncrun_clear()
 			EndIf
 		ElseIf StringInStr($sStdOut, "exists") Then
 			_setStatus(StringReplace($sStdOut, @CRLF, " "), 1)
@@ -406,12 +406,12 @@ Func _clickUp()
 	EndIf
 
 	If _checkMouse($list_profiles) And _ctrlHasFocus($list_profiles) Then
+		MouseClick($MOUSE_CLICK_PRIMARY)
 		If $mdblClick Then
 			_applyGUI()
 			$mdblClick = 0
 		Else
 			If $dragging Then
-				MouseClick($MOUSE_CLICK_PRIMARY)
 				$newitem = ControlListView($hgui, "", $list_profiles, "GetSelected")
 				$dragtext = ControlListView($hgui, "", $list_profiles, "GetText", $dragitem)
 				$newtext = ControlListView($hgui, "", $list_profiles, "GetText", $newitem)
@@ -643,9 +643,10 @@ Func _apply($dhcp, $ip, $subnet, $gateway, $dnsDhcp, $dnsp, $dnsa, $dnsreg, $ada
 	EndIf
 
 	if _warnUserDuplicateIP($adapter) then Return
-	AdlibUnRegister("_asyncRun_Process")
+	
+	;AdlibUnRegister("_asyncRun_Process")
 	$_reserveAsync = True
-	_asyncrun_clear()
+	;_asyncrun_clear()
 
 	$cmd1 = 'netsh interface ip set address '
 	$cmd2 = '"' & $adapter & '"'
@@ -1547,6 +1548,10 @@ Func _applyRoute()
 	$ip_props = _getIPs($selected_adapter)
 	$gateway = StringSplit($ip_props[2],".",2)
 	$ip_address = StringSplit($ip_props[0],".",2)
+	if $ip_props[7] Then
+		_setStatus("Route cannot be set in DHCP mode. Try applying settings first.")
+		Return
+	endif
 	if not isarray($gateway) or not IsArray($ip_address) Then
 		MsgBox(0,"'ROUTE ADD' Failed","The adapter IP settings must be set before a route can be added. Be sure to apply the IP settings before setting the route. Settings may not apply if the adapter is unplugged.")
 		return
@@ -1561,7 +1566,7 @@ Func _applyRoute()
 		return
 	Endif
 
-	$cmd = "powershell route delete 172.0.0.0; route add 172.0.0.0 mask 255.0.0.0 " & $ip_props[2] & " if " & $ifIndex
+	$cmd = 'route delete 172.0.0.0 && route add 172.0.0.0 mask 255.0.0.0 ' & $ip_props[2] & " if " & $ifIndex
 	asyncrun($cmd, _applyRouteCallback, "Apply Route")
 EndFunc
 
@@ -1570,7 +1575,7 @@ Func _applyRouteCallback($desc, $nextdesc, $sStdOut)
 	If StringRight(StringStripWS($sStdOut, $STR_STRIPALL),3) = "OK!" Then
 		_setStatus("Route was successfully updated!")
 	Else
-		_setStatus($sStdOut)
+		_setStatus("Route could not be set.")
 	Endif
 	GuiFlatButton_SetState($tbButtonAddRoute, $GUI_ENABLE)
 	_updateAddRouteButtonColor()
@@ -1589,11 +1594,16 @@ Func _updateAddRouteButtonColor()
 	"'" & $gateway & "'" & ' -and $_.InterfaceIndex -eq ' & $ifIndex & '}"'
 
 	$desc = "Updating route button color"
+	;~ d($cmd)
 	asyncRun($cmd, _updateAddRouteButtonColor_callback,$desc, Default, True, False)
 EndFunc
 
 
 Func _updateAddRouteButtonColor_callback($desc, $nextdesc, $sStdOut)
+	;~ if StringInStr($sStdOut, "failed") Then
+		;~ d($sStdOut)
+	;~ 	return
+	;~ endif
 	if StringStripWS($sStdOut, $STR_STRIPALL) = "" Then
 		;~ d(StringStripWS($sStdOut, $STR_STRIPALL) & @crlf &@crlf & StringStripWS($sStdOut, $STR_STRIPALL) = "")
 		_setButtonYellow($tbButtonAddRoute)
@@ -1661,10 +1671,10 @@ Func _warnUserDuplicateIP($currentAdapter)
 	if (GUICtrlRead($radio_IpAuto) = $GUI_CHECKED) then Return
 	_setStatus("Checking for duplicate IP assignments...") 
 	$ip = _ctrlGetIP($ip_Ip)
-
 	$adapterNames = Adapter_GetNames($adapters)
 	$ip = _ctrlGetIP($ip_Ip)
 	for $adapterName in $adapterNames
+	 	$a = _getIPs($adapterName)[0]
 		if $ip = _getIPs($adapterName)[0] And $adapterName <> $currentAdapter Then
 			$yesno = Msgbox(4,'Set IP Error', 'Warning' & @CRLF & @CRLF & 'IP ' & $ip & ' is already assigned to interface "' & $adapterName & '".' & @CRLF & 'Delete IP from "' & $adapterName & '"?')
 			if $yesno = 6 Then
@@ -1680,6 +1690,11 @@ Func _warnUserDuplicateIP($currentAdapter)
 	Next
 	return 0
 EndFunc
+
+
+func dummycallback($a, $b, $c)
+EndFunc
+
 
 Func _filterProfiles()
 	Local $aArray[1] = [0]
@@ -2080,6 +2095,12 @@ Func _handleHoverItemChange()
 	Local $index = ($ihot)
 	if $index = -1 then return
 	Local $hoverProfile = _getProfileByIndex($index)
+	$suppressComError = True
+	if not _checkProfileExists($hoverProfile) then
+		$suppressComError = False
+		Return
+	endif
+	$suppressComError = False
 	_setGUI($hoverProfile)
 	; update label colors based on whether the profile and previous gui values match
 	_updateLabelColor($radio_IpAuto, $hoverProfile.IpAuto, $stashedGuiProfile.IpAuto)
