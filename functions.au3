@@ -68,10 +68,9 @@ Func RunCallback($sDescription, $sNextDescription, $sStdOut)
 ;~ 			_setStatus(StringReplace($sStdOut, @CRLF, " "), 1)
 ;~ ;~ 			_GUICtrlToolbar_EnableButton($hToolbar, $tb_apply, True)
 ;~ 			GuiFlatButton_SetState($tbButtonApply, $GUI_ENABLE)
-		Elseif $sNextDescription = "" Then
+		Else
 			$_reserveAsync = False
 			GuiFlatButton_SetState($tbButtonApply, $GUI_ENABLE)
-
 			$selected_adapter = GUICtrlRead($combo_adapters)
 			If Not $showWarning Then
 				if _getIPs($selected_adapter)[7] <> (GUICtrlRead($radio_IpAuto) = $GUI_CHECKED) Then
@@ -84,6 +83,9 @@ Func RunCallback($sDescription, $sNextDescription, $sStdOut)
 	EndIf
 	_updateCurrent()
 	_updateApplyButtonColor()
+	_updateAddRouteButtonColor()
+	
+	
 EndFunc   ;==>RunCallback
 
 
