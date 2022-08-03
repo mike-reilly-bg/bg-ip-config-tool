@@ -106,12 +106,12 @@ EndFunc   ;==>_onRadio
 ; Description..: Set IP address information from profile
 ; Events.......: Click on profile list item / deselect a list item
 ;------------------------------------------------------------------------------
-Func _onClick($forceApply = False)
+Func _onClick()
 	; clicking in blank listview space or pressing Escape
 	if _GUICtrlListView_GetSelectedCount($list_profiles) = 0 Then
 		_setAllListViewLabelsDefault()
 	; clicked on a profile
-	Elseif _checkMouse($list_profiles) or $forceApply Then
+	Elseif _checkMouse($list_profiles) Then
 		_setGUI(_getSelectedProfile())
 		$blockApplyButtonColorUpdate = False
 		_stashGuiProfile()
@@ -277,7 +277,7 @@ Func _onLvUp()
 	If _ctrlHasFocus($list_profiles) Then
 		$Index = ControlListView($hgui, "", $list_profiles, "GetSelected")
 		ControlListView($hgui, "", $list_profiles, "Select", $Index - 1)
-		_onClick(True)
+		lvUpDn()
 	Else
 		GUISetAccelerators(0)
 		Send("{Up}")
@@ -294,13 +294,24 @@ Func _onLvDown()
 	If _ctrlHasFocus($list_profiles) Then
 		$Index = ControlListView($hgui, "", $list_profiles, "GetSelected")
 		ControlListView($hgui, "", $list_profiles, "Select", $Index + 1)
-		_onClick(True)
+		lvUpDn()
 	Else
 		GUISetAccelerators(0)
 		Send("{Down}")
 		GUISetAccelerators($aAccelKeys)
 	EndIf
 EndFunc   ;==>_onLvDown
+
+
+func lvUpDn()
+	_setGUI(_getSelectedProfile())
+	$blockApplyButtonColorUpdate = False
+	_stashGuiProfile()
+	_setAllGUILabelsDefault()
+	_setAllListViewLabelsDefault()
+	_updateApplyButtonColor()
+	_updateAddRouteButtonColor()
+endfunc
 
 
 ;------------------------------------------------------------------------------
