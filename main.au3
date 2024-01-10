@@ -2,8 +2,8 @@
 #RequireAdmin
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Icon=icon.ico
-#AutoIt3Wrapper_Outfile=RPW IP Config Tool.exe
-#AutoIt3Wrapper_Outfile_x64=Simp le IP Config 2.9.7-x64.exe
+#AutoIt3Wrapper_Outfile=BG IP Config Tool.exe
+#AutoIt3Wrapper_Outfile_x64=BG IP Config 2.9.7-x64.exe
 #AutoIt3Wrapper_Compile_Both=n
 #AutoIt3Wrapper_UseX64=n
 #AutoIt3Wrapper_Change2CUI=n

@@ -268,9 +268,6 @@ Func _setLangStrings($langCode = "en-US", $manualUpdate = False)
 	Local $hFile = FileOpen(@ScriptDir & "\lang\lang-" & $langCode & ".json", $FO_READ)
 	If $hFile = -1 Then
 		$fileData = _getEnglish()
-		If $langCode <> "en-US" Then
-			MsgBox(1, "Error", "Error reading language file")
-		EndIf
 	Else
 		If $hFile = -1 Then
 			MsgBox(1, "Error", "Error reading language file")
