@@ -28,7 +28,8 @@ Func _loadAdapters()
 
 	Local $tadapters = _GetAdapters()    ; get list of adapter names from 'network connections'
 	Local $ladapters[1][4] = [[0, 0, 0, 0]]
-	Adapter_DeleteAll($adapters)
+	$adapters = Adapter()
+	;~ Adapter_DeleteAll($adapters)
 	For $i = 0 To UBound($tadapters) - 1
 		$index = _ArraySearch($aIPAllAddrTable, $tadapters[$i], 0)
 		$mac = ""
@@ -80,8 +81,6 @@ Func _getIPs($adaptername)
 	Local $aIPv4AdaptersInfoEx = _Network_IPv4AdaptersInfoEx()    ; get info about all adapters (XP)
 	Local $nAdapters = @extended
 	Local $adapstate = _AdapterMod($adaptername, 2)
-
-	Local $tadapters = _GetAdapters()
 
 	If $adapstate = $oLangStrings.interface.props.adapterStateDisabled Then
 
@@ -408,28 +407,16 @@ Func _GetAdapters()
 	Local $ShellApp, $oNetConnections, $FolderItem
 	Local $myadapters[1] = [0], $iPlaceHolder = 0
 
-	; Create virtual folder for Network Connections
-	Const $ssfCONTROLS = 49
-	$ShellApp = ObjCreate("Shell.Application")                ; create shell object
-	$oNetConnections = $ShellApp.Namespace($ssfCONTROLS)    ; get Network Connections Namespace object
+	_setStatus("Updating network adapter list")
 
-	; If no 'Network connections' folder then return error.
-	If Not IsObj($oNetConnections) Then
-;~         MsgBox( 48, "Error", "Network Connections not found.")
-		Return 1
-	EndIf
+	; Define the PowerShell command
+	$psCommand = "(New-Object -Com Shell.Application).NameSpace(49).Items() | %{$_.Name} | Sort"
 
-	; Find the network adapters
-	For $FolderItem In $oNetConnections.Items
-		If $iPlaceHolder = 0 Then
-			$myadapters[$iPlaceHolder] = $FolderItem.name
-			$iPlaceHolder += 1
-		Else
-			ReDim $myadapters[$iPlaceHolder + 1]              ; expand the array
-			$myadapters[$iPlaceHolder] = $FolderItem.name
-			$iPlaceHolder += 1
-		EndIf
-	Next
+	; Run the PowerShell command and capture the output
+	$cmd = 'powershell.exe -nologo -executionpolicy bypass -noprofile -Command "' & $psCommand & '"'
 
-	Return $myadapters
+	$cmd_response = _getDOSOutput($cmd)
+	$networkAdapters = StringSplit($cmd_response, @CRLF, 2)
+	_setStatus("Ready")
+	Return $networkAdapters
 EndFunc   ;==>_GetAdapters

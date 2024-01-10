@@ -305,34 +305,12 @@ Func _main()
 	_print("make GUI")
 
 	;get list of adapters and current IP info
-	_loadAdapters()
 	_print("load adapters")
 
 	;watch for new program instances
 	GUIRegisterMsg($iMsg, '_NewInstance')
 
-	;Add adapters the the combobox
-	If Not IsArray($adapters) Then
-		MsgBox(16, $oLangStrings.message.error, $oLangStrings.message.errorRetrieving)
-	Else
-		Adapter_Sort($adapters)    ; connections sort ascending
-		$defaultitem = Adapter_GetName($adapters, 0)
-		$sStartupAdapter = $options.StartupAdapter
-		If Adapter_Exists($adapters, $sStartupAdapter) Then
-			$defaultitem = $sStartupAdapter
-		EndIf
-
-		$sAdapterBlacklist = $options.AdapterBlacklist
-		$aBlacklist = StringSplit($sAdapterBlacklist, "|")
-		If IsArray($aBlacklist) Then
-			Local $adapterNames = Adapter_GetNames($adapters)
-			For $i = 0 To UBound($adapterNames) - 1
-				$indexBlacklist = _ArraySearch($aBlacklist, $adapterNames[$i], 1)
-				If $indexBlacklist <> -1 Then ContinueLoop
-				GUICtrlSetData($combo_adapters, $adapterNames[$i], $defaultitem)
-			Next
-		EndIf
-	EndIf
+	_updateCombo()
 
 	_refresh(1)
 	ControlListView($hgui, "", $list_profiles, "Select", 0)
@@ -429,9 +407,10 @@ Func _main()
 
 		if _StrToState($options.AutoRefresh) Then
 			_updateCurrent()
-			if Mod($counter, 10) = 0 Then ;and not $_reserveAsync Then
+			if Mod($counter, 50) = 0 Then ;and not $_reserveAsync Then
 				_updateAddRouteButtonColor()
 				_updateApplyButtonColor()
+				_updateCombo()
 				$counter = 1
 			Endif
 		EndIf

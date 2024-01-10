@@ -1130,6 +1130,7 @@ Func _refresh($init = 0)
 	_loadProfiles()
 	_updateProfileList()
 	_updateCurrent()
+	_updateCombo()
 	_updateAddRouteButtonColor()
 	_updateApplyButtonColor()
 	If $pIdle Then
