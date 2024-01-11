@@ -29,9 +29,6 @@ Func _Options()
 	_AutoItObject_AddProperty($oObject, "AdapterBlacklist")
 	_AutoItObject_AddProperty($oObject, "PositionX")
 	_AutoItObject_AddProperty($oObject, "PositionY")
-	_AutoItObject_AddProperty($oObject, "AutoUpdate")
-	_AutoItObject_AddProperty($oObject, "LastUpdateCheck")
-	_AutoItObject_AddProperty($oObject, "AutoRefresh")
 	_AutoItObject_AddProperty($oObject, "count", $ELSCOPE_PRIVATE, 13)
 
 	;object methods
@@ -53,9 +50,6 @@ Func _Options_getSectionStr($oSelf)
 	$sSection &= "AdapterBlacklist=" & $oSelf.AdapterBlacklist & @CRLF
 	$sSection &= "PositionX=" & $oSelf.PositionX & @CRLF
 	$sSection &= "PositionY=" & $oSelf.PositionY & @CRLF
-	$sSection &= "AutoUpdate=" & $oSelf.AutoUpdate & @CRLF
-	$sSection &= "LastUpdateCheck=" & $oSelf.LastUpdateCheck & @CRLF
-	$sSection &= "AutoRefresh=" & $oSelf.AutoRefresh & @CRLF
 	Return $sSection
 EndFunc   ;==>_Options_getSectionStr
 
@@ -82,11 +76,5 @@ Func _Options_getSection($oSelf)
 	$aObject[8][1] = $oSelf.PositionX
 	$aObject[9][0] = "PositionY"
 	$aObject[9][1] = $oSelf.PositionY
-	$aObject[10][0] = "AutoUpdate"
-	$aObject[10][1] = $oSelf.AutoUpdate
-	$aObject[11][0] = "LastUpdateCheck"
-	$aObject[11][1] = $oSelf.LastUpdateCheck
-	$aObject[11][0] = "AutoRefresh"
-	$aObject[11][1] = $oSelf.AutoRefresh
 	Return $aObject
 EndFunc   ;==>_Options_getSection

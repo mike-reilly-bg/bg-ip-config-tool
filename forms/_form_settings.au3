@@ -68,14 +68,6 @@ Func _formm_settings()
 	GUICtrlSetBkColor(-1, 0xFFFFFF)
 	GUICtrlSetState($ck_saveAdapter, _checkboxStrToState($options.SaveAdapterToProfile))
 
-	$ck_autoUpdate = GUICtrlCreateCheckbox($oLangStrings.settings.opt4, 10 * $dScale, 120 * $dScale, $w - 50 * $dScale, 20 * $dScale)
-	GUICtrlSetBkColor(-1, 0xFFFFFF)
-	GUICtrlSetState($ck_autoUpdate, _checkboxStrToState($options.AutoUpdate))
-
-	$ck_autoRefresh = GUICtrlCreateCheckbox($oLangStrings.settings.opt5, 10 * $dScale, 140 * $dScale, $w - 50 * $dScale, 20 * $dScale)
-	GUICtrlSetBkColor(-1, 0xFFFFFF)
-	GUICtrlSetState($ck_autoRefresh, _checkboxStrToState($options.AutoRefresh))
-
 	$bt_optSave = GUICtrlCreateButton($oLangStrings.buttonSave, $w - 20 * $dScale - 75 * $dScale, $h - 27 * $dScale, 75 * $dScale, 22 * $dScale)
 	GUICtrlSetOnEvent($bt_optSave, "_saveOptions")
 	$bt_optCancel = GUICtrlCreateButton($oLangStrings.buttonCancel, $w - 20 * $dScale - 75 * $dScale * 2 - 5, $h - 27 * $dScale, 75 * $dScale, 22 * $dScale)
@@ -91,8 +83,6 @@ Func _saveOptions()
 	$options.StartupMode = _StateToStr($ck_startinTray)
 	$options.MinToTray = _StateToStr($ck_mintoTray)
 	$options.SaveAdapterToProfile = _StateToStr($ck_saveAdapter)
-	$options.AutoUpdate = _StateToStr($ck_autoUpdate)
-	$options.AutoRefresh = _StateToStr($ck_autoRefresh)
 
 	Local $langRet = StringLeft(StringRight(GUICtrlRead($cmb_langSelect), 6), 5)
 	If $langRet <> -1 Then

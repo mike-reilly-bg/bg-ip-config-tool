@@ -1,3 +1,7 @@
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_UseX64=y
+#AutoIt3Wrapper_Run_AU3Check=n
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 ; -----------------------------------------------------------------------------
 ; This file is part of Simple IP Config.
 ;
@@ -21,13 +25,12 @@
 ; Description:	- most functions related to doing something in the program
 ;==============================================================================
 Global $oMyError = ObjEvent("AutoIt.Error", "MyErrFunc")
-Global $suppressComError = 0
+Global $suppressComError = True
 
 Func MyErrFunc($oError)
 	If Not $suppressComError Then
-		SetError(1)
+		;~ SetError(1)
 		; Do anything here.
-		MsgBox(1, "COM " & $oLangStrings.message.error, "Simple IP Config COM " & $oLangStrings.message.error & @CRLF & "Error Number: " & Hex($oError.number) & @CRLF & $oError.windescription & @CRLF & "Source: " & $oError.source & @CRLF & "Line: " & $oError.scriptline)
 	EndIf
 EndFunc   ;==>MyErrFunc
 
@@ -230,7 +233,7 @@ Func _checksSICUpdate($manualCheck = 0)
 		If $manualCheck Or _DateDiff('D', $dateLastCheck, $dateNow) >= 7 Or $dateLastCheck = '' Then
 			_form_update($thisVersion, $scurrentVersion, $isNew)
 
-			$options.LastUpdateCheck = $dateNow
+		$options.LastUpdateCheck = $dateNow
 			IniWrite($sProfileName, "options", "LastUpdateCheck", $dateNow)
 		EndIf
 	Else
@@ -409,23 +412,16 @@ Func _clickUp()
 	EndIf
 
 	If _checkMouse($list_profiles) And _ctrlHasFocus($list_profiles) Then
-		MouseClick($MOUSE_CLICK_PRIMARY)
-		If $mdblClick Then
-			_GUICtrlListView_CancelEditLabel($list_profiles)
-			_applyGUI()
-			$mdblClick = 0
-			;_GUICtrlListView_GetItem($list_profiles,_GUICtrlListView_GetSelectedIndices($list_profiles)))
-		Else
-			If $dragging Then
-				$newitem = ControlListView($hgui, "", $list_profiles, "GetSelected")
-				$dragtext = ControlListView($hgui, "", $list_profiles, "GetText", $dragitem)
-				$newtext = ControlListView($hgui, "", $list_profiles, "GetText", $newitem)
-				If $newitem <> "" And $dragtext <> $newtext Then
-					$ret = _iniMove($sProfileName, $dragtext, $newtext)
-					If Not $ret Then
-						$profiles.move($dragtext, $newitem)
-						_updateProfileList()
-					EndIf
+		;~ MouseClick($MOUSE_CLICK_PRIMARY)
+		If $dragging Then
+			$newitem = ControlListView($hgui, "", $list_profiles, "GetSelected")
+			$dragtext = ControlListView($hgui, "", $list_profiles, "GetText", $dragitem)
+			$newtext = ControlListView($hgui, "", $list_profiles, "GetText", $newitem)
+			If $newitem <> "" And $dragtext <> $newtext Then
+				$ret = _iniMove($sProfileName, $dragtext, $newtext)
+				If Not $ret Then
+					$profiles.move($dragtext, $newitem)
+					_updateProfileList()
 				EndIf
 			EndIf
 		EndIf
@@ -642,6 +638,7 @@ EndFunc   ;==>_applyGUI
 ;------------------------------------------------------------------------------
 ; MUST BE TESTED VERY CAREFULLY
 Func _apply($dhcp, $ip, $subnet, $gateway, $dnsDhcp, $dnsp, $dnsa, $dnsreg, $adapter, $Callback)
+	_save()
 	If $adapter = "" Then
 		_setStatus($oLangStrings.message.selectAdapter, 1)
 		Return 1
@@ -1015,7 +1012,12 @@ Func _delete($name = "")
 			_setStatus($oLangStrings.message.errorOccurred, 1)
 		EndIf
 
-		$profiles.remove($profileName)
+		Local $areyousure = MsgBox(4, "Delete profile", "Are you sure you want to delete profile '" & $profileName & "'?")
+		If $areyousure = 6 Then
+			$profiles.remove($profileName)
+		Else
+			Return
+		Endif
 	Else
 		_GUICtrlListView_CancelEditLabel(ControlGetHandle($hgui, "", $list_profiles))
 	EndIf
@@ -1040,7 +1042,7 @@ Func _new()
 	$index = ControlListView($hgui, "", $list_profiles, "GetSelected")
 	$text = ControlListView($hgui, "", $list_profiles, "GetText", $index)
 	$profileName = $text
-
+	
 	If $profiles.exists($profileName) Then
 		MsgBox($MB_ICONWARNING, "Warning!", $oLangStrings.message.profileNameExists)
 		$lv_startEditing = 1
@@ -1049,7 +1051,7 @@ Func _new()
 
 	Local $oNewProfile = $profiles.create($profileName)
 	Local $adapName = iniNameEncode(GUICtrlRead($combo_adapters))
-
+	
 	$oNewProfile.IpAuto = _StateToStr($radio_IpAuto)
 	$oNewProfile.IpAddress = _ctrlGetIP($ip_Ip)
 	$oNewProfile.IpSubnet = _ctrlGetIP($ip_Subnet)
@@ -1133,6 +1135,7 @@ Func _refresh($init = 0)
 	_updateCombo()
 	_updateAddRouteButtonColor()
 	_updateApplyButtonColor()
+	_arrange()
 	If $pIdle Then
 		If Not $init Or ($init And Not $showWarning) Then
 			_setStatus($oLangStrings.message.ready)
@@ -1329,12 +1332,6 @@ Func _loadProfiles()
 						$options.PositionX = $thisSection[$j][1]
 					Case "PositionY"
 						$options.PositionY = $thisSection[$j][1]
-					Case "AutoUpdate"
-						$options.AutoUpdate = $thisSection[$j][1]
-					Case "LastUpdateCheck"
-						$options.LastUpdateCheck = $thisSection[$j][1]
-					Case "AutoRefresh"
-						$options.AutoRefresh = $thisSection[$j][1]
 				EndSwitch
 			Else
 				Switch $thisSection[$j][0]
@@ -2103,10 +2100,10 @@ Func _handleHoverItemChange()
 	Local $hoverProfile = _getProfileByIndex($index)
 	$suppressComError = True
 	if not _checkProfileExists($hoverProfile) then
-		$suppressComError = False
+		;~ $suppressComError = False
 		Return
 	endif
-	$suppressComError = False
+	;~ $suppressComError = False
 	_setGUI($hoverProfile)
 	; update label colors based on whether the profile and previous gui values match
 	_updateLabelColor($radio_IpAuto, $hoverProfile.IpAuto, $stashedGuiProfile.IpAuto)
@@ -2122,21 +2119,23 @@ EndFunc   ;==>_highlightHoverItemGuiMismatch
 
 
 Func _highlightUnsavedProfile()
-	If $cmdLine Then Return
-	$guiProfile = _getGUI()
-	if _GUICtrlListView_GetSelectedCount($list_profiles) <> 0 Then
-		$selectedProfile = _getSelectedProfile()
-		if $selectedProfile.IpAuto <> $guiProfile.IpAuto Or _
-		$selectedProfile.IpAddress <> $guiProfile.IpAddress Or _
-		$selectedProfile.IpSubnet <> $guiProfile.IpSubnet Or _
-		$selectedProfile.IpGateway <> $guiProfile.IpGateway Or _
-		$selectedProfile.DnsAuto <> $guiProfile.DnsAuto Or _
-		$selectedProfile.IpDnsPref <> $guiProfile.IpDnsPref Or _
-		$selectedProfile.IpDnsAlt <> $guiProfile.IpDnsAlt Or _
-		$selectedProfile.RegisterDns <> $guiProfile.RegisterDns Then
+
+	;~ If $cmdLine Then Return
+	;~ $guiProfile = _getGUI()
+	;~ if _GUICtrlListView_GetSelectedCount($list_profiles) <> 0 Then
+	;~ 	$selectedProfile = _getSelectedProfile()
+	;~ 	if $selectedProfile.IpAuto <> $guiProfile.IpAuto Or _
+	;~ 	$selectedProfile.IpAddress <> $guiProfile.IpAddress Or _
+	;~ 	$selectedProfile.IpSubnet <> $guiProfile.IpSubnet Or _
+	;~ 	$selectedProfile.IpGateway <> $guiProfile.IpGateway Or _
+	;~ 	$selectedProfile.DnsAuto <> $guiProfile.DnsAuto Or _
+	;~ 	$selectedProfile.IpDnsPref <> $guiProfile.IpDnsPref Or _
+	;~ 	$selectedProfile.IpDnsAlt <> $guiProfile.IpDnsAlt Or _
+	;~ 	$selectedProfile.RegisterDns <> $guiProfile.RegisterDns Then
 			
-		EndIf
-	EndIf
+	;~ 	EndIf
+	;~ EndIf
+
 EndFunc
 
 

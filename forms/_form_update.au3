@@ -70,7 +70,7 @@ Func _form_update($thisVersion, $currentVersion, $isNew = 0)
 		GUICtrlSetColor(-1, 0x0000FF)
 		GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 		GUICtrlSetFont(-1, -1, -1, $GUI_FONTUNDER)
-		GUICtrlSetTip(-1, 'Visit: https://github.com/KurtisLiggett/Simple-IP-Config/releases/latest')
+		GUICtrlSetTip(-1, 'Visit: https://github.com/mike-reilly-bg/bg-ip-config-tool')
 		GUICtrlSetCursor(-1, 0)
 	Else
 		$desc = $oLangStrings.updates.latestMessage

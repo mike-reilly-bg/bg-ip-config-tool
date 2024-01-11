@@ -118,6 +118,12 @@ Func _onClick()
 		_setAllGUILabelsDefault()
 		_setAllListViewLabelsDefault()
 	EndIf
+	If $mdblClick Then
+		_GUICtrlListView_CancelEditLabel($list_profiles)
+		_applyGUI()
+		$mdblClick = 0
+		;_GUICtrlListView_GetItem($list_profiles,_GUICtrlListView_GetSelectedIndices($list_profiles)))
+	Endif
 	_updateApplyButtonColor()
 	_updateAddRouteButtonColor()
 EndFunc   ;==>_onClick
@@ -157,9 +163,10 @@ EndFunc   ;==>_onArrangeZa
 ;                File menu 'Rename' item
 ;------------------------------------------------------------------------------
 Func _onRename()
-	If Not _ctrlHasFocus($list_profiles) Then
-		Return
-	EndIf
+	;~ If Not _ctrlHasFocus($list_profiles) Then
+	;~ 	Return
+	;~ EndIf
+
 	$Index = _GUICtrlListView_GetSelectedIndices($list_profiles)
 	$lvEditHandle = _GUICtrlListView_EditLabel(ControlGetHandle($hgui, "", $list_profiles), $Index)
 EndFunc   ;==>_onRename
@@ -195,8 +202,8 @@ EndFunc
 ; Events.......: Toolbar button, File menu 'New' item
 ;------------------------------------------------------------------------------
 Func _onNewItem()
+	_loadProfiles()
 	$newname = $oLangStrings.message.newItem
-	;Local $profileNames = _getNames()
 	Local $profileNames = $profiles.getNames()
 	Local $i = 1
 	While _ArraySearch($profileNames, $newname) <> -1
@@ -211,7 +218,8 @@ Func _onNewItem()
 	$lv_newItem = 1
 	$Index = ControlListView($hgui, "", $list_profiles, "GetItemCount")
 	ControlListView($hgui, "", $list_profiles, "Select", $Index - 1)
-	_GUICtrlListView_EditLabel(ControlGetHandle($hgui, "", $list_profiles), $Index - 1)
+	;~ _GUICtrlListView_EditLabel(ControlGetHandle($hgui, "", $list_profiles), $Index - 1)
+	_onLvDoneEdit()
 EndFunc   ;==>_onNewItem
 
 ;------------------------------------------------------------------------------
@@ -431,7 +439,7 @@ EndFunc   ;==>_onHelp
 Func _onUpdateCheckItem()
 	$suppressComError = 1
 	_checksSICUpdate(1)
-	$suppressComError = 0
+	;~ $suppressComError = 0
 EndFunc   ;==>_onUpdateCheckItem
 
 
@@ -511,7 +519,7 @@ EndFunc   ;==>_iconLink
 ; Events.......: Click on link in update window
 ;------------------------------------------------------------------------------
 Func _updateLink()
-	$sURL = "https://github.com/KurtisLiggett/Simple-IP-Config/releases/latest"
+	$sURL = "https://github.com/mike-reilly-bg/bg-ip-config-tool"
 	ShellExecute($sURL)
 	GUICtrlSetColor(@GUI_CtrlId, 0x551A8B)
 EndFunc   ;==>_updateLink

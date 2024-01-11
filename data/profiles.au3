@@ -189,6 +189,66 @@ Func _Profiles_setProfile($oSelf, $sName, $oNewProfile)
 	Return -1
 EndFunc   ;==>_Profiles_setProfile
 
+; Custom function to sort IP addresses using Bubble Sort
+Func SortIPArray(ByRef $arr, $bDescending = False)
+    Local $i, $j
+    Local $iSize = UBound($arr)
+    
+    For $i = 0 To $iSize - 2
+        For $j = 0 To $iSize - 2 - $i
+            If $bDescending Then
+                If IPCompareFunc($arr[$j], $arr[$j + 1]) = -1 Then
+                    _Swap($arr[$j], $arr[$j + 1])
+                EndIf
+            Else
+                If IPCompareFunc($arr[$j], $arr[$j + 1]) = 1 Then
+                    _Swap($arr[$j], $arr[$j + 1])
+                EndIf
+            EndIf
+        Next
+    Next
+EndFunc
+
+; Swap function
+Func _Swap(ByRef $v1, ByRef $v2)
+    Local $temp = $v1
+    $v1 = $v2
+    $v2 = $temp
+EndFunc
+
+
+Func IPCompareFunc($sElement1, $sElement2)
+    ; Check if both elements are valid IP addresses
+    If IsIP($sElement1) And IsIP($sElement2) Then
+        ; Split the IP addresses into segments
+        Local $aIP1 = StringSplit($sElement1, ".")
+        Local $aIP2 = StringSplit($sElement2, ".")
+
+        ; Compare each segment as integer
+        For $i = 1 To 4
+            If Int($aIP1[$i]) < Int($aIP2[$i]) Then 
+                Return -1
+            ElseIf Int($aIP1[$i]) > Int($aIP2[$i]) Then
+                Return 1
+            EndIf
+        Next
+    ElseIf IsIP($sElement1) Then
+        ; If only the first element is a valid IP, it should come first
+		Return -1
+    ElseIf IsIP($sElement2) Then
+        ; If only the second element is a valid IP, it should come first
+		Return 1
+    EndIf
+
+    ; If neither are valid IPs or both are equal, sort by string comparison
+    Return StringCompare($sElement1, $sElement2)
+EndFunc
+
+; Function to check if a string is a valid IP address
+Func IsIP($sIP)
+    Return StringRegExp($sIP, "^\d{1,3}(\.\d{1,3}){3}$")
+EndFunc
+
 Func _Profiles_sort($oSelf, $iDescending = 0)
 	#forceref $oSelf
 	Local $oProfilesTemp = LinkedList()
@@ -196,7 +256,8 @@ Func _Profiles_sort($oSelf, $iDescending = 0)
 
 	;sort the names first
 	If Not IsArray($aNames) Then Return 1
-	_ArraySort($aNames, $iDescending)
+
+	SortIPArray($aNames, $iDescending)
 
 	;recreate the list
 	For $i=0 to $oSelf.count-1

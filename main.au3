@@ -4,14 +4,13 @@
 #AutoIt3Wrapper_Icon=icon.ico
 #AutoIt3Wrapper_Outfile=BG IP Config Tool.exe
 #AutoIt3Wrapper_Outfile_x64=BG IP Config 1.0.0-x64.exe
-#AutoIt3Wrapper_Compile_Both=n
-#AutoIt3Wrapper_UseX64=n
-#AutoIt3Wrapper_Change2CUI=n
+#AutoIt3Wrapper_UseX64=y
 #AutoIt3Wrapper_Res_Description=BG IP Config Tool
-#AutoIt3Wrapper_Res_Fileversion=1.0
+#AutoIt3Wrapper_Res_Fileversion=1.0.0.0
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
 #AutoIt3Wrapper_Res_HiDpi=y
-#AutoIt3Wrapper_AU3Check_Stop_OnWarning=y
+#AutoIt3Wrapper_Run_AU3Check=n
+#AutoIt3Wrapper_Tidy_Stop_OnError=n
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 #Region license
 ; -----------------------------------------------------------------------------
@@ -175,7 +174,7 @@ Global $lvcon_rename, $lvcon_delete, $lvcon_arrAz, $lvcon_arrZa, $lvcreateLinkIt
 Global $lvcontext
 
 ;Settings window
-Global $ck_mintoTray, $ck_startinTray, $ck_saveAdapter, $ck_autoUpdate, $cmb_langSelect, $ck_autoRefresh
+Global $ck_mintoTray, $ck_startinTray, $ck_saveAdapter, $cmb_langSelect
 
 Global $timerstart, $timervalue
 
@@ -274,7 +273,6 @@ _main()
 Func _main()
 	_print("starting")
 	_initLang()
-
 	_print("init lang")
 	; popuplate current adapter names and mac addresses
 	;_loadAdapters()
@@ -324,14 +322,6 @@ Func _main()
 
 	;get the domain
 	GUICtrlSetData($domainName, _DomainComputerBelongs())
-
-	$sAutoUpdate = $options.AutoUpdate
-	If _StrToState($sAutoUpdate) Then
-		$suppressComError = 1
-		_checksSICUpdate()
-		$suppressComError = 0
-		_updateAddRouteButtonColor()
-	EndIf
 
 	$iHot = -1
 
@@ -404,16 +394,6 @@ Func _main()
 			Case $GUI_EVENT_CLOSE
 				Exit
 		EndSwitch
-
-		if _StrToState($options.AutoRefresh) Then
-			_updateCurrent()
-			if Mod($counter, 50) = 0 Then ;and not $_reserveAsync Then
-				_updateAddRouteButtonColor()
-				_updateApplyButtonColor()
-				_updateCombo()
-				$counter = 1
-			Endif
-		EndIf
 
 		_handleHoverItemChange()
 		_highlightUnsavedProfile()
