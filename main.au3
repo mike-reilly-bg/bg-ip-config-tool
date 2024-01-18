@@ -4,7 +4,7 @@
 #AutoIt3Wrapper_Icon=icon.ico
 #AutoIt3Wrapper_Outfile=BG IP Config Tool.exe
 #AutoIt3Wrapper_Outfile_x64=BG IP Config 1.0.0-x64.exe
-#AutoIt3Wrapper_UseX64=y
+#AutoIt3Wrapper_UseX64=n
 #AutoIt3Wrapper_Res_Description=BG IP Config Tool
 #AutoIt3Wrapper_Res_Fileversion=1.0.0.0
 #AutoIt3Wrapper_Res_requestedExecutionLevel=requireAdministrator
